@@ -1,0 +1,54 @@
+#!/bin/sh
+
+prefix=/usr/local
+cxx=g++
+HERE="$(dirname "$(readlink -f "${0}")")"
+CONF="${HERE}/val-config.in"
+MAKE="${HERE}/Makefile.in"
+includeflag="-I${HERE}/include"
+
+#echo $CONF
+
+for arg in "$@"; do
+    case "$arg" in
+    --prefix=*)
+        prefix=`echo $arg | sed 's/--prefix=//'`
+        ;;
+    --cxx=*)
+        cxx=`echo $arg | sed 's/--cxx=//'`
+        ;;
+    --help|-h)
+        echo 'usage: ./configure [options]'
+        echo 'options:'
+        echo '  --prefix=<path>: installation prefix (else prefix=/usr/local)'
+        echo '  --cxx=<command>: c++ compiler (else cxx=g++)'
+        exit 0
+        ;;
+    esac
+done
+
+PRIMPATH="char primlistpath[] = \"${prefix}/share/valmath/data/primlis1.txt\";"
+#PRIMPATH="char primlistpath[] = ${HERE}"
+
+#echo $PRIMPATH
+
+echo 'changing val_basis.cpp'
+sed -i "8s#.*#${PRIMPATH}#" "${HERE}/src/val_basics.cpp"
+
+
+echo 'generating makefile ...'
+echo "PREFIX=$prefix" > Makefile
+echo "DIRPATH = $HERE" >> Makefile
+echo "CXX=$cxx" >> Makefile
+echo "INCLUDEFLAG = $includeflag" >> Makefile
+cat $MAKE >> Makefile
+
+echo 'generating val-config'
+mkdir -p bin
+echo '#!/bin/sh' > bin/val-config
+echo "" >> bin/val-config
+echo "PREFIX=$prefix" >> bin/val-config
+cat $CONF >> bin/val-config
+chmod 755 bin/val-config
+
+echo 'configuration complete, type make to build.'

@@ -1,0 +1,14 @@
+INCLUDE1="${PREFIX}/include/valmath"
+
+
+for arg in "$@"; do
+    case "$arg" in
+    --libs)
+        echo '-lvalmath -pthread'
+        ;;
+
+    --cflags)
+		echo "-I${INCLUDE1} I${INCLUDE1}/val"
+        ;;
+    esac
+done

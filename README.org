@@ -1,0 +1,72 @@
+#+title: libvalmath: A C++ library for mathematical computations
+#+author: Miguel Valbuena
+
+
+* Headers:
+
+**  affinspace.h :
+Defines a template class ~affinspace<T>~, that represents a finite dimensional affine space over the
+field ~T~. Includes the header file ~LA.h~.
+
+** analysis.h : 
+
+** complex.h : 
+
+** d_array.h :
+
+** error.h : 
+
+** fraction.h :
+
+** function_parser: 
+
+** gaussian.h
+
+** Glist.h
+
+** ideal_roots.h
+
+** integer.h
+
+** LA.h
+
+** matrix.h
+
+** modint.h
+
+** modq.h
+
+** MyTime.h
+
+** n_polynom.h
+
+** numbers.h
+** pol_arithmetic.h :   
+
+** polfactor.h : 
+
+** pol.h : 
+
+** rand.h : 
+
+** rational.h :
+
+** s_expo.h :
+
+** s_grobner.h :
+
+** s_modinteger.h :
+
+** s_polynom.h :
+
+** trie.h :
+
+** val_basics.h :
+
+** val_filesys.h :
+
+** val_utils.h :
+
+** vector.h :
+
+* Build and Install

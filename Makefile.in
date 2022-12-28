@@ -1,0 +1,47 @@
+CXXFLAGS = -O3 -Wall -pedantic-errors -pedantic -std=c++14 -fvisibility=hidden -fpic -fno-semantic-interposition $(INCLUDEFLAG)
+LDFLAGS = -s -O2 -O2 -pthread
+OBJ = obj
+LIB = lib
+LIBPATH = $(PREFIX)/lib
+INCLUDEPATH = $(PREFIX)/include/valmath/val
+DATAPATH = $(PREFIX)/share/valmath/data
+BINPATH = $(PREFIX)/bin
+VALPTH = $(PREFIX)/share/valmath
+
+libvalmath.so: $(OBJ)/libvalmath.o
+	mkdir -p $(LIB)
+	#echo "linkage"
+	$(CXX) -shared -o $(LIB)/libvalmath.so $(OBJ)/libvalmath.o  $(LDFLAGS)
+
+
+$(OBJ)/libvalmath.o : $(DIRPATH)/src/libmain.cpp
+	mkdir -p $(OBJ)
+	#echo "compilation"
+	$(CXX) -c $(CXXFLAGS) $(DIRPATH)/src/libmain.cpp -o $@
+
+
+	
+.PHONY clean:
+
+clean:
+	rm -r -f $(OBJ) $(LIB)
+
+
+.PHONY install:
+
+install:
+	mkdir -p $(INCLUDEPATH) $(DATAPATH) $(BINPATH)
+	cp -r $(DIRPATH)/include/* $(INCLUDEPATH)
+	cp  $(DIRPATH)/data/* $(DATAPATH)
+	cp bin/val-config $(BINPATH)/
+	cp lib/libvalmath.so $(LIBPATH)/
+
+
+
+.PHONY uninstall:
+
+uninstall:
+	rm -f $(LIBPATH)/libvalmath.so
+	rm -f $(BINPATH)/val-config
+	rm -r -f $(VALPTH)
+	rm -r -f $(PREFIX)/include/valmath
