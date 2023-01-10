@@ -1,6 +1,32 @@
 #+title: libvalmath: A C++ library for mathematical computations
 #+author: Miguel Valbuena
 
+* Features:
+
+** Groebner Bases:
+
+*** Implementation of the buchberger algorithm to compute the reduced Groebner Basis of an ideal over $\mathbb{Q}$ or $\mathbb{F}_p$.
+
+*** Implementation of the permuted Groebner-Walk-Algorithm for basis conversion.
+
+*** Groebner Basis conversion using the Hilbert criterion.
+
+** Commutative Algebra:
+
+*** Computation of zerodimensional radical ideals over $\mathbb{Q}$.
+
+*** Computation of the real and complex roots of a zerodimensional ideal over $\mathbb{Q}$.
+
+** Linear Algebra:
+
+*** Implementation of the Gauss Algorithm to solve systems of linear equations.
+
+*** Solving linear equations over integers via elementary divisors.
+
+*** Orthogonalization of a vector space via Erhard Schmidt. Computation of the orthogonal space.
+
+*** Intersection or distance between two affine spaces.
+
 
 * Headers:
 
