@@ -3277,8 +3277,24 @@ Glist<GPair<double>> valfunction::get_undefined_intervals(const double &x1,const
     }
 
     if (oper=="^") {
-        valfunction f("log("+h.getinfixnotation()+")*(" + g.getinfixnotation()+")");
-        return f.get_undefined_intervals(x1,x2,iterations,epsilon,methoditerations);
+		valfunction f;
+        if (!has_variable(g_t)) {
+			std::string s_g = g.getinfixnotation();
+			if (isinteger(s_g)) {
+				int e = FromString<int>(s_g);
+				if (e<0) {
+					f = valfunction("1/(" + h.getinfixnotation() + ")");
+				}
+				else f = h;
+			}
+			else {
+				f = valfunction("sqrt(" + h.getinfixnotation() + ")");
+			}
+		}
+        else {
+			f = valfunction("log("+h.getinfixnotation()+")*(" + g.getinfixnotation()+")");
+		}
+		return f.get_undefined_intervals(x1,x2,iterations,epsilon,methoditerations);
     }
 
 	return intervals;
