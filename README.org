@@ -19,7 +19,7 @@
 
 *** Computation of the hilbert polynomial of an ideal.
 
-*** Factorization of univariate polynomials over $\mathbb{Q}$ and $\mathbb{F}_p.
+*** Factorization of univariate polynomials over $\mathbb{Q}$ and $\mathbb{F}_p$.
 
 ** Linear Algebra:
 
