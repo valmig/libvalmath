@@ -139,5 +139,5 @@ Type ~make install~ or ~sudo make install~ (if sudo privileges are required).
 Type ~make uninstall~ or ~sudo make uninstall~ (if sudo privileges are required).
 
 * Using libvalmath (On Linux Systems):
-After installing, use the library with the compilation flag ~'val-config --cflags'~ (for finding the headers)
-and the linking flag ~'val-config --libs'~ (to link against the library).
+After installing, use the library with the compilation flag src_makefile{'val-config --cflags'} (for finding the headers)
+and the linking flag src_makefile{'val-config --libs'} (to link against the library).
