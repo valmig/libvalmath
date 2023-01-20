@@ -1883,6 +1883,10 @@ const valfunction& valfunction::infix_to_postfix(const std::string &s)
 			t = s_stack("t",s_stack::NUMBER);
 			++i;
 		}
+		else if (s[i] == 'P' && i < n-1 && s[i+1] == 'I') {
+			t = s_stack("PI",s_stack::NUMBER);
+			i += 2;		
+		}
 		else if ((sf = fparser::getstringfunction(s,i)) != "") {
 			t = s_stack(sf,s_stack::OPERATOR,5);
 			i+= sf.length();
