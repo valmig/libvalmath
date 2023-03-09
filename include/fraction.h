@@ -58,7 +58,7 @@ public:
     fraction<T> operator /(const fraction<T> &F) const;
     const fraction<T>& operator *=(const fraction<T> &F) {*this=*this*F;return *this;}
     const fraction<T>& operator /=(const fraction<T> &F) {*this=*this/F;return *this;}
-    int operator ==(const fraction<T> &F) const {return  (zaehler==F.zaehler && nenner==F.nenner);}
+    int operator ==(const fraction<T> &F) const {return (zaehler*F.nenner == nenner*F.zaehler);}//{return  (zaehler==F.zaehler && nenner==F.nenner);}
     int operator !=(const fraction<T> &F) const {return !(*this==F);}
     static int isreduced() {return reduced;}
     static void setreduced(int a) {reduced=a;}

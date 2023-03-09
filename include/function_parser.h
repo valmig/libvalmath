@@ -81,7 +81,7 @@ public:
     pol<rational> getpolynomial() const;
     n_polynom<rational> getn_polynom() const;
     s_polynom<rational> gets_polynom() const;
-    rationalfunction getrationalfunction() const;
+    rationalfunction getrationalfunction(int reduced = 1) const;
     void setparameter(const double &a) {t=a;}
     const double& getparameter() const {return t;}
     const std::string& getinfixnotation() const;

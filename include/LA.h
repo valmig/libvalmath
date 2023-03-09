@@ -49,8 +49,8 @@ template <class T>
 val::pol<T> char_pol(const val::matrix<T>& A);
 
 // Computes exact solutions of a linear equation system given by the extended matrix of A.
-// First row of X is a special solution, the rest of the rows form a basis for the solution of 
-// the homogeneous LES. Returns the number of rows of X, e.g. 0 if LES is unsolvable. 
+// First row of X is a special solution, the rest of the rows form a basis for the solution of
+// the homogeneous LES. Returns the number of rows of X, e.g. 0 if LES is unsolvable.
 template <class T>
 int les(matrix<T>& A,matrix<T>& X,T& det);
 
@@ -105,7 +105,7 @@ template <class T>
 vector<vector<T> > orthogonalspace(const vector<vector<T> >& V,const matrix<T> &A=matrix<T>());
 
 // Computes the rotation matrix by the angle alpha of the variables mu,nu (dim = dimension, angle in RAD)
-DLL_PUBLIC val::matrix<double> rotationmatrix(const double& alpha,int mu=0,int nu=1,int dim=2); 
+DLL_PUBLIC val::matrix<double> rotationmatrix(const double& alpha,int mu=0,int nu=1,int dim=2);
 
 
 
@@ -200,7 +200,7 @@ template <class T>
 int gauss(matrix<T>& A,vector<int>& q,T& det)
 {
  int m=A.numberofrows(),n=A.numberofcolumns(),i,j,s,l,k=0,r=0;
- T h,zero(0),one(1);
+ T h,zero = zero_element<T>(), one = unity_element<T>();
 
  q=vector<int>(0,n);
 
@@ -331,7 +331,7 @@ T det_by_gauss(matrix<T>& A)
         }
      if (h!=zero) {
         r++;
-        if (k!=(r-1)) {        // Swap rows 
+        if (k!=(r-1)) {        // Swap rows
             A.swaprows(k,r-1);
             changesign(det);
         }
@@ -432,6 +432,7 @@ template <class T>
 int les(matrix<T>& A,matrix<T>& X,T& det)
 {
  int n=A.numberofcolumns(),r,i,j,s,dim;
+ T zero = zero_element<T>(), minusone = -unity_element<T>();
 
  vector<int> q(n);
 
@@ -441,7 +442,7 @@ int les(matrix<T>& A,matrix<T>& X,T& det)
  if (r>0)
     if (q[r-1]==n-1) return 0;      // LES has no solutions;
 
- X=matrix<T>(T(0),dim=n-r,n-1);
+ X=matrix<T>(zero,dim=n-r,n-1);
 
  vector<int> p(0,dim-1);            // not-scale-indexes
  //p.make_zero();
@@ -454,7 +455,7 @@ int les(matrix<T>& A,matrix<T>& X,T& det)
  for (i=0;i<r;i++)                // Get X[0]
       X(0,q(i)) = A(i,n-1);
 
- for (i=1;i<dim;i++) X(i,p(i-1)) = T(-1);
+ for (i=1;i<dim;i++) X(i,p(i-1)) = minusone;
   for (i=0;i<r;i++)
 	 for (j=0;j<dim-1;j++) X(j+1,q(i))  = A(i,p(j));
 
@@ -776,7 +777,7 @@ int orthogonalize(vector<vector<T> > &V,const matrix<T> &A)
  T zero(0);
 
  if (m==0 || m==1) return 1;
- 
+
  vector<T> v(m-1),w(m-1);
 
  n=V(0).dimension();

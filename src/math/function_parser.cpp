@@ -1472,10 +1472,12 @@ s_polynom<rational> valfunction::gets_polynom() const
 }
 
 
-rationalfunction valfunction::getrationalfunction() const
+rationalfunction valfunction::getrationalfunction(int reduced) const
 {
     rationalfunction v2,value=val::zero_element<rationalfunction>();
     if (Gdat.isempty()) return value;
+    int red = rationalfunction::isreduced();
+    rationalfunction::setreduced(reduced); 
 
     GlistIterator<valfunction::token> iT;
     Glist<rationalfunction> G;
@@ -1526,6 +1528,7 @@ rationalfunction valfunction::getrationalfunction() const
     G.resetactual();
     value=val::zero_element<rationalfunction>();
     if (!G.isempty()) value=G.actualvalue();
+    rationalfunction::setreduced(red);
     return value;
 }
 
@@ -1879,7 +1882,7 @@ const valfunction& valfunction::infix_to_postfix(const std::string &s)
 			if (nvar<3) nvar=3;
 			++i;
 		}
-        else if (s[i] == 't' && i < n-1 && s[i+1] != 'a') {
+        else if (s[i] == 't' && (i == n-1 || (i < n-1 && s[i+1] != 'a')) )  {
 			t = s_stack("t",s_stack::NUMBER);
 			++i;
 		}
