@@ -8,7 +8,7 @@ for arg in "$@"; do
         ;;
 
     --cflags)
-		echo "-I${INCLUDE1} I${INCLUDE1}/val"
+		echo "-I${INCLUDE1} -I${INCLUDE1}/val"
         ;;
     esac
 done
