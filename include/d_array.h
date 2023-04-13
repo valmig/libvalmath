@@ -51,6 +51,7 @@ public:
     void sinsert(T&& value);
     void append(const d_array<T>& v);
     void append(d_array<T>&& v);
+    d_array<T> operator+ (const d_array<T> &u) const;
     const T* begin() const {return dat;}
     T* begin() {return dat;}
     const T* end() const {if (dat==nullptr) return dat; else return &dat[len];}
@@ -350,6 +351,23 @@ void d_array<T>::append(d_array<T>&& v)
     v.dat=nullptr;
 }
 
+
+template <class T>
+d_array<T> d_array<T>::operator+ (const d_array<T> &u) const
+{
+    d_array<T> v;
+    int i,j;
+    v.cap = u.cap + cap;
+    v.len = u.len + len;
+    if (!v.cap) return v;
+
+    v.dat = new T[v.cap];
+
+    for (i = 0; i < cap; ++i) v.dat[i] = dat[i];
+    for (j = 0; j < u.cap; ++i, ++j) v.dat[i] = u.dat[j];
+
+    return v;
+}
 
 
 template <class T>
