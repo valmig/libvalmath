@@ -397,7 +397,7 @@ val::pol<val::rational> modular_gcd(const val::pol<val::rational> &f, const val:
 
     if (n<1) n=1;
 
-    int i=0,j,deg=-1,degvalid;
+    int j,deg=-1,degvalid; // i=0
     integer zero;
     pol<rational> h,hold,onepol(rational(1)),zeropol;
     pol<integer> fint = val::primitivpart(f), gint = val::primitivpart(g), hint;
@@ -419,7 +419,8 @@ val::pol<val::rational> modular_gcd(const val::pol<val::rational> &f, const val:
 
     auto p = Primlist->begin();
 
-    for (i=0;p!=Primlist->end();i++) {
+    //for (i=0;p!=Primlist->end();i++) {
+    for (;p!=Primlist->end();) {
         for (j=0;j<n;j++) {
             while (p!=Primlist->end()) {
                 q[j] = p();

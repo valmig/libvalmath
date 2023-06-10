@@ -88,6 +88,7 @@ public:
     std::string getfirstoperator() const;
     int numberofvariables() const {return nvar;}
     int isconst() const;
+    int isconst(int k) const;
     int isrationalfunction() const;
     int ispolynomialfunction() const;
     int isdifferentiable() const;

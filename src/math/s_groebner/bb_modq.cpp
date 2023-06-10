@@ -91,7 +91,7 @@ void update(val::s_polynom<val::modq> &f,val::Glist< val::s_polynom<val::modq> >
 
   // Eventually release memory:
   if (nGrest-nGrestold>=100) {
-	  int is,nelm=0;
+	  int is;//nelm=0;
 	  for (ItG.settohead(Grest);ItG;ItG++) {
 		  if (ItG().iszero()) continue;
 		  is=1;
@@ -104,7 +104,7 @@ void update(val::s_polynom<val::modq> &f,val::Glist< val::s_polynom<val::modq> >
 		  }
 		  if (is) {
 			  nGrest--;
-			  nelm++;
+			  //nelm++;
 			  ItG().del();
 		  }
 	  }

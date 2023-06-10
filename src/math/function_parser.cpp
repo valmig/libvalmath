@@ -58,6 +58,7 @@ val::n_polynom<val::rational> lcm(const val::n_polynom<val::rational>& f,const v
         h.insert(rational(monom.actualcoef()),Z);
     }
     h.normalize();
+    
     return h;
 }
 
@@ -658,6 +659,9 @@ void valfunction::subst_var_t_pi(d_array<token> &f_t,d_array<d_array<token>> &to
         }
     }
     if (found) par++;
+	//std::cout<<"\n After renaming all, f_t = ";
+	//for (const auto& v : f_t) std::cout<<v.data<<"  ";
+
 }
 
 void valfunction::back_subst(d_array<token> & f_t,const d_array<d_array<token>> &toklist,int nx)
@@ -1894,93 +1898,8 @@ const valfunction& valfunction::infix_to_postfix(const std::string &s)
 			t = s_stack(sf,s_stack::OPERATOR,5);
 			i+= sf.length();
 		}
-		/*
-        else if (s[i]=='e') {
-            if (fparser::foundpattern(s,"exp",i)) {
-                t = s_stack("exp",s_stack::OPERATOR,5);
-            }
-            else syntax=0;
-        }
-        else if (s[i]=='l') {
-            if (fparser::foundpattern(s,"log",i)) {
-                t = s_stack("log",s_stack::OPERATOR,5);
-            }
-            else syntax=0;
-        }
-        else if (s[i]=='s') {
-            j=i;
-            if (fparser::foundpattern(s,"sin",i)) {
-                t = s_stack("sin",s_stack::OPERATOR,5);
-            }
-            else {
-                i=j;
-                if (fparser::foundpattern(s,"sqrt",i)) {
-                    t = s_stack("sqrt",s_stack::OPERATOR,5);
-                }
-                else syntax=0;
-            }
-        }
-        else if (s[i]=='c') {
-            if (fparser::foundpattern(s,"cos",i)) {
-                t = s_stack("cos",s_stack::OPERATOR,5);
-            }
-            else syntax=0;
-        }
-        else if (s[i]=='t') {
-            j=i;
-            if (fparser::foundpattern(s,"tan",i)) {
-                t = s_stack("tan",s_stack::OPERATOR,5);
-            }
-            else {
-                t = s_stack("t",s_stack::NUMBER);
-                i=j+1;
-            }
-        }
-        else if (s[i]=='P') {
-            if (fparser::foundpattern(s,"PI",i)) {
-                t = s_stack("PI",s_stack::NUMBER);
-            }
-            else syntax=0;
-        }
-        else if (s[i]=='a') {
-            if (i!=n-1 && s[i+1]=='b') {
-                if (fparser::foundpattern(s,"abs",i)) {
-                    t = s_stack("abs",s_stack::OPERATOR,5);
-                }
-                else syntax=0;
-            }
-            else if (fparser::foundpattern(s,"arc",i)) {
-                syntax=0;
-                if (s[i]=='s') {
-                    if (fparser::foundpattern(s,"sin",i)) {
-                        t = s_stack("arcsin",s_stack::OPERATOR,5);
-                        syntax=1;
-                    }
-                }
-                else if (s[i]=='c') {
-                    if (fparser::foundpattern(s,"cos",i)) {
-                        t = s_stack("arccos",s_stack::OPERATOR,5);
-                        syntax=1;
-                    }
-                }
-                else if (s[i]=='t') {
-                    if (fparser::foundpattern(s,"tan",i)) {
-                        t = s_stack("arctan",s_stack::OPERATOR,5);
-                        syntax=1;
-                    }
-                }
-            }
-            else syntax=0;
-        }
-        */
         else {failed=1;++i;}
         
-        /*
-        if (!syntax) {
-            s_infix="";
-            return *this;
-        }
-        */
         
         if (!failed) {
             if (!G.isempty()) {
@@ -2065,6 +1984,19 @@ int valfunction::isconst() const
 	}
 	return 1;
 }
+
+
+int valfunction::isconst(int k) const
+{
+	std::string svar = "x" + ToString(k);
+	for (const auto &value : Gdat) {
+		if (k == 1 && value.data == "x") return 0;
+		if (value.data == svar) return 0;
+	}
+	return 1;
+}
+
+
 
 int valfunction::isrationalfunction() const
 {
@@ -2459,16 +2391,16 @@ void valfunction::simplifypolynomial(d_array<token> &f_t)
 
     // Convert to infix:
     std::string s_fnom = MPolToString(f_nom), s_fdenom=MPolToString(f_denom),mult_nom="",mult_denom="";
-    int n_nom=0,n_denom=0;
+    //int n_nom=0,n_denom=0;
     for (int i=0;i<dim;++i) {
         if (num_pot[i]>0) {
-            n_nom++;
+            //n_nom++;
             mult_nom+="x" + ToString(i+1);
             if (num_pot[i]>1) mult_nom+="^" + ToString(num_pot[i]);
             mult_nom+="*";
         }
         else if (num_pot[i]<0) {
-            n_denom++;
+            //n_denom++;
             mult_denom+="x" + ToString(i+1);
             if (num_pot[i]<-1) mult_denom+="^" + ToString(val::abs(num_pot[i]));
             mult_denom+="*";
@@ -2531,15 +2463,30 @@ void valfunction::simplify(int extended)
     d_array<d_array<token>> toklist;
     auto it=Gdat.begin();
     valfunction h;
+    std::string s_number;
 
-    h.nvar=nvar;
+ 
+
 
     h.s_infix="1";
 
     for (i=n-1;i>=0;--i,it++) f_t[i] = it();
 
+	nvar=1;
+    for (auto& value : f_t) {
+		if (value.data != "x" && value.data[0]=='x') {
+			i=1;
+			s_number = fparser::findnumber(value.data,i);
+			nvar=val::Max(nvar,val::FromString<int>(s_number));
+		}
+	}
+
+    h.nvar=nvar;
+
+
     //std::cout<<"\n Start: f_t = ";
     //for (const auto& value : f_t) std::cout<<value.data + " ";
+    //std::cout << " f = " << s_infix;
     //std::cout<<"\n nvar = "<<nvar;
     //std::cout<<std::endl;
 
@@ -2571,6 +2518,10 @@ void valfunction::simplify(int extended)
     
     //std::cout<<"\n After first simplifications: f_t = ";
     //for (const auto& value : f_t) std::cout<<value.data + " ";
+    //valfunction g;
+    //for (const auto& value : f_t) g.Gdat.push(value);
+    //g.s_infix = get_infix(g.Gdat,nvar);
+    //std::cout << "\n f = " << g.s_infix;
 
 
     // Inner functions:
@@ -2625,9 +2576,17 @@ void valfunction::simplify(int extended)
         }
         else ++i;
     }
-
-    //std::cout<<"\n After inner substitutions, f_t = ";
-    //for (auto& value : f_t) std::cout<<value.data<<" ";
+    
+    /*
+    std::cout<<"\n After inner substitutions, f_t = ";
+    for (auto& value : f_t) std::cout<<value.data<<" ";
+    {
+		valfunction g;
+		for (const auto& value : f_t) g.Gdat.push(value);
+		g.s_infix = get_infix(g.Gdat,nvar);
+		std::cout << "\n f = " << g.s_infix << "\n";
+	}
+	*/
 
     // outer - functions: ------------------------------------------------
 
@@ -2648,6 +2607,17 @@ void valfunction::simplify(int extended)
         simplify_sqrt(f_t);
         n = f_t.length();
     }
+    
+    /*
+    std::cout<<"\n After extended rules: f_t = ";
+    for (const auto& value : f_t) std::cout<<value.data + " ";
+    {
+		valfunction g;
+		for (const auto& value : f_t) g.Gdat.push(value);
+		g.s_infix = get_infix(g.Gdat,nvar);
+		std::cout << "\n f = " << g.s_infix << "\n";
+	}
+	*/
 
     // Create toklist
     subst_var_t_pi(f_t,toklist,nx,nvar);
@@ -2729,7 +2699,6 @@ void valfunction::simplify(int extended)
     Gdat.dellist();
     //std::cout<<"\n f_t nach Rücksubstitution: ";
     //for (auto& value : f_t) std::cout<<value.data<<" ";
-    std::string s_number;
 
 
 	nvar=1;
@@ -2820,7 +2789,7 @@ valfunction valfunction::operator^ (int n) const
 
 valfunction valfunction::derive(int k) const
 {
-    if (Gdat.isempty() || is_zero() || k<=0 || k>nvar) return valfunction();
+    if (Gdat.isempty() || is_zero() || k<=0 || k>nvar || isconst(k)) return valfunction();
     int n=Gdat.length(),j=1;
     auto it = Gdat.begin();
     d_array<token> f_t(n),g_t,h_t;
@@ -2876,13 +2845,31 @@ valfunction valfunction::derive(int k) const
         for (const auto& value: h_t) h.Gdat.push(value);
         h.s_infix = get_infix(h.Gdat,nvar);
 
-        if (f_t[0].data=="+") return (h.derive(k) + g.derive(k));
+        if (f_t[0].data=="+")  {
+			return (h.derive(k) + g.derive(k));
+			//std::cout <<"\n Sum Done!" << std::endl;
+			//return (h.derive(k) + g.derive(k));
+			//return F;
+		}
         if (f_t[0].data=="-") return (h.derive(k) - g.derive(k));
         if (f_t[0].data=="*") {
-            return (h.derive(k)*g + h*g.derive(k));
+            //valfunction F;
+            //std::cout <<"\n Product!" << std::endl;
+            if (h.isconst(k)) return h*g.derive(k);
+            else if (g.isconst(k)) return g*h.derive(k);
+            else return (h.derive(k)*g + h*g.derive(k));
+            //valfunction F =  (h.derive(k)*g + h*g.derive(k));
+            //std::cout <<"\n Product Done!" << std::endl;
+            //return F;
         }
         if (f_t[0].data=="/") {
-            return (h.derive(k)*g - h*g.derive(k))/(g^2);
+            //valfunction F;
+            //std::cout <<"\n Division! divisor = " << g.s_infix << std::endl;
+            if (g.isconst(k))  return h.derive(k)/g;
+            else return (h.derive(k)*g - h*g.derive(k))/(g^2);
+            //valfunction F = (h.derive(k)*g - h*g.derive(k))/(g^2);
+            //std::cout <<"\n Division done! divisor = " << g.s_infix << std::endl;
+            //return F;
         }
         if (f_t[0].data=="^") {
             if (!has_variable(g_t)) {
@@ -3007,15 +2994,23 @@ valfunction valfunction::getfirstargument() const
     valfunction f;
     if (is_zero()) return f;
 
-    int n=Gdat.length(),j=1;
+    int n=Gdat.length(),j=1, i, mvar = 0;
     d_array<token> f_t(n),g_t;
     auto it = Gdat.begin();
 
     for (int i=n-1;i>=0;--i,it++) f_t[i] = it();
     g_t=splitfunction(f_t,j);
     if (j<n) g_t=splitfunction(f_t,j);
-    for (const auto& value: g_t) f.Gdat.push(value);
+    for (const auto& value: g_t) {
+		 f.Gdat.push(value);
+		 if (value.data[0] == 'x') {
+			 i = 1;
+			 mvar = FromString<int>(fparser::findnumber(value.data,i));
+			 f.nvar = Max(f.nvar,mvar);
+		 }
+	 }
     f.s_infix = get_infix(f.Gdat);
+    //f.nvar = nvar;
     return f;
 }
 
@@ -3024,13 +3019,20 @@ valfunction valfunction::getsecondargument() const
     valfunction f;
     if (is_zero()) return f;
 
-    int n=Gdat.length(),j=1;
+    int n=Gdat.length(),j=1, i, mvar =0;
     d_array<token> f_t(n),g_t;
     auto it = Gdat.begin();
 
     for (int i=n-1;i>=0;--i,it++) f_t[i] = it();
     g_t=splitfunction(f_t,j);
-    for (const auto& value: g_t) f.Gdat.push(value);
+    for (const auto& value: g_t) {
+		f.Gdat.push(value);
+		 if (value.data[0] == 'x') {
+			 i = 1;
+			 mvar = FromString<int>(fparser::findnumber(value.data,i));
+			 f.nvar = Max(f.nvar,mvar);
+		 }
+	}
     f.s_infix = get_infix(f.Gdat);
     return f;
 }

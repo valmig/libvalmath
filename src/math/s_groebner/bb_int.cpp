@@ -200,7 +200,7 @@ void updateG(val::Glist< val::s_polynom<val::integer> > &G,int &nG,val::Glist< v
 int HomGroebner(val::Glist<val::s_polynom<val::integer> > &H,val::Glist<val::s_polynom<val::integer> > &G,int nH)
 {
  int nG=0,nd,dh,ds,d,nThreads=common_bb::ComputingThreads,i,intThreads;
- int anzs=0,anzsd=0,anzh=0,anzhd=0;
+ //int anzs=0,anzsd=0,anzh=0,anzhd=0;
  val::Glist<int> primlist;
  val::Glist<val::s_polynom<val::integer> > Gd;
  val::Glist<val::s_polynom<val::modq> > Gp,Gpd;
@@ -258,8 +258,8 @@ int HomGroebner(val::Glist<val::s_polynom<val::integer> > &H,val::Glist<val::s_p
 	 else if (dh<=ds) d=dh;
 	 else d=ds;
 
-	 anzsd=0;
-	 anzhd=0;
+	 //anzsd=0;
+	 //anzhd=0;
 	 nd=0;
 //-------------------------------------------------------------------------
     common_bb::KritPairs::nGd=0;
@@ -309,8 +309,8 @@ int HomGroebner(val::Glist<val::s_polynom<val::integer> > &H,val::Glist<val::s_p
 	 common_bb::interredBasis(Gd);
 	 common_bb::restoreGp(Gpd,Gd);
 	 updateG(G,nG,Gd,Gp,Gpd,Pair);
-	 anzh+=anzhd;
-	 anzs+=anzsd;
+	 //anzh+=anzhd;
+	 //anzs+=anzsd;
  }
  Gp.dellist();
  primlist.dellist();

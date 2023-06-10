@@ -113,7 +113,7 @@ void updateG(val::Glist<val::s_polynom<T> > &G,int &nG,val::Glist<val::s_polynom
 template <class T>
 int Homgroebner(val::Glist<val::s_polynom<T> > &G, int comment)
 {
- int nG=0,nd,dh,ds,d,nThreads=common_bb::ComputingThreads,i,anzs;
+ int nG=0,dh,ds,d,nThreads=common_bb::ComputingThreads,i,anzs; //nd
  val::Glist<val::s_polynom<T> > H,Gd;
  val::Glist<common_bb::spair> Pair;
  val::Glist<common_bb::KritPairs> ListKPairs;
@@ -126,13 +126,13 @@ int Homgroebner(val::Glist<val::s_polynom<T> > &G, int comment)
  H.resetactual();
  d=H.actualvalue().LT().totdeg();
 
- nd=0;
+ //nd=0;
 
  while (!H.isempty() && H.actualvalue().LT().totdeg()==d) {
      H.actualvalue().reduction(Gd);
 	 if (!H.actualvalue().iszero()) {
 		 Gd.sinsert(std::move(H.actualvalue()));
-		 nd++;
+		 //nd++;
 	 }
 	 H.skiphead();
  }

@@ -316,7 +316,7 @@ void pol<T>::insert(const T& wert,int g)
  term<T>* p;
  term<T>* q;
 
- if (wert==T(0)) return;
+ if (wert == zero) return;
  if (head==NULL) {
     p=new term<T>(wert,g);
     head=p; return;}
@@ -492,7 +492,7 @@ T pol<T>:: eval(const T& beta) const
  T wert;
  term<T> *p;
 
- if (head==NULL) return T(0);
+ if (head==NULL) return zero;
  wert=head->coef;
  p=head->next;
  for (i=deg(*this)-1;i>=0;i--) {
@@ -536,7 +536,7 @@ template <class Z> Z pol<T>::eval(const Z& beta) const
  Z wert;
  term<T> *p;
 
- if (head==NULL) return Z(T(0));
+ if (head==NULL) return zero_element<Z>();
  wert=Z(head->coef);
  p=head->next;
  for (i=deg(*this)-1;i>=0;i--) {
@@ -558,7 +558,7 @@ template <class Z> Z pol<T>::derivation(const Z& beta) const
  Z wert;
  term<T> *p;
 
- if (head==NULL) return Z(0);
+ if (head==NULL) return zero_element<Z>();
  wert=Z(T(head->grad)*head->coef);
  p=head->next;
  for (i=head->grad-2;i>=0;i--) {
@@ -1124,9 +1124,10 @@ const pol<T>& pol<T>::operator *=(const T& wert)
 {
  term<T>* p;
  term<T>* r;
+ 
 
- if (wert==T(1)) return *this;
- if (wert==T(0)) {
+ if (wert == unity_element<T>()) return *this;
+ if (wert == zero) {
     del();
     return *this;
  }
@@ -1162,7 +1163,7 @@ pol<T> operator *(const T& wert,const pol<T>& f)
 
  p=f.head;
  if (p==NULL || wert==pol<T>::zero) return g;
- if (wert==T(1)) return f;
+ if (wert==unity_element<T>()) return f;
 
  while (p!=NULL)
        if ((wert*p->coef)==pol<T>::zero) p=p->next;
@@ -1271,7 +1272,7 @@ template <class T>
 pol<T> pol<T>::operator /(const pol<T>& g) const
 {
  int n1,m,i,grad;
- T wert;
+ T wert, one = unity_element<T>();
  T* eps;
  term<T> *p,*q;
  pol<T> h;
@@ -1286,11 +1287,11 @@ pol<T> pol<T>::operator /(const pol<T>& g) const
  m=g.head->grad;
  if (m>n1) return h;
  wert=g.head->coef;
- eps=horner(*this,((T(1)/wert)*g));
+ eps=horner(*this,((one/wert)*g));
  p=NULL;
  for (grad=0,i=m;i<=n1;i++,grad++)
       if (eps[i]!=zero) {
-	 q = new term<T>((T(1)/wert)*eps[i],grad,p);
+	 q = new term<T>((one/wert)*eps[i],grad,p);
 	 p=q;
       }
  h.head=p;
@@ -1318,7 +1319,7 @@ pol<T> pol<T>::operator %(const pol<T>& g) const
 
  if ((m=g.head->grad)>head->grad) return *this;
  wert=g.head->coef;
- eps=horner(*this,((T(1)/wert)*g));
+ eps=horner(*this,((unity_element<T>()/wert)*g));
  p=NULL;
  for (grad=0,i=0;i<m;i++,grad++) {
      if (eps[i]!=zero) {
@@ -1350,7 +1351,7 @@ void divrest(const pol<T>& f, const pol<T>& g,pol<T>& q,pol<T>& r)
 
  int m=g.head->grad,i,grad,n1=f.head->grad;
  const T &wert=g.head->coef;
- T one(1);
+ T one = unity_element<T>();
  T* eps;
  term<T> *p,*t;
  pol<T> h;
@@ -1408,7 +1409,7 @@ const pol<T>& pol<T>::normalize()
     if (head==NULL) return *this;
     term<T> *p;
     T div(head->coef);
-    if (div==T(1)) return *this;
+    if (div == unity_element<T>()) return *this;
     for (p=head;p!=NULL;p=p->next) p->coef/=div;
     return *this;
 }

@@ -348,7 +348,7 @@ void updateG(val::Glist< val::s_polynom<val::modq> > &G,int &nG,val::Glist< val:
 template <>
 int GroebnerwithHilbert(val::Glist<val::s_polynom<val::integer> > &G,int order,const val::matrix<int> &M,int nH)
 {
- int nG=0,nd,d,i,c,nThreads=common_bb::ComputingThreads,intThreads=0;
+ int nG=0,d,i,c,nThreads=common_bb::ComputingThreads,intThreads=0; //nd
  val::Glist<int> primlist;
  val::Glist<val::s_polynom<val::integer> > Gd,H,Hd;
  val::Glist<val::s_polynom<val::modq> > Gp,Gpd;
@@ -388,12 +388,12 @@ int GroebnerwithHilbert(val::Glist<val::s_polynom<val::integer> > &G,int order,c
  H.resetactual();
  d=H.actualvalue().LT().totdeg();
 
- nd=0;
+ //nd=0;
  while (!H.isempty() && H.actualvalue().LT().totdeg()==d) {
      H.actualvalue().reduction(Gd);
 	 if (!H.actualvalue().iszero()) {
 		 Gd.sinsert(std::move(H.actualvalue()));
-		 nd++;
+		 //nd++;
 	 }
 	 nH--;
 	 H.skiphead();
@@ -432,7 +432,7 @@ int GroebnerwithHilbert(val::Glist<val::s_polynom<val::integer> > &G,int order,c
 		 val::Error::error("\nComputation failed!!");
 	 }
 
-	 nd=0;
+	 //nd=0;
 	 while (H.actualvalid() && H.actualvalue().LT().totdeg() < d) {
         H.moveactual();
         nH--;
@@ -513,7 +513,7 @@ int GroebnerwithHilbert(val::Glist<val::s_polynom<val::integer> > &G,int order,c
 template <>
 int GroebnerwithHilbert(val::Glist<val::s_polynom<val::modq> > &G,int order,const val::matrix<int> &M,int nH)
 {
- int nG=0,nd,d,i,c,nThreads=common_bb::ComputingThreads;
+ int nG=0,d,i,c,nThreads=common_bb::ComputingThreads; //nd
  val::Glist<val::s_polynom<val::modq> > Gd,H;
  val::Glist<common_bb::spair> Pair;
  val::GlistManipulator<val::s_polynom<val::modq> > pH;
@@ -547,12 +547,12 @@ int GroebnerwithHilbert(val::Glist<val::s_polynom<val::modq> > &G,int order,cons
  H.resetactual();
  d=H.actualvalue().LT().totdeg();
 
- nd=0;
+ //nd=0;
  while (!H.isempty() && H.actualvalue().LT().totdeg()==d) {
      H.actualvalue().reduction(Gd);
 	 if (!H.actualvalue().iszero()) {
 		 Gd.sinsert(std::move(H.actualvalue()));
-		 nd++;
+		 //nd++;
 	 }
 	 nH--;
 	 H.skiphead();
@@ -583,7 +583,7 @@ int GroebnerwithHilbert(val::Glist<val::s_polynom<val::modq> > &G,int order,cons
 		 val::Error::error("\nComputation failed!");
 	 }
 
-	 nd=0;
+	 //nd=0;
 	 while (H.actualvalid() && H.actualvalue().LT().totdeg() < d) {
         H.moveactual();
         nH--;
