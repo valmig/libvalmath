@@ -1,10 +1,11 @@
 INCLUDE1="${PREFIX}/include/valmath"
+LIBPATH="${PREFIX}/lib"
 
 
 for arg in "$@"; do
     case "$arg" in
     --libs)
-        echo '-lvalmath -pthread'
+        echo "-L ${LIBPATH} -lvalmath -pthread"
         ;;
 
     --cflags)
