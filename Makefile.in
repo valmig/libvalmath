@@ -30,7 +30,7 @@ clean:
 .PHONY install:
 
 install:
-	mkdir -p $(INCLUDEPATH) $(DATAPATH) $(BINPATH)
+	mkdir -p $(INCLUDEPATH) $(DATAPATH) $(BINPATH) $(LIBPATH)
 	cp -r $(DIRPATH)/include/* $(INCLUDEPATH)
 	cp  $(DIRPATH)/data/* $(DATAPATH)
 	cp bin/val-config $(BINPATH)/
