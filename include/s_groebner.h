@@ -5,6 +5,7 @@
 
 #include <string>
 #include <val_basics.h>
+#include <matrix.h>
 
 namespace val
 {
@@ -25,7 +26,6 @@ DLL_PUBLIC void SetNumberofThreads(int);
 template <class T> class Glist;
 template <class T> class s_polynom;
 template <class T> class pol;
-template <class T> class matrix;
 class modq; class integer; class rational;
 
 //
