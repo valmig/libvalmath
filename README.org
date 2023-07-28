@@ -1,8 +1,54 @@
 #+title: libvalmath: A C++ library for mathematical computations
 #+author: Miguel Valbuena
 
-* Features:
 
+* TABLE OF CONTENTS :toc:
+- [[#features][Features:]]
+  - [[#groebner-bases][Groebner Bases:]]
+  - [[#commutative-algebra][Commutative Algebra:]]
+  - [[#linear-algebra][Linear Algebra:]]
+  - [[#calculus][Calculus:]]
+- [[#headers][Headers:]]
+  - [[#affinspaceh-][affinspace.h :]]
+  - [[#analysish-][analysis.h :]]
+  - [[#complexh-][complex.h :]]
+  - [[#d_arrayh-][d_array.h :]]
+  - [[#errorh-][error.h :]]
+  - [[#fractionh-][fraction.h :]]
+  - [[#function_parser][function_parser:]]
+  - [[#gaussianh][gaussian.h]]
+  - [[#glisth][Glist.h]]
+  - [[#ideal_rootsh][ideal_roots.h]]
+  - [[#integerh][integer.h]]
+  - [[#lah][LA.h]]
+  - [[#matrixh][matrix.h]]
+  - [[#modinth][modint.h]]
+  - [[#modqh][modq.h]]
+  - [[#mytimeh][MyTime.h]]
+  - [[#n_polynomh][n_polynom.h]]
+  - [[#numbersh][numbers.h]]
+  - [[#pol_arithmetich-][pol_arithmetic.h :]]
+  - [[#polfactorh-][polfactor.h :]]
+  - [[#polh-][pol.h :]]
+  - [[#randh-][rand.h :]]
+  - [[#rationalh-][rational.h :]]
+  - [[#s_expoh-][s_expo.h :]]
+  - [[#s_grobnerh-][s_grobner.h :]]
+  - [[#s_modintegerh-][s_modinteger.h :]]
+  - [[#s_polynomh-][s_polynom.h :]]
+  - [[#trieh-][trie.h :]]
+  - [[#val_basicsh-][val_basics.h :]]
+  - [[#val_filesysh-][val_filesys.h :]]
+  - [[#val_utilsh-][val_utils.h :]]
+  - [[#vectorh-][vector.h :]]
+- [[#build-and-install-on-linux-systems][Build and Install (On Linux Systems):]]
+  - [[#configuration][Configuration:]]
+  - [[#build][Build:]]
+  - [[#install][Install:]]
+  - [[#uninstall][Uninstall:]]
+- [[#using-libvalmath-on-linux-systems][Using libvalmath (On Linux Systems):]]
+
+* Features:
 ** Groebner Bases:
 
 *** Implementation of the buchberger algorithm to compute the reduced Groebner Basis of an ideal over $\mathbb{Q}$ or $\mathbb{F}_p$.
@@ -31,10 +77,9 @@
 
 *** Intersection or distance between two affine spaces.
 
-
 ** Calculus:
 
-*** Definition of elementary functions: $\exp, \log, \sin, \cos", ... (See ~analysis.h~).
+*** Definition of elementary functions: $\exp, \log, \sin, \cos$, ... (See ~analysis.h~).
 
 *** Definition of class implementing a function $\mathbb{R}^n \rightarrow \mathbb{R}$. (See ~function_parser.h~)
 
@@ -48,9 +93,9 @@
 
 *** Approximation of an integral via the Secant-Method.
 
-* Headers:
 
-**  affinspace.h :
+* Headers:
+** affinspace.h :
 Defines a template class ~affinspace<T>~, that represents a finite dimensional affine space over the
 field ~T~. Includes the header file ~LA.h~.
 
@@ -114,6 +159,7 @@ field ~T~. Includes the header file ~LA.h~.
 ** val_utils.h :
 
 ** vector.h :
+
 
 * Build and Install (On Linux Systems):
 After cloning this repository, go to the cloned directory and create a build-directory, e.g. :
