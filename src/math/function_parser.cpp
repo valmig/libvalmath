@@ -1531,7 +1531,14 @@ rationalfunction valfunction::getrationalfunction(int reduced) const
     }
     G.resetactual();
     value=val::zero_element<rationalfunction>();
-    if (!G.isempty()) value=G.actualvalue();
+    if (G.isempty()) return value;
+    pol<rational> nom = G.actualvalue().nominator(), denom = G.actualvalue().denominator();
+    rational contnom = content(nom), contdenom = content(denom);
+    nom /= contnom; denom /= contdenom;
+    contnom /= contdenom;
+    nom *= contnom;
+    value = rationalfunction(std::move(nom),std::move(denom));
+    //if (!G.isempty()) value = G.actualvalue();
     rationalfunction::setreduced(red);
     return value;
 }
