@@ -326,7 +326,10 @@ template <class T>
 int Glist<T>::delelement(int i)
 {
 	if (head==nullptr || i<0) return 0;
-	if (i==0) skiphead();
+	if (i==0) {
+        skiphead();
+        return 0;
+    }
 	node *p;
 	int j;
 
