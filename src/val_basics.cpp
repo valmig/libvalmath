@@ -125,6 +125,7 @@ double round(const double& x,int k)
 
     if (x==NaN || x==-NaN) return x;
     if (x==Inf || x==-Inf) return x;
+    if (y > 1.0e30) return x;
 
     //limit = ~limit;
     //std::cout<<" "<<limit<<"  ";
