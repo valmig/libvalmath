@@ -1787,8 +1787,9 @@ valfunction valfunction::operator() (const valfunction& f) const
         else if (s_infix[i]=='x') s+=sf;
         else s+= s_infix[i];
     }
-
-    return valfunction(s);
+    valfunction h(s);
+    h.t = t;
+    return h;
 }
 
 valfunction valfunction::operator() (const vector<valfunction> &F) const
@@ -1816,8 +1817,9 @@ valfunction valfunction::operator() (const vector<valfunction> &F) const
         }
         else s+= s_infix[i];
 	}
-
-	return valfunction (s);
+    valfunction h(s);
+    h.t = t;
+    return h;
 }
 
 
@@ -2731,7 +2733,9 @@ valfunction valfunction::operator+ (const valfunction& g) const
 {
     if (g.is_zero()) return *this;
     if (is_zero()) return g;
-    return valfunction(s_infix + "+" + g.s_infix);
+    valfunction f(s_infix + "+" + g.s_infix);
+    f.t = t;
+    return f;
 }
 
 
@@ -2739,14 +2743,18 @@ valfunction valfunction::operator- (const valfunction& g) const
 {
     if (g.is_zero()) return *this;
     std::string s_g = g.get_prefix()[0];
-    return valfunction(s_infix + "-(" + g.s_infix + ")");
+    valfunction f(s_infix + "-(" + g.s_infix + ")");
+    f.t = t;
+    return f;
 }
 
 
 valfunction valfunction::operator -() const
 {
     if (is_zero()) return *this;
-    return valfunction("-(" + s_infix +")");
+    valfunction f("-(" + s_infix +")");
+    f.t = t;
+    return f;
 }
 
 
@@ -2762,7 +2770,9 @@ valfunction valfunction::operator* (const valfunction& g) const
 
     s = "(" + s + ")";
     s_g = "(" + s_g + ")";
-    return valfunction(s + "*" + s_g);
+    valfunction f(s + "*" + s_g);
+    f.t = t;
+    return f;
 }
 
 
@@ -2776,7 +2786,9 @@ valfunction valfunction::operator/ (const valfunction& g) const
     s = "(" + s + ")";
     s_g = "(" + s_g + ")";
 
-    return valfunction(s + "/" + s_g);
+    valfunction f(s + "/" + s_g);
+    f.t = t;
+    return f;
 }
 
 
@@ -2790,7 +2802,9 @@ valfunction valfunction::operator^ (int n) const
     s = "(" + s + ")";
     s_n= "(" + s_n + ")";
 
-    return valfunction(s+ "^" + s_n);
+    valfunction f(s+ "^" + s_n);
+    f.t = t;
+    return f;
 }
 
 
@@ -2804,6 +2818,7 @@ valfunction valfunction::derive(int k) const
     std::string svar="x" + val::ToString(k);
 
     g.nvar = h.nvar = g1.nvar = g2.nvar = g3.nvar = nvar;
+    g.t = h.t = g1.t = g2.t = g3.t = t;
 
     // Case: rational function:
     if (nvar==1 && isrationalfunction()) {
@@ -3017,6 +3032,7 @@ valfunction valfunction::getfirstargument() const
 		 }
 	 }
     f.s_infix = get_infix(f.Gdat);
+    f.t = t;
     //f.nvar = nvar;
     return f;
 }
@@ -3041,6 +3057,7 @@ valfunction valfunction::getsecondargument() const
 		 }
 	}
     f.s_infix = get_infix(f.Gdat);
+    f.t = t;
     return f;
 }
 
@@ -3077,7 +3094,7 @@ Glist<double> valfunction::double_roots(const double &x1,const double &x2,int it
     valfunction g,h;
     std::string oper;
 
-    g.nvar=h.nvar=1;
+    g.nvar=h.nvar=1; g.t = h.t = t;
 
     for (int i=n-1;i>=0;--i,it++) f_t[i] = it();
     oper = f_t[0].data;
@@ -3194,7 +3211,7 @@ Glist<GPair<double>> valfunction::get_undefined_intervals(const double &x1,const
     valfunction g,h;
     std::string oper;
 
-    g.nvar=h.nvar=1;
+    g.nvar=h.nvar=1; g.t = h.t = t;
 
     for (i=n-1;i>=0;--i,it++) f_t[i] = it();
     oper = f_t[0].data;

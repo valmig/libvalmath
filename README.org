@@ -15,7 +15,6 @@
   - [[#d_arrayh-][d_array.h :]]
   - [[#errorh-][error.h :]]
   - [[#fractionh-][fraction.h :]]
-  - [[#function_parser][function_parser:]]
   - [[#gaussianh][gaussian.h]]
   - [[#glisth][Glist.h]]
   - [[#ideal_rootsh][ideal_roots.h]]
@@ -40,6 +39,7 @@
   - [[#val_basicsh-][val_basics.h :]]
   - [[#val_filesysh-][val_filesys.h :]]
   - [[#val_utilsh-][val_utils.h :]]
+  - [[#valfunctionh][valfunction.h]]
   - [[#vectorh-][vector.h :]]
 - [[#build-and-install-on-linux-systems][Build and Install (On Linux Systems):]]
   - [[#configuration][Configuration:]]
@@ -109,8 +109,6 @@ field ~T~. Includes the header file ~LA.h~.
 
 ** fraction.h :
 
-** function_parser: 
-
 ** gaussian.h
 
 ** Glist.h
@@ -132,6 +130,7 @@ field ~T~. Includes the header file ~LA.h~.
 ** n_polynom.h
 
 ** numbers.h
+
 ** pol_arithmetic.h :   
 
 ** polfactor.h : 
@@ -157,6 +156,8 @@ field ~T~. Includes the header file ~LA.h~.
 ** val_filesys.h :
 
 ** val_utils.h :
+
+** valfunction.h
 
 ** vector.h :
 
