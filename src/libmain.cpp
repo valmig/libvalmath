@@ -16,5 +16,5 @@
 #include "math/numbers.cpp"
 #include "math/ideal_roots.cpp"
 #include "math/polfactor.cpp"
-#include "math/function_parser.cpp"
+#include "math/valfunction.cpp"
 #include "math/LA.cpp"
