@@ -63,7 +63,7 @@
 
 *** Computation of the real and complex roots of a zerodimensional ideal over $\mathbb{Q}$.
 
-*** Computation of the hilbert polynomial of an ideal.
+*** Computation of the Hilbert polynomial of an ideal.
 
 *** Factorization of univariate polynomials over $\mathbb{Q}$ and $\mathbb{F}_p$.
 
@@ -81,7 +81,7 @@
 
 *** Definition of elementary functions: $\exp, \log, \sin, \cos$, ... (See ~analysis.h~).
 
-*** Definition of class implementing a function $\mathbb{R}^n \rightarrow \mathbb{R}$. (See ~function_parser.h~)
+*** Definition of class implementing a function $\mathbb{R}^n \rightarrow \mathbb{R}$. (See ~valfunction.h~)
 
 *** Computing derivations of functions.
 
@@ -91,7 +91,7 @@
 
 *** Computation of some stammfunctions.
 
-*** Approximation of an integral via the Secant-Method.
+*** Approximation of an integral.
 
 
 * Headers:
