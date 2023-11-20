@@ -649,7 +649,7 @@ void Glist<T>::copyanddelete(Glist<T> &H)
  return;
 }
 
-// H wird am Ende der Liste Eingefügt, danach H leer!
+// H wird am Ende der Liste Eingefuegt, danach H leer!
 template <class T>
 void Glist<T>::appendtoend(Glist<T> &H)
 {

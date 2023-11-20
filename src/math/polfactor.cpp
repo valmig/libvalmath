@@ -696,10 +696,14 @@ d_array<rational> rational_roots(const pol<rational> &g,const Glist<int> &Primel
     integer B = integer(2)*D*N,s,m,r,t;
 
     int l = lowestpowergreater(B,integer(modq::q),m);
+    rational z, rzero;
 
     for (const auto &x : modqzeros) {
         if (hensel_lift(f,x,l,s)) {
-            if (ratconstruction(m,s,N,D,r,t)) zeros.push_back(rational(std::move(r),std::move(t)));
+            if (ratconstruction(m,s,N,D,r,t)) {
+                z = rational(std::move(r), std::move(t));
+                if (h(z) == rzero) zeros.push_back(rational(std::move(z)));
+            }
         }
     }
 

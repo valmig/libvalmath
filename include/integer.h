@@ -108,8 +108,8 @@ public:
 	   integer operator -() const;
 	   integer& operator +=(const integer&);
 	   integer& operator -=(const integer&);
-	   integer& operator++();     // praefix ++ Gibt neuen Wert zurück
-	   integer& operator++(int);  // postfix ++ Gibt neuen Wert zurück
+	   integer& operator++();     // praefix ++ Gibt neuen Wert zurueck
+	   integer& operator++(int);  // postfix ++ Gibt neuen Wert zurueck
 	   integer& operator--();     // praefix --
 	   integer& operator--(int);  // postfix --
 	   const integer& changesign() {laenge*=-1;return *this;}
