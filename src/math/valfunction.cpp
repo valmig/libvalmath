@@ -1899,11 +1899,11 @@ const valfunction& valfunction::infix_to_postfix(const std::string &s)
 			t = s_stack("t",s_stack::NUMBER);
 			++i;
 		}
-		else if (s[i] == 'P' && i < n-1 && s[i+1] == 'I') {
+        else if (s[i] == 'P' && i < n-1 && s[i+1] == 'I') {
 			t = s_stack("PI",s_stack::NUMBER);
 			i += 2;		
 		}
-		else if ((sf = fparser::getstringfunction(s,i)) != "") {
+        else if ((sf = fparser::getstringfunction(s,i)) != "") {
 			t = s_stack(sf,s_stack::OPERATOR,5);
 			i+= sf.length();
 		}
@@ -2040,6 +2040,13 @@ int valfunction::isdifferentiable() const
 
 int valfunction::islinearfunction() const
 {
+    if (isconst()) return 1;
+    if (getfirstoperator() == "*") {
+        valfunction f = getfirstargument() , g = getsecondargument();
+        if (f.isconst()) return g.islinearfunction();
+        else if (g.isconst()) return f.islinearfunction();
+        else return 0;
+    }
     for (const auto& value : Gdat) {
         if (value.type==2) {
             if (value.data!="m" && value.data!="+" && value.data!="-" && value.data!="*" && value.data!="/") return 0;

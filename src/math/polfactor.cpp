@@ -693,7 +693,8 @@ d_array<rational> rational_roots(const pol<rational> &g,const Glist<int> &Primel
         if (polynomzeros(fmodq,modqzeros)) {found = 1;break;}
     }
     if (!found) return zeros;
-    integer B = integer(2)*D*N,s,m,r,t;
+    //integer B = integer(2)*D*N,s,m,r,t;
+    integer A = MaxNorm(f), B = integer(2) * integer(deg(f)) * f.LC() * (A + A*A), s, m, r, t;
 
     int l = lowestpowergreater(B,integer(modq::q),m);
     rational z, rzero;
