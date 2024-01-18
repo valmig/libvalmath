@@ -751,7 +751,7 @@ void valfunction::simplify_exp(d_array<token> &f_t,int nvar,int prod)
 
     // log(exp):
     for (i=0;i<n-1;++i) {
-		if (f_t[i].data=="log" && f_t[i+1].data=="exp") {
+		if ((f_t[i].data=="log" && f_t[i+1].data=="exp") || (f_t[i].data == "exp" && f_t[i+1].data == "log")) {
 			k=i+2;
 			tok=splitfunction(f_t,k);
 			squeeze(f_t,tok,i,k);
