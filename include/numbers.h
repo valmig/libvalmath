@@ -35,6 +35,13 @@ DLL_PUBLIC int nextprime(int n);               // needs  isprime
 
 DLL_PUBLIC val::integer nextprime(const val::integer &n1,int schritte=5);
 
+// Computes greatest nat. number  m, with m<=sqrt(n), by bisection-method in [a,b].
+DLL_PUBLIC val::integer sqrt(const val::integer& n);
+
+// test if a rational number is a square and computes eventually the square root of it.
+DLL_PUBLIC int isquadratic(const val::rational& r, val::rational &root);
+
+
 // simultaneous congruence: z1= z[i] mod m[i]  (Chinese Remainder Theorem)
 // M[i] = m[0]*...*m[i] for 0<=i<n
 DLL_PUBLIC integer simultcong(const d_array<integer> &z,const d_array<integer> &m,const d_array<integer> &M = d_array<integer>());

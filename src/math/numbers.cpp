@@ -111,7 +111,7 @@ int nextprime(int n)               // depends on isprime
  if (n<2) return 2;
  if (n==2) return 3;
  if (n%2) s=2;
-  else s=1;
+ else s=1;
  for (i=n+s;i<grenze;i+=2)
      if (ispseudoprime(i)) {
          if (isprime(i)) return(i);
@@ -131,6 +131,42 @@ val::integer nextprime(const val::integer &n1,int schritte)
           n+=zwei;
     }
     return n;
+}
+
+
+
+// Computes greatest nat. number  m, with m<=sqrt(n), by bisection-method in [a,b].
+val::integer sqrt(const val::integer& n)
+{
+    using namespace val;
+    integer a,a1,c,d,b=n;
+
+    while ((d=(b-a))>1) {
+        d = d >> 1;
+        a1=a+d;
+        c=a1*a1;
+        if (c>n) b=std::move(a1);
+        else a=std::move(a1);
+    }
+    if ((b*b)>n) return a;
+    else return b;
+}
+
+
+// test if a rational number is a square and computes eventually the square root of it.
+int isquadratic(const val::rational& r, val::rational &root)
+{
+    const val::integer &p = r.nominator(), &q = r.denominator();
+    val::integer sp, sq;
+    root = val::rational(0);
+    if (q.iszero()) return 0;
+    if (p.iszero()) return 1;
+    if (p.signum() < 0) return 0;
+    sp = sqrt(p);
+    sq = sqrt(q);
+    root = val::rational(sp,sq);
+    if (r == root * root) return 1;
+    else return 0;
 }
 
 

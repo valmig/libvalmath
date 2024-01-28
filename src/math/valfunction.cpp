@@ -9,6 +9,7 @@
 #include <n_polynom.h>
 #include <s_polynom.h>
 #include <pol_arithmetic.h>
+#include <numbers.h>
 //#include <s_modinteger.cpp>
 //#include <polfactor.h>
 #include <s_groebner.h>
@@ -1204,11 +1205,49 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
 	            }
 	        }
 	    }
-	    while (found);	
+	    while (found);
 	    //std::cout<<"\n after product f_t : ";
 	    //for (auto& value : f_t) std::cout<<value.data<<" ";
 	}
-
+    {
+        // simplify sqrt or squares:
+        rational r, root;
+        integer one(1);
+        int s_found = 0;
+	    for (i = 0; i < n; ++i) {
+            s_found = 0;
+            if (f_t[i].data != "sqrt") continue;
+            if (i < n-1 && f_t[i+1].type == 0) {
+                if (f_t[i+1].data == "t" || f_t[i+1].data == "PI") continue;
+                k = i+1;
+                r = FromString<rational>(f_t[i+1].data);
+                if (isquadratic(r, root)) s_found = 1;
+            }
+            if (i < n-3 && f_t[i+1].data == "/" && f_t[i+2].type == 0 && f_t[i+3].type == 0) {
+                if (f_t[i+2].data == "t" || f_t[i+2].data == "PI" || f_t[i+3].data == "t" || f_t[i+3].data == "PI") continue;
+                r = FromString<rational>(f_t[i+3].data + "/" + f_t[i+2].data);
+                k = i +3;
+                if (isquadratic(r,root)) s_found = 1;
+            }
+            if (s_found) {
+                h_t.del();
+                if (root.denominator() == one) {
+                    h_t.reserve(1);
+                    h_t.push_back(token(ToString(root.nominator()),0));
+                }
+                else {
+                    h_t.reserve(3);
+                    h_t.push_back(token("/",2));
+                    h_t.push_back(token(ToString(root.denominator()),0));
+                    h_t.push_back(token(ToString(root.nominator()),0));
+                }
+                squeeze(f_t, h_t, i, k+1);
+                n = f_t.length();
+            }
+        }
+	    //std::cout<<"\n after square f_t : ";
+	    //for (auto& value : f_t) std::cout<<value.data<<" ";
+    }
     
     // sqrt (h^n)
     for (i = 0; i < n - 2; ++i) {
@@ -2288,6 +2327,10 @@ void valfunction::simplifypolynomial(d_array<token> &f_t)
         else if (f_t[i].data=="/" && G.length()>=2) {
             G.resetactual();
             g=G.actualvalue();G.skiphead();f=G.actualvalue();G.skiphead();
+            if (g.nominator().iszero()) {
+                f_t.del();
+                return;
+            }
             G.push(f/g);
         }
         else if (f_t[i].data=="^" && G.length()>=2) {
