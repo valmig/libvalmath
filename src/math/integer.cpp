@@ -700,7 +700,7 @@ integer integer::operator >>(int n) const
 // Prem.: abs(laenge)>=abs(y.laenge), z.dat=NULL. Result: z=signum(*this)*(abs(*this)+abs(y))
 void integer::add(const integer& y,integer &z) const
 {
- // Triviale Fälle:
+ // Triviale Faelle:
  if (dat==NULL) return;
  if (y.dat==NULL) {
 	 z=*this;
@@ -869,7 +869,7 @@ void integer::sub(const integer& y,integer &z) const
 void integer::subto(const integer& y)
 {
 
- // Triviale Fälle:
+ // Triviale Faelle:
  if (dat==NULL) return;  // => y.dat==NULL
  if (y.dat==NULL) {
 	 return;
