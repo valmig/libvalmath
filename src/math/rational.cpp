@@ -38,9 +38,9 @@ int rational::Output_Digits=16;
 void rational:: kuerze()
 {
     integer h(ggTspez(zaehler,nenner));
-	if (h.dat==NULL) return;
-	if (h.laenge<0) h.laenge*=-1;
-    zaehler=EDIV(zaehler,h);
+    if (h.dat == NULL) return;
+    if (h.laenge < 0) h.laenge *= -1;
+    zaehler = EDIV(zaehler, h);
     nenner=EDIV(nenner,h);
     if (nenner.laenge<0) {zaehler.laenge*=-1;nenner.laenge*=-1;}
 }

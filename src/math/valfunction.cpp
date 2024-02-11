@@ -1098,18 +1098,18 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
 						}	 
 	                    h1.del();
 	                    if (isequal) {
-							if (f_t[i].data == "*") {
-								h1.reserve(m1-1);
-								for (int j = 1; j < m1; ++j) h1.push_back(tok[j]);
-							}
-							else {
-								h1.reserve(1); h1.push_back(token("1",0));
-							}
-							squeeze(f_t,h1,i,k);
-							n = f_t.length();
-							break;
-						}
-	                    h1.reserve(m);
+                            if (f_t[i].data == "*") {
+                                h1.reserve(m1-1);
+                                for (int j = 1; j < m1; ++j) h1.push_back(tok[j]);
+                            }
+                            else {
+                                h1.reserve(1); h1.push_back(token("1",0));
+                            }
+                            squeeze(f_t,h1,i,k);
+                            n = f_t.length();
+                            break;
+                        }
+                        h1.reserve(m);
 	                    if (f_t[i].data=="*") h1[0] = token("*",2);
 	                    else h1[0] = token("/",2);
 	                    for (l=1;l<m1;++l) h1[l] = h_t[l];

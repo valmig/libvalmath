@@ -41,6 +41,9 @@ S tailofstring(const S &value, int m  = 1);
 template <template<typename> class C, typename T  = char>
 std::basic_string<T> getfirstwordofstring(const std::basic_string<T>& value, const C<T> &separators = C<T>{'\n', ' ', ';', ',', '.', ':'});
 
+template <class T>
+void replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std::basic_string<T> &to);
+
 
 DLL_PUBLIC char* StringToChar(const std::string& s);
 
@@ -136,6 +139,19 @@ std::basic_string<T> getfirstwordofstring(const std::basic_string<T>& value, con
 	return first;
 }
 
+
+// replace every appearende of 'from' to 'to' in string s
+template <class T>
+void replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std::basic_string<T> &to)
+{
+    if (from.empty()) return;
+
+    size_t pos = 0, n = to.length(), m = from.length();
+    while ((pos = s.find(from,pos)) != std::basic_string<T>::npos) {
+        s.replace(pos,m,to);
+        pos += n;
+    }
+}
 
 
 template <class T> std::string gettypename(const T& a)
