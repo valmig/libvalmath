@@ -103,7 +103,7 @@ d_array<T>::d_array(d_array<T> &&A)
     dat=A.dat;
     len=A.len;
     cap=A.cap;
-    A.dat=NULL;A.len=A.cap=0;
+    A.dat=nullptr;A.len=A.cap=0;
 }
 
 
@@ -177,7 +177,7 @@ void d_array<T>::resize(int n)
         len = n;
         h=dat;
         dat=hdat;
-        hdat=NULL;
+        hdat = nullptr;
         delete[] h;
     }
     return;

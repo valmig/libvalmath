@@ -903,6 +903,52 @@ double artanh(const double &x)
 	return log((1+x)/(1-x))*0.5;
 }
 
+
+// complex functions
+
+double atan2(const double& y, const double &x)
+{
+    if (x > 0) return val::arctan(y/x);
+    else if (x < 0) {
+        if (y >= 0) return val::arctan(y/x) + val::PI;
+        else return  val::arctan(y/x) - val::PI;
+    }
+    else if (y > 0) return 0.5*val::PI;
+    else if (y < 0) return -0.5*val::PI;
+    else return val::NaN;
+}
+
+double arg(const val::complex &z)
+{
+return val::atan2(z.imaginary(), z.real());
+}
+
+val::complex exp(const val::complex &z)
+{
+    double r = val::exp(z.real());
+    return val::complex(r * val::cos(z.imaginary()), r * val::sin(z.imaginary()));
+}
+
+complex sin(const complex &z)
+{
+    return complex(sin(z.real()) * cosh(z.imaginary()), cos(z.real()) * sinh(z.imaginary()));
+}
+
+complex cos(const complex &z)
+{
+    return complex(cos(z.real()) * cosh(z.imaginary()), -sin(z.real()) * sinh(z.imaginary()));
+}
+
+complex sinh(const complex &z)
+{
+    return complex(sinh(z.real()) * cos(z.imaginary()), cosh(z.real()) * sin(z.imaginary()));
+}
+
+complex cosh(const complex &z)
+{
+    return complex(cosh(z.real()) * cos(z.imaginary()), sinh(z.real()) * sin(z.imaginary()));
+}
+
 // ------------------------------------------------------------------------------------------------------------------
 
 

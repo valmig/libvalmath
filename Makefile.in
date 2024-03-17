@@ -10,17 +10,14 @@ VALPTH = $(PREFIX)/share/valmath
 
 libvalmath.so: $(OBJ)/libvalmath.o
 	mkdir -p $(LIB)
-	#echo "linkage"
 	$(CXX) -shared -o $(LIB)/libvalmath.so $(OBJ)/libvalmath.o  $(LDFLAGS)
 
 
 $(OBJ)/libvalmath.o : $(DIRPATH)/src/libmain.cpp
 	mkdir -p $(OBJ)
-	#echo "compilation"
 	$(CXX) -c $(CXXFLAGS) $(DIRPATH)/src/libmain.cpp -o $@
 
 
-	
 .PHONY clean:
 
 clean:

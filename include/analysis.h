@@ -64,6 +64,14 @@ DLL_PUBLIC double arcosh(const double&);
 DLL_PUBLIC double artanh(const double&);
 
 
+// complex functions
+DLL_PUBLIC double atan2(const double& y, const double &x);
+DLL_PUBLIC double arg(const val::complex &z);
+DLL_PUBLIC complex exp(const val::complex &z);
+DLL_PUBLIC complex sin(const complex &z);
+DLL_PUBLIC complex cos(const complex &z);
+DLL_PUBLIC complex sinh(const complex &z);
+DLL_PUBLIC complex cosh(const complex &z);
 
 
 // Iterative secant method for the computation of a root of the double functor f.
