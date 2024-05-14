@@ -65,7 +65,7 @@ private:
     static const std::string zero_string;
 public:
     valfunction() = default;
-    explicit valfunction(const std::string &s,int simp=1) {infix_to_postfix(s);if (simp) {simplify();}}
+    explicit valfunction(const std::string &s,int simp=1) {infix_to_postfix(s);if (simp) {simplify();} else {s_infix = get_infix(Gdat,nvar);}}
     valfunction(const valfunction&);
     valfunction(valfunction &&f) : Gdat(std::move(f.Gdat)), t(std::move(f.t)), s_infix(std::move(f.s_infix)) {nvar=f.nvar;}//{Gdat=std::move(f.Gdat);t=f.t;}
     valfunction& operator= (valfunction&& f) {Gdat=std::move(f.Gdat);t=std::move(f.t);s_infix=std::move(f.s_infix);nvar=f.nvar;return *this;}
@@ -98,7 +98,7 @@ public:
     d_array<std::string> get_prefix() const;
     std::string get_infix() const;
     //
-    int is_zero() const {return (s_infix=="" || s_infix=="0");}
+    int is_zero() const {return (s_infix=="" || s_infix=="0" || Gdat.isempty());}
     //
     valfunction operator +(const valfunction &g) const;
     const valfunction& operator +=(const valfunction& g) {*this = *this + g;return *this;}

@@ -2012,6 +2012,7 @@ const valfunction& valfunction::infix_to_postfix(const std::string &s)
          Gdat.inserttoend(valfunction::token(OP.actualvalue().data,int(OP.actualvalue().type)));
         OP.skiphead();OP.resetactual();
     }
+    if (Gdat.isempty()) s_infix = "";
 
     return *this;
 }

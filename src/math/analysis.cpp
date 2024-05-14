@@ -823,10 +823,10 @@ double tan(const double &d)
 
 double arctan(const double &d)
 {
-    if (isNaN(d)) return val::NaN;
     if (d==val::Inf) return (val::PI/2);
     if (d==-val::Inf) return (-val::PI/2);
     if (d==0.0) return 0.0;
+    if (isNaN(d)) return val::NaN;
     double x,y,z = abs(d);
 
 
