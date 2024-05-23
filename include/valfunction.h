@@ -4,6 +4,7 @@
 #include <string>
 #include <Glist.h>
 #include <d_array.h>
+#include <pol.h>
 
 namespace fparser
 {
@@ -15,7 +16,7 @@ namespace val
 {
 
 template <class T> class fraction;
-template <class T> class pol;
+//template <class T> class pol;
 template <class T> class vector;
 template <class T> class n_polynom;
 template <class T> class s_polynom;
@@ -81,6 +82,7 @@ public:
     pol<rational> getpolynomial() const;
     n_polynom<rational> getn_polynom() const;
     s_polynom<rational> gets_polynom() const;
+    template <class T> val::pol<T> getunivarpol(const T& a,const std::string var="x") const; // polynomial p(var) = f(var,a,a,...,a);
     rationalfunction getrationalfunction(int reduced = 1) const;
     void setparameter(const double &a) {t=a;}
     const double& getparameter() const {return t;}
@@ -270,6 +272,73 @@ T valfunction::rationaleval(const vector<T>& x) const
     if (!G.isempty()) value=G.actualvalue();
     return value;
 }
+
+template <class T>
+val::pol<T> valfunction::getunivarpol(const T& a,const std::string var) const
+{
+    using namespace val;
+    pol<T> Y(T(1),1),value,v2;  //
+    int exponent;
+
+    if (Gdat.isempty()) return value;
+
+    GlistIterator<valfunction::token> iT;
+    Glist<pol<T>> G;
+
+
+    for (iT=Gdat;iT;iT++) {
+        G.resetactual();
+        if (iT().type==0) {
+            if (iT().data=="t") G.inserttohead(pol<T>(T(t),0));
+            else G.inserttohead(pol<T>(val::FromString<T>(iT().data),0));
+        }
+        else if (iT().type==1) {
+            if (iT().data != var) G.inserttohead(pol<T>(a,0));
+            else G.inserttohead(Y);
+        } //std::cout<<"  variable ";
+        else {
+            value.del();  // value=0
+            if (iT().data=="+") {   //case "+":
+                if (!G.isempty()) {value=std::move(G.actualvalue());G.skiphead();}
+                if (!G.isempty()) {value+=G.actualvalue();G.skiphead();}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="-") {  // case "-":
+                if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();value-=v2;}
+                G.inserttohead(std::move(value));
+            }
+            else if (iT().data=="m") {
+                if (!G.isempty()) G.actualvalue()*=T(-1);
+            }
+            else if (iT().data=="*") {  //case "*":
+                if (!G.isempty()) {value=std::move(G.actualvalue());G.skiphead();}
+                if (!G.isempty()) {value*=G.actualvalue();G.skiphead();}
+                G.inserttohead(std::move(value));
+            }
+            else if (iT().data=="/") {  //case "/":
+                if (!G.isempty()) {v2=std::move(G.actualvalue());G.skiphead();}
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();value/=v2;}
+                G.inserttohead(std::move(value));
+            }
+            else if (iT().data=="^") { //case "^":
+                if (!G.isempty()) {v2=std::move(G.actualvalue());G.skiphead();}
+                exponent=int(v2.leader());
+                if (!G.isempty()) {
+                    value=G.actualvalue();
+                    G.skiphead();
+                    value=val::power(value,exponent);
+                }
+                G.inserttohead(std::move(value));
+            }
+        }
+    }
+    G.resetactual();
+    value.del();
+    if (!G.isempty()) value=std::move(G.actualvalue());
+    return value;
+}
+
 
 
 } //end namespace val
