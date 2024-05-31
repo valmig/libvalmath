@@ -556,7 +556,7 @@ void valfunction::to_double(d_array<token> &f)
         if (f[j].data=="/" && f[j+1].type==0 && f[j+2].type==0) {
             a = FromString<rational>(f[j+2].data);
             b = FromString<rational>(f[j+1].data);
-            h[0] = token(ToString(double(a/b)),0);
+            h[0] = token(ToString(double(a/b),15),0);
             squeeze(f,h,j,j+3);
             n-=2;
         }
