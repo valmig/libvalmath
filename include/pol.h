@@ -976,17 +976,18 @@ const pol<T>& pol<T>::operator +=(const pol<T>& t)
 	  switch (fall) {
 	      case 0 : p=p->next; break;                    // q->grad < p->next->grad
 
-	      case 1 : if ( ( (p->next->coef) + (q->coef) ) == zero ) {  // == !
-			  r=p->next;
-			  p->next=r->next;
-			  delete r;
-		       }
-		       else {
-			  p->next->coef+=q->coef;
-			  p=p->next;
-		       }
-		       q=q->next;
-		       break;
+	      case 1 :
+              if ( ( (p->next->coef) + (q->coef) ) == zero ) {  // == !
+                  r=p->next;
+                  p->next=r->next;
+                  delete r;
+		      }
+              else {
+                  p->next->coef+=q->coef;
+                  p=p->next;
+              }
+              q=q->next;
+              break;
 
 	      case 2 : r = new term<T>(q->coef,q->grad,p->next);    // < !
 		       p->next=r;
@@ -1083,14 +1084,15 @@ const pol<T>& pol<T>::operator -=(const pol<T>& t)
 	  switch (fall) {
 	      case 0 : p=p->next; break;     				// q->grad < p->next->grad
 
-	      case 1 : if ( ( (p->next->coef) - (q->coef) ) == zero ) {  // == !
-			  r=p->next;
-			  p->next=r->next;
-			  delete r;
+	      case 1 :
+              if ( ( (p->next->coef) - (q->coef) ) == zero ) {  // == !
+                  r=p->next;
+                  p->next=r->next;
+                  delete r;
 		       }
-		       else {
-			  p->next->coef-=q->coef;
-			  p=p->next;
+              else {
+                  p->next->coef-=q->coef;
+                  p=p->next;
 		       }
 		       q=q->next;
 		       break;

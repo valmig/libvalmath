@@ -6,14 +6,16 @@
 #include <rational.h>
 #include <fraction.h>
 #include <error.h>
-#include <n_polynom.h>
-#include <s_polynom.h>
-#include <pol_arithmetic.h>
+#include <complex.h>
+//#include <n_polynom.h>
+//#include <s_polynom.h>
+//#include <pol_arithmetic.h>
 #include <numbers.h>
 //#include <s_modinteger.cpp>
 //#include <polfactor.h>
 #include <s_groebner.h>
 
+typedef val::complex (c_function)(const val::complex &);
 
 // Computing lcm of multivariate polynomials via groebner-bases.
 val::n_polynom<val::rational> lcm(const val::n_polynom<val::rational>& f,const val::n_polynom<val::rational>& g)
@@ -85,50 +87,48 @@ val::n_polynom<val::rational> gcd(const val::n_polynom<val::rational> &f,const v
 namespace fparser
 {
 val::d_array<std::string> sfunctionlist({"sqrt", "exp", "log", "abs", "sinh", "cosh", "tanh", "arsinh", "arcosh", "artanh", 
-										"sin", "cos", "tan", "arcsin", "arccos", "arctan"});
+                                         "sin", "cos", "tan", "arcsin", "arccos", "arctan"});
 
-val::d_array<val::GPair<std::string,val::d_function*>> 
-functionpairs ({ {"sqrt",val::sqrt}, {"abs",val::abs}, {"exp", val::exp}, {"log", val::log}, {"sin", val::sin}, {"cos", val::cos}, 
-					{"tan", val::tan}, {"arcsin", val::arcsin}, {"arccos", val::arccos}, {"arctan", val::arctan}, {"sinh", val::sinh},
-					{"cosh", val::cosh}, {"tanh", val::tanh}, {"arsinh", val::arsinh}, {"arcosh", val::arcosh}, {"artanh", val::artanh}	});
+val::d_array<val::GPair<std::string,val::d_function*>> functionpairs ({ {"abs",val::abs}, {"exp", val::exp}, {"sin", val::sin}, {"cos", val::cos}, {"cosh", val::cosh}, {"sinh", val::sinh},
+                 {"tan", val::tan}, {"arcsin", val::arcsin}, {"arccos", val::arccos}, {"arctan", val::arctan},
+                 {"tanh", val::tanh}, {"arsinh", val::arsinh}, {"arcosh", val::arcosh}, {"artanh", val::artanh}, {"sqrt",val::sqrt}, {"log", val::log}});
 
+val::d_array<val::GPair<std::string,c_function*>> c_functionpairs ({{"exp", val::exp}, {"sin", val::sin}, {"cos", val::cos}, {"cosh", val::cosh}, {"sinh", val::sinh} });
 
 std::string getstringfunction(const std::string &s, int j)
 {
-	int n = s.length() - j, m, found, i;
-	
-	for (const auto& sf : sfunctionlist) {
-		m = sf.length();
-		found = 0;
-		if (n >= m) {
-			found = 1;
-			for (i = 0; i < m; ++i) {
-				if (sf[i] != s[i+j]) {
-					found = 0;
-					break;
-				}
-			}
-		}
-		if (found) return sf;
-	}
+    int n = s.length() - j, m, found, i;
 
-	return "";
+    for (const auto& sf : sfunctionlist) {
+        m = sf.length();
+        found = 0;
+        if (n >= m) {
+            found = 1;
+            for (i = 0; i < m; ++i) {
+                if (sf[i] != s[i+j]) {
+                    found = 0;
+                    break;
+                }
+            }
+        }
+        if (found) return sf;
+    }
+
+    return "";
 }
 
 int getindexoffunction(const std::string &sf)
 {
-	if (sf =="") return -1;
-	int i = 0;
-	
-	for (const auto &f : functionpairs) {
-		if (f.x == sf) return i;
-		++i;
-	} 
-	
-	return -1;
+    if (sf == "") return -1;
+    int i = 0;
+
+    for (const auto &f : functionpairs) {
+        if (f.x == sf) return i;
+        ++i;
+    }
+
+    return -1;
 }
-
-
 
 int isinteger(const double &a,const double &epsilon=1e-9)
 {
@@ -594,12 +594,21 @@ void valfunction::subst_var_t_pi(d_array<token> &f_t,d_array<d_array<token>> &to
 	}
 
     for (const auto& value : f_t) {
-		if (value.type==0 && value.data=="t") {
-			toklist.push_back(d_array<token>{token("t",0)});
-			par++;
-			break;
-		}
-	}
+        if (value.type==0 && value.data=="i") {
+            toklist.push_back(d_array<token>{token("i",0)});
+            par++;
+            break;
+        }
+    }
+
+    for (const auto& value : f_t) {
+        if (value.type==0 && value.data=="t") {
+            toklist.push_back(d_array<token>{token("t",0)});
+            par++;
+            break;
+        }
+    }
+
     for (i=1;i<=nvar;++i) {
 		svar="x" + val::ToString(i);
 		for (const auto& value : f_t) {
@@ -646,6 +655,16 @@ void valfunction::subst_var_t_pi(d_array<token> &f_t,d_array<d_array<token>> &to
     for (auto& value : f_t) {
         if (value.type==0 && value.data=="PI") {
             value.data="x" + val::ToString(par+1) ;value.type=1;
+            found=1;
+        }
+    }
+    if (found) par++;
+
+    // Find and replace i:
+    found=0;
+    for (auto& value : f_t) {
+        if (value.type==0 && value.data=="i") {
+            value.data="x" + val::ToString(par+1);value.type=1;
             found=1;
         }
     }
@@ -1338,9 +1357,6 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
 }
 
 
-
-
-
 void valfunction::simplify_qsin(d_array<token> &f_t)
 {
 	int i,k,n=f_t.length(),l;
@@ -1367,6 +1383,52 @@ void valfunction::simplify_qsin(d_array<token> &f_t)
     //for (const auto& value : f_t) std::cout<<value.data + " ";
 	//std::cout<<std::endl;
 }
+
+
+int valfunction::simplify_im(d_array<token> &f_t)
+{
+    int i, n = f_t.length(), subst = 0, e, k;
+    d_array<token> h;
+
+    h.reserve(2);
+
+
+    for (i = 0; i < n-2; ++i) {
+        if (f_t[i].data == "^" && f_t[i+1].type == 0 && f_t[i+2].data == "i") {
+            if (!val::isinteger(f_t[i+1].data)) continue;
+            subst = 1;
+            h.del();
+            e = FromString<int>(f_t[i+1].data) % 4;
+            k = i+3;
+            switch (e)
+            {
+                case 2:
+                {
+                    // subst i^e with -1;
+                    h.push_back((token("m",2))); h.push_back(token("1",0));
+                } break;
+                case 3:
+                {
+                    h.push_back((token("m",2))); h.push_back(token("i",0));
+                }
+                break;
+                case 0:
+                {
+                    h.push_back(token("1",0));
+                }
+                break;
+                default: break;
+            }
+            squeeze(f_t, h, i, k);
+            n = f_t.length();
+        }
+    }
+    //std::cout<<"\nNach im f = ";
+    //for (const auto& value : f_t) std::cout<<value.data + " ";
+    //std::cout<<std::endl;
+    return subst;
+}
+
 
 valfunction::valfunction(const valfunction& f)
 {
@@ -1439,7 +1501,7 @@ pol<rational> valfunction::getpolynomial() const
 }
 
 
-
+/*
 n_polynom<rational> valfunction::getn_polynom() const
 {
     n_polynom<rational> v2,value;
@@ -1509,11 +1571,12 @@ n_polynom<rational> valfunction::getn_polynom() const
     return value;
 }
 
+
 s_polynom<rational> valfunction::gets_polynom() const
 {
     return val::To_s_polynom(getn_polynom());
 }
-
+*/
 
 rationalfunction valfunction::getrationalfunction(int reduced) const
 {
@@ -1601,9 +1664,9 @@ double valfunction::operator() (const double& x) const
             else G.inserttohead(val::FromString<double>(iT().data));
         }
         else if (iT().type==1) {
-			if (iT().data=="x" || iT().data=="x1") G.inserttohead(x);
-			else G.inserttohead(0);
-		}
+            if (iT().data=="x" || iT().data=="x1") G.inserttohead(x);
+            else G.inserttohead(0);
+        }
         else {
             value=0.0;
             if (iT().data=="+") {   //case "+":
@@ -1643,60 +1706,8 @@ double valfunction::operator() (const double& x) const
                 G.inserttohead(value);
             }
             else if ((i = fparser::getindexoffunction(iT().data)) != -1) {
-				if (!G.isempty()) G.actualvalue()=fparser::functionpairs[i].y(G.actualvalue());
-			}
-            
-            /*
-            else if (iT().data=="sqrt") {
-                if (!G.isempty()) G.actualvalue()=val::sqrt(G.actualvalue());
+                if (!G.isempty()) G.actualvalue()=fparser::functionpairs[i].y(G.actualvalue());
             }
-            else if (iT().data=="exp") {
-                if (!G.isempty()) G.actualvalue()=val::exp(G.actualvalue());
-            }
-            else if (iT().data=="log") {
-                if (!G.isempty()) G.actualvalue()=val::log(G.actualvalue());
-            }
-            else if (iT().data=="sin") {
-                if (!G.isempty()) G.actualvalue()=val::sin(G.actualvalue());
-            }            //default: break;
-            else if (iT().data=="cos") {
-                if (!G.isempty()) G.actualvalue()=val::cos(G.actualvalue());
-            }
-            else if (iT().data=="tan") {
-                if (!G.isempty()) G.actualvalue()=val::tan(G.actualvalue());
-            }
-            else if (iT().data=="abs") {
-                if (!G.isempty()) G.actualvalue()=val::abs(G.actualvalue());
-            }
-            else if (iT().data=="arcsin") {
-                if (!G.isempty()) G.actualvalue()=val::arcsin(G.actualvalue());
-            }
-            else if (iT().data=="arccos") {
-                if (!G.isempty()) G.actualvalue()=val::arccos(G.actualvalue());
-            }
-            else if (iT().data=="arctan") {
-                if (!G.isempty()) G.actualvalue()=val::arctan(G.actualvalue());
-            }
-
-            else if (iT().data=="sinh") {
-                if (!G.isempty()) G.actualvalue()=val::sinh(G.actualvalue());
-            }            //default: break;
-            else if (iT().data=="cosh") {
-                if (!G.isempty()) G.actualvalue()=val::cosh(G.actualvalue());
-            }
-            else if (iT().data=="tanh") {
-                if (!G.isempty()) G.actualvalue()=val::tanh(G.actualvalue());
-            }
-            else if (iT().data=="arsinh") {
-                if (!G.isempty()) G.actualvalue()=val::arsinh(G.actualvalue());
-            }
-            else if (iT().data=="arcosh") {
-                if (!G.isempty()) G.actualvalue()=val::arcosh(G.actualvalue());
-            }
-            else if (iT().data=="artanh") {
-                if (!G.isempty()) G.actualvalue()=val::artanh(G.actualvalue());
-            }
-            */
         }
     }
     G.resetactual();
@@ -1723,13 +1734,13 @@ double valfunction::operator() (const vector<double>& x) const
             else G.inserttohead(val::FromString<double>(iT().data));
         }
         else if (iT().type==1) {
-			if (iT().data=="x" || iT().data=="x1") G.inserttohead(x(0));
-			else {
-				i=1;
-				k=val::FromString<int>(fparser::findnumber(iT().data,i));
-				G.inserttohead(x(k-1));
-			}
-		}
+            if (iT().data=="x" || iT().data=="x1") G.inserttohead(x(0));
+            else {
+                i=1;
+                k=val::FromString<int>(fparser::findnumber(iT().data,i));
+                G.inserttohead(x(k-1));
+            }
+        }
         else {
             value=0.0;
             if (iT().data=="+") {   //case "+":
@@ -1769,8 +1780,8 @@ double valfunction::operator() (const vector<double>& x) const
                 G.inserttohead(value);
             }
             else if ((i = fparser::getindexoffunction(iT().data)) != -1) {
-				if (!G.isempty()) G.actualvalue() = fparser::functionpairs[i].y(G.actualvalue());
-			}
+                if (!G.isempty()) G.actualvalue() = fparser::functionpairs[i].y(G.actualvalue());
+            }
             /*
             else if (iT().data=="sqrt") {
                 if (!G.isempty()) G.actualvalue()=val::sqrt(G.actualvalue());
@@ -1812,6 +1823,151 @@ double valfunction::operator() (const vector<double>& x) const
 }
 
 
+complex valfunction::operator() (const complex& x) const
+{
+    using namespace val;
+    complex value(0.0),v2;
+    if (Gdat.isempty()) return 0.0;
+
+    GlistIterator<valfunction::token> iT;
+    Glist<complex> G;
+    int i;
+
+    for (iT=Gdat;iT;iT++) {
+        G.resetactual();
+        if (iT().type==0) {
+            if (iT().data=="PI") G.inserttohead(val::PI);
+            else if (iT().data=="t") G.inserttohead(t);
+            else G.inserttohead(val::FromString<complex>(iT().data));
+        }
+        else if (iT().type==1) {
+            if (iT().data=="x" || iT().data=="x1") G.inserttohead(x);
+            else G.inserttohead(0);
+        }
+        else {
+            value=0.0;
+            if (iT().data=="+") {   //case "+":
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value+=G.actualvalue();G.skiphead();}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="-") {  // case "-":
+                if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();value-=v2;}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="m") {
+                if (!G.isempty()) G.actualvalue()*=-1.0;
+            }
+            else if (iT().data=="*") {  //case "*":
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value*=G.actualvalue();G.skiphead();}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="/") {  //case "/":
+                if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();value/=v2;}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="^") { //case "^":
+                if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {
+                    value=G.actualvalue();
+                    G.skiphead();
+                    if (v2.imaginary() == 0.0 && fparser::isinteger(v2.real())) {
+                        value=val::power(value,int(val::integer(val::rational(v2.real()))));
+                    }
+                }
+                G.inserttohead(value);
+            }
+            else if ((i = fparser::getindexoffunction(iT().data)) != -1) {
+                if (i > 5) return complex(val::NaN);
+                if (!G.isempty() && i == 0) G.actualvalue() = val::abs(G.actualvalue());
+                else if (!G.isempty()) G.actualvalue()=fparser::c_functionpairs[i-1].y(G.actualvalue());
+            }
+        }
+    }
+    G.resetactual();
+    value=0.0;
+    if (!G.isempty()) value=G.actualvalue();
+    return value;
+}
+
+
+complex valfunction::operator() (const vector<complex>& x) const
+{
+    using namespace val;
+    complex value=0.0,v2;
+    if (Gdat.isempty()) return 0.0;
+
+    GlistIterator<valfunction::token> iT;
+    Glist<complex> G;
+    int i,k;
+
+    for (iT=Gdat;iT;iT++) {
+        G.resetactual();
+        if (iT().type==0) {
+            if (iT().data=="PI") G.inserttohead(val::PI);
+            else if (iT().data=="t") G.inserttohead(t);
+            else G.inserttohead(val::FromString<complex>(iT().data));
+        }
+        else if (iT().type==1) {
+            if (iT().data=="x" || iT().data=="x1") G.inserttohead(x(0));
+            else {
+                i=1;
+                k=val::FromString<int>(fparser::findnumber(iT().data,i));
+                G.inserttohead(x(k-1));
+            }
+        }
+        else {
+            value=0.0;
+            if (iT().data=="+") {   //case "+":
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value+=G.actualvalue();G.skiphead();}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="-") {  // case "-":
+                if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();value-=v2;}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="m") {
+                if (!G.isempty()) G.actualvalue()*=-1.0;
+            }
+            else if (iT().data=="*") {  //case "*":
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value*=G.actualvalue();G.skiphead();}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="/") {  //case "/":
+                if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();value/=v2;}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="^") { //case "^":
+                if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {
+                    value=G.actualvalue();
+                    G.skiphead();
+                    if (v2.imaginary() == 0.0 && fparser::isinteger(v2.real())) {
+                        value=val::power(value,int(val::integer(val::rational(v2.real()))));
+                    }
+                }
+                G.inserttohead(value);
+            }
+            else if ((i = fparser::getindexoffunction(iT().data)) != -1) {
+                if (i > 5) return complex(val::NaN);
+                if (!G.isempty() && i == 0) G.actualvalue() = val::abs(G.actualvalue());
+                else if (!G.isempty()) G.actualvalue()=fparser::c_functionpairs[i-1].y(G.actualvalue());
+            }
+        }
+    }
+    G.resetactual();
+    value=0.0;
+    if (!G.isempty()) value=G.actualvalue();
+    return value;
+}
+
 valfunction valfunction::operator() (const valfunction& f) const
 {
     if (is_zero()) return valfunction();
@@ -1833,16 +1989,16 @@ valfunction valfunction::operator() (const valfunction& f) const
 
 valfunction valfunction::operator() (const vector<valfunction> &F) const
 {
-	if (is_zero()) return valfunction();
-	int i,n= s_infix.length(),k,dim = val::Min(nvar,F.dimension());
-	std::string s;
-	vector<std::string> sf("0",nvar);
+    if (is_zero()) return valfunction();
+    int i,n= s_infix.length(),k,dim = val::Min(nvar,F.dimension());
+    std::string s;
+    vector<std::string> sf("0",nvar);
 
-	for (i=0;i<dim;++i) {
+    for (i=0;i<dim;++i) {
         sf(i) = "(" + F(i).s_infix + ")";
-	}
+    }
 
-	for (i=0;i<n;++i) {
+    for (i=0;i<n;++i) {
         if (s_infix[i]=='z') s+=sf(2);
         else if (s_infix[i]=='y') s+=sf(1);
         else if (s_infix[i]=='x') {
@@ -1855,7 +2011,7 @@ valfunction valfunction::operator() (const vector<valfunction> &F) const
             else s+=sf(0);
         }
         else s+= s_infix[i];
-	}
+    }
     valfunction h(s);
     h.t = t;
     return h;
@@ -1925,27 +2081,31 @@ const valfunction& valfunction::infix_to_postfix(const std::string &s)
             t = s_stack(out,s_stack::VARIABLE);
         }
         else if (s[i]=='y') {
-			t = s_stack("x2",s_stack::VARIABLE);
-			if (nvar<2) nvar=2;
-			++i;
-		}
+            t = s_stack("x2",s_stack::VARIABLE);
+            if (nvar<2) nvar=2;
+            ++i;
+        }
         else if (s[i]=='z') {
-			t = s_stack("x3",s_stack::VARIABLE);
-			if (nvar<3) nvar=3;
-			++i;
-		}
+            t = s_stack("x3",s_stack::VARIABLE);
+            if (nvar<3) nvar=3;
+            ++i;
+        }
+        else if(s[i]=='i') {
+            t = s_stack("i",s_stack::NUMBER);
+            ++i;
+        }
         else if (s[i] == 't' && (i == n-1 || (i < n-1 && s[i+1] != 'a')) )  {
-			t = s_stack("t",s_stack::NUMBER);
-			++i;
-		}
+            t = s_stack("t",s_stack::NUMBER);
+            ++i;
+        }
         else if (s[i] == 'P' && i < n-1 && s[i+1] == 'I') {
-			t = s_stack("PI",s_stack::NUMBER);
-			i += 2;		
-		}
+            t = s_stack("PI",s_stack::NUMBER);
+            i += 2;
+        }
         else if ((sf = fparser::getstringfunction(s,i)) != "") {
-			t = s_stack(sf,s_stack::OPERATOR,5);
-			i+= sf.length();
-		}
+            t = s_stack(sf,s_stack::OPERATOR,5);
+            i+= sf.length();
+        }
         else {failed=1;++i;}
         
         
@@ -2028,23 +2188,31 @@ void valfunction::print() const
 
 int valfunction::isconst() const
 {
-	for (const auto &value : Gdat) {
-		if (value.data[0]=='x' || value.data[0]=='y' || value.data[0]=='z') return 0;
-	}
-	return 1;
+    for (const auto &value : Gdat) {
+        if (value.data[0]=='x' || value.data[0]=='y' || value.data[0]=='z') return 0;
+    }
+    return 1;
 }
 
 
 int valfunction::isconst(int k) const
 {
-	std::string svar = "x" + ToString(k);
-	for (const auto &value : Gdat) {
-		if (k == 1 && value.data == "x") return 0;
-		if (value.data == svar) return 0;
-	}
-	return 1;
+    std::string svar = "x" + ToString(k);
+    for (const auto &value : Gdat) {
+        if (k == 1 && value.data == "x") return 0;
+        if (value.data == svar) return 0;
+    }
+    return 1;
 }
 
+
+int valfunction::iscomplex() const
+{
+    for (const auto &value : Gdat) {
+        if (value.data == "i") return 1;
+    }
+    return 0;
+}
 
 
 int valfunction::isrationalfunction() const
@@ -2072,10 +2240,11 @@ int valfunction::isrationalfunction() const
 
 int valfunction::isdifferentiable() const
 {
-	for (const auto& value : Gdat) {
-		if (value.data=="abs") return 0;
-	}
-	return 1;
+    for (const auto &value : Gdat) {
+        if (value.data == "abs")
+            return 0;
+    }
+    return 1;
 }
 
 int valfunction::islinearfunction() const
@@ -2177,11 +2346,11 @@ std::string valfunction::get_infix(const Glist<valfunction::token>& Gdat,int nva
         // Push operands
         if (value.type<=1) {
            if (nvar<=3) {
-			   if (value.data=="x1") {G.push("x");Gtoken.push("x");}
-			   else if (value.data=="x2") {G.push("y");Gtoken.push("y");}
-			   else if (value.data=="x3") {G.push("z");Gtoken.push("z");}
-			   else {G.push(value.data);Gtoken.push(value.data);}
-		   }
+               if (value.data=="x1") {G.push("x");Gtoken.push("x");}
+               else if (value.data=="x2") {G.push("y");Gtoken.push("y");}
+               else if (value.data=="x3") {G.push("z");Gtoken.push("z");}
+               else {G.push(value.data);Gtoken.push(value.data);}
+           }
            else {G.push(value.data); Gtoken.push(value.data);}
            G.resetactual();
            Gtoken.resetactual();
@@ -2518,7 +2687,7 @@ void valfunction::simplifypolynomial(d_array<token> &f_t)
 void valfunction::simplify(int extended)
 {
     if (is_zero() || Gdat.isempty() ) return;
-    int n=Gdat.length(),nx=0,i,k,found,l,d,ispot=0,isdouble=0,qsin=0,qcos=0;//simplifyagain=0;
+    int n=Gdat.length(),nx=0,i,k,found,l,d,ispot=0,isdouble=0,qsin=0,qcos=0, imsubst=0;//simplifyagain=0;
     d_array<token> f_t(n),tok,h_t;
     d_array<d_array<token>> toklist;
     auto it=Gdat.begin();
@@ -2532,14 +2701,14 @@ void valfunction::simplify(int extended)
 
     for (i=n-1;i>=0;--i,it++) f_t[i] = it();
 
-	nvar=1;
+    nvar=1;
     for (auto& value : f_t) {
-		if (value.data != "x" && value.data[0]=='x') {
-			i=1;
-			s_number = fparser::findnumber(value.data,i);
-			nvar=val::Max(nvar,val::FromString<int>(s_number));
-		}
-	}
+        if (value.data != "x" && value.data[0] == 'x') {
+            i = 1;
+            s_number = fparser::findnumber(value.data, i);
+            nvar = val::Max(nvar, val::FromString<int>(s_number));
+        }
+    }
 
     h.nvar=nvar;
 
@@ -2552,18 +2721,16 @@ void valfunction::simplify(int extended)
 
     qsin = qcos = 0;
     for (i=0;i<n-3;++i) {
-		if (f_t[i].data=="^" && f_t[i+1].data=="2") {
-			if (f_t[i+2].data=="sin") qsin=1;
-			if (f_t[i+2].data=="cos") qcos=1;
-		}
+        if (f_t[i].data == "^" && f_t[i + 1].data == "2") {
+            if (f_t[i + 2].data == "sin") qsin = 1;
+            if (f_t[i + 2].data == "cos") qcos = 1;
+        }
     }
 
     if (qsin && qcos) {
-        simplify_qsin(f_t);         // trigonometric pythagoras
-		n=f_t.length();
-	}
-
-
+        simplify_qsin(f_t); // trigonometric pythagoras
+        n = f_t.length();
+    }
 
     // exp - rules
     if (has_operator(f_t,"exp")) {
@@ -2756,10 +2923,11 @@ void valfunction::simplify(int extended)
     //
     if (isdouble) to_double(f_t);
 
+    imsubst = simplify_im(f_t); // simplifies powers of i
+
     Gdat.dellist();
     //std::cout<<"\n f_t nach Rücksubstitution: ";
     //for (auto& value : f_t) std::cout<<value.data<<" ";
-
 
 	nvar=1;
     for (auto& value : f_t) {
@@ -2772,6 +2940,7 @@ void valfunction::simplify(int extended)
 	}
     s_infix=get_infix(Gdat,nvar);
 
+    if (imsubst) simplify(extended);
 
     //std::cout<<"\n s_infix at end of simplify = "<<s_infix;
 
@@ -2872,7 +3041,7 @@ valfunction valfunction::derive(int k) const
     g.t = h.t = g1.t = g2.t = g3.t = t;
 
     // Case: rational function:
-    if (nvar==1 && isrationalfunction()) {
+    if (nvar==1 && isrationalfunction() && !iscomplex()) {
         rationalfunction F=getrationalfunction();
         pol<rational> f_denom = F.denominator();
 
@@ -2919,11 +3088,11 @@ valfunction valfunction::derive(int k) const
         h.s_infix = get_infix(h.Gdat,nvar);
 
         if (f_t[0].data=="+")  {
-			return (h.derive(k) + g.derive(k));
-			//std::cout <<"\n Sum Done!" << std::endl;
-			//return (h.derive(k) + g.derive(k));
-			//return F;
-		}
+            return (h.derive(k) + g.derive(k));
+            //std::cout <<"\n Sum Done!" << std::endl;
+            //return (h.derive(k) + g.derive(k));
+            //return F;
+        }
         if (f_t[0].data=="-") return (h.derive(k) - g.derive(k));
         if (f_t[0].data=="*") {
             //valfunction F;
@@ -3044,19 +3213,20 @@ valfunction valfunction::derive(int k) const
         return -g.derive(k)*h;
     }
     else if (f_t[0].data == "arsinh") {
-		std::string sg = g.getinfixnotation(), sF = "1/sqrt((" + sg + ")^2 + 1)";
-		return g.derive() * valfunction(sF); 
-	}
+        std::string sg = g.getinfixnotation(), sF = "1/sqrt((" + sg + ")^2 + 1)";
+        return g.derive() * valfunction(sF);
+    }
     else if (f_t[0].data == "arcosh") {
-		std::string sg = g.getinfixnotation(), sF = "1/sqrt((" + sg + ")^2 - 1)";
-		return g.derive() * valfunction(sF); 
-	}
+        std::string sg = g.getinfixnotation(), sF = "1/sqrt((" + sg + ")^2 - 1)";
+        return g.derive() * valfunction(sF);
+    }
     else if (f_t[0].data == "artanh") {
-		std::string sg = g.getinfixnotation(), sF = "1/(1 -(" + sg + ")^2)";
-		return g.derive() * valfunction(sF); 
-	}
-		
-    else return valfunction();
+        std::string sg = g.getinfixnotation(), sF = "1/(1 -(" + sg + ")^2)";
+        return g.derive() * valfunction(sF);
+    }
+
+    else
+        return valfunction();
 
     return g;
 }
@@ -3075,13 +3245,13 @@ valfunction valfunction::getfirstargument() const
     g_t=splitfunction(f_t,j);
     if (j<n) g_t=splitfunction(f_t,j);
     for (const auto& value: g_t) {
-		 f.Gdat.push(value);
-		 if (value.data[0] == 'x') {
-			 i = 1;
-			 mvar = FromString<int>(fparser::findnumber(value.data,i));
-			 f.nvar = Max(f.nvar,mvar);
-		 }
-	 }
+        f.Gdat.push(value);
+        if (value.data[0] == 'x') {
+            i = 1;
+            mvar = FromString<int>(fparser::findnumber(value.data, i));
+            f.nvar = Max(f.nvar, mvar);
+        }
+    }
     f.s_infix = get_infix(f.Gdat);
     f.t = t;
     //f.nvar = nvar;
@@ -3100,13 +3270,13 @@ valfunction valfunction::getsecondargument() const
     for (int i=n-1;i>=0;--i,it++) f_t[i] = it();
     g_t=splitfunction(f_t,j);
     for (const auto& value: g_t) {
-		f.Gdat.push(value);
-		 if (value.data[0] == 'x') {
-			 i = 1;
-			 mvar = FromString<int>(fparser::findnumber(value.data,i));
-			 f.nvar = Max(f.nvar,mvar);
-		 }
-	}
+        f.Gdat.push(value);
+        if (value.data[0] == 'x') {
+            i = 1;
+            mvar = FromString<int>(fparser::findnumber(value.data, i));
+            f.nvar = Max(f.nvar, mvar);
+        }
+    }
     f.s_infix = get_infix(f.Gdat);
     f.t = t;
     return f;
@@ -3118,9 +3288,9 @@ Glist<double> valfunction::double_roots(const double &x1,const double &x2,int it
 {
 	Glist<double> d_roots;
 
-	if (is_zero() || nvar>1) return d_roots;
+    if (is_zero() || nvar>1) return d_roots;
 
-	if (isrationalfunction()) {
+    if (isrationalfunction()) {
         rationalfunction F = getrationalfunction();
         pol<rational> f=F.nominator();
         vector<double> realroots;
@@ -3136,7 +3306,7 @@ Glist<double> valfunction::double_roots(const double &x1,const double &x2,int it
         }
         d_roots.sort();
         return d_roots;
-	}
+    }
 
     int n=Gdat.length(),j=1;
     auto it = Gdat.begin();
@@ -3208,7 +3378,7 @@ Glist<double> valfunction::double_roots(const double &x1,const double &x2,int it
         double value;
         n=d_roots.length();
         while (i<n) {
-			value = operator()(d_roots[0]);
+            value = operator()(d_roots[0]);
             if (val::isNaN(value)) {d_roots.skiphead();n--;}
             ++i;
         }
@@ -3216,27 +3386,27 @@ Glist<double> valfunction::double_roots(const double &x1,const double &x2,int it
         return d_roots;
     }
     if (oper=="/") {
-		d_roots=h.double_roots(x1,x2,iterations,epsilon);
+        d_roots=h.double_roots(x1,x2,iterations,epsilon);
         int i=0;
         double value;
         n=d_roots.length();
         while (i<n) {
-			value = g(d_roots[0]);
+            value = g(d_roots[0]);
             if (val::isNaN(value) || value == val::Inf || value == -val::Inf || value == 0.0)  {d_roots.skiphead();n--;}
             ++i;
         }
-	}
+    }
 
 
-	return d_roots;
+    return d_roots;
 }
 
 Glist<GPair<double>> valfunction::get_undefined_intervals(const double &x1,const double &x2,int iterations,const double &epsilon,int methoditerations) const
 {
-	Glist<GPair<double>> intervals;
-	if (is_zero() || nvar>1) return intervals;
+    Glist<GPair<double>> intervals;
+    if (is_zero() || nvar>1) return intervals;
 
-	if (isrationalfunction()) {
+    if (isrationalfunction()) {
         rationalfunction F = getrationalfunction();
         pol<rational> f= F.denominator();
         vector<double> realroots;
@@ -3253,7 +3423,7 @@ Glist<GPair<double>> valfunction::get_undefined_intervals(const double &x1,const
             intervals.push_back(GPair<double>(z,z));
         }
         return intervals;
-	}
+    }
 
     int n=Gdat.length(),i,j=1;
     auto it = Gdat.begin();

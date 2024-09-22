@@ -5,10 +5,11 @@
 #include <Glist.h>
 #include <d_array.h>
 #include <pol.h>
+#include <pol_arithmetic.h>
 
 namespace fparser
 {
-std::string findnumber(const std::string &s, int &i);
+DLL_PUBLIC std::string findnumber(const std::string &s, int &i);
 }
 
 
@@ -18,11 +19,15 @@ namespace val
 template <class T> class fraction;
 //template <class T> class pol;
 template <class T> class vector;
-template <class T> class n_polynom;
-template <class T> class s_polynom;
+//template <class T> class n_polynom;
+//template <class T> class s_polynom;
 class rational;
 
 typedef fraction<pol<rational>> rationalfunction;
+
+template <class T> class complex_type;
+typedef complex_type<double> complex;
+
 
 class DLL_PUBLIC valfunction
 {
@@ -60,6 +65,7 @@ private:
     static void simplify_log(d_array<token> &f,int extended);
     static void simplify_sqrt(d_array<token> &f,int nvar=1,int prod = 0);
     static void simplify_qsin(d_array<token> &f);
+    static int simplify_im(d_array<token> &f);
     static void subst_var_t_pi(d_array<token> &f_t,d_array<d_array<token>> &toklist,int &nx,int nvar=1);
     static void back_subst(d_array<token> & f_t,const d_array<d_array<token>> &toklist,int nx);
     static std::string get_infix(const Glist<token>& Gdat,int nvar=1);
@@ -75,13 +81,15 @@ public:
     const valfunction& infix_to_postfix(const std::string &s);
     double operator() (const double&) const;
     double operator() (const vector<double>&) const;
+    complex operator() (const complex&) const;
+    complex operator() (const vector<complex>&) const;
     valfunction operator() (const valfunction&) const;
     valfunction operator() (const vector<valfunction>&) const;
     template <class T> T rationaleval(const T& r) const;
     template <class T> T rationaleval(const vector<T> &v) const;
     pol<rational> getpolynomial() const;
-    n_polynom<rational> getn_polynom() const;
-    s_polynom<rational> gets_polynom() const;
+    template <class T> n_polynom<T> getn_polynom() const;
+    template<class T> s_polynom<T> gets_polynom() const;
     template <class T> val::pol<T> getunivarpol(const T& a,const std::string var="x") const; // polynomial p(var) = f(var,a,a,...,a);
     rationalfunction getrationalfunction(int reduced = 1) const;
     void setparameter(const double &a) {t=a;}
@@ -91,6 +99,7 @@ public:
     int numberofvariables() const {return nvar;}
     int isconst() const;
     int isconst(int k) const;
+    int iscomplex() const;
     int isrationalfunction() const;
     int ispolynomialfunction() const;
     int isdifferentiable() const;
@@ -250,12 +259,12 @@ T valfunction::rationaleval(const vector<T>& x) const
             }
             else if (iT().data=="^" && i>0) { //case "^":
                 if (!G.isempty()) {
-					G.skiphead();
-					if (Gdat[i-1].data=="m" && i-1>0) {
-						exp = -FromString<int>(Gdat[i-2].data);
-					}
-					else exp = FromString<int>(Gdat[i-1].data);
-				}
+                    G.skiphead();
+                    if (Gdat[i-1].data=="m" && i-1>0) {
+                        exp = -FromString<int>(Gdat[i-2].data);
+                    }
+                    else exp = FromString<int>(Gdat[i-1].data);
+                }
                 if (!G.isempty()) {
                     value=G.actualvalue();
                     G.skiphead();
@@ -278,7 +287,7 @@ val::pol<T> valfunction::getunivarpol(const T& a,const std::string var) const
 {
     using namespace val;
     pol<T> Y(T(1),1),value,v2;  //
-    int exponent;
+    int i = 0;
 
     if (Gdat.isempty()) return value;
 
@@ -286,7 +295,7 @@ val::pol<T> valfunction::getunivarpol(const T& a,const std::string var) const
     Glist<pol<T>> G;
 
 
-    for (iT=Gdat;iT;iT++) {
+    for (iT=Gdat;iT;iT++, ++i) {
         G.resetactual();
         if (iT().type==0) {
             if (iT().data=="t") G.inserttohead(pol<T>(T(t),0));
@@ -322,12 +331,13 @@ val::pol<T> valfunction::getunivarpol(const T& a,const std::string var) const
                 G.inserttohead(std::move(value));
             }
             else if (iT().data=="^") { //case "^":
-                if (!G.isempty()) {v2=std::move(G.actualvalue());G.skiphead();}
-                exponent=int(v2.leader());
+                //if (!G.isempty()) {v2=std::move(G.actualvalue());G.skiphead();}
+                if (!G.isempty()) {G.skiphead();}
+                //exponent=int(v2.leader());
                 if (!G.isempty()) {
                     value=G.actualvalue();
                     G.skiphead();
-                    value=val::power(value,exponent);
+                    value=val::power(value,FromString<int>(Gdat[i-1].data));
                 }
                 G.inserttohead(std::move(value));
             }
@@ -339,7 +349,83 @@ val::pol<T> valfunction::getunivarpol(const T& a,const std::string var) const
     return value;
 }
 
+template <class T>
+n_polynom<T> valfunction::getn_polynom() const
+{
+    n_polynom<T> v2,value;
+    if (Gdat.isempty()) return value;
 
+    GlistIterator<valfunction::token> iT;
+    Glist<n_polynom<T>> G;
+    n_expo X(nvar);
+    int i,j,n , k = 0;
+
+
+    for (iT=Gdat;iT;iT++, ++k) {
+        G.resetactual();
+        for (i=0;i<nvar;++i) X[i]=0;
+        if (iT().type==0) {
+            if (iT().data=="t") G.inserttohead(n_polynom<T>(T(t),X));
+            else G.inserttohead(n_polynom<T>(val::FromString<T>(iT().data),X));
+        }
+        else if (iT().type==1) {
+                j=1;
+                if (iT().data=="x" || iT().data=="x1") X[0]=1;
+                else {
+                    n=val::FromString<int>(fparser::findnumber(iT().data,j));
+                    X[n-1]=1;
+                }
+                G.inserttohead(n_polynom<T>(T(1),X));
+        }
+        else {
+            value=n_polynom<T>();
+            if (iT().data=="+") {   //case "+":
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value+=G.actualvalue();G.skiphead();}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="-") {  // case "-":
+                if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();value-=v2;}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="m") {
+                if (!G.isempty()) G.actualvalue()=-G.actualvalue();
+            }
+            else if (iT().data=="*") {  //case "*":
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value*=G.actualvalue();G.skiphead();}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="/") {  //case "/":
+                if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();value/=v2;}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="^") { //case "^":
+                //if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {G.skiphead();}
+                if (!G.isempty()) {
+                    value=G.actualvalue();
+                    G.skiphead();
+                    //value=val::power(value,int(val::integer(v2.LC())));
+                    value=val::power(value,FromString<int>(Gdat[k-1].data));
+                }
+                G.inserttohead(value);
+            }
+        }
+    }
+    G.resetactual();
+    value=n_polynom<T>();
+    if (!G.isempty()) value=G.actualvalue();
+    return value;
+}
+
+template<class T>
+s_polynom<T> valfunction::gets_polynom() const
+{
+    return val::To_s_polynom(getn_polynom<T>());
+}
 
 } //end namespace val
 
