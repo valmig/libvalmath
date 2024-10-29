@@ -147,91 +147,13 @@ T valfunction::rationaleval(const T& x) const
         G.resetactual();
         if (iT().type==0) {
             if (iT().data!="t" && iT().data!="PI")  {
-				G.inserttohead(val::FromString<T>(iT().data));
-			}
+                G.inserttohead(val::FromString<T>(iT().data));
+            }
         }
         else if (iT().type==1) {
-			if (iT().data=="x" || iT().data=="x1") G.inserttohead(x);
-			else G.inserttohead(zero);
-		} //std::cout<<"  variable ";}
-        else {
-            value=zero;
-            if (iT().data=="+") {   //case "+":
-                if (!G.isempty()) {value=G.actualvalue();G.skiphead();}
-                if (!G.isempty()) {value+=G.actualvalue();G.skiphead();}
-                G.inserttohead(value);
-            }
-            else if (iT().data=="-") {  // case "-":
-                if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
-                if (!G.isempty()) {value=G.actualvalue();G.skiphead();value-=v2;}
-                G.inserttohead(value);
-            }
-            else if (iT().data=="m") {
-                if (!G.isempty()) G.actualvalue()=-G.actualvalue();
-            }
-            else if (iT().data=="*") {  //case "*":
-                if (!G.isempty()) {value=G.actualvalue();G.skiphead();}
-                if (!G.isempty()) {value*=G.actualvalue();G.skiphead();}
-                G.inserttohead(value);
-            }
-            else if (iT().data=="/") {  //case "/":
-                if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
-                if (!G.isempty()) {value=G.actualvalue();G.skiphead();value/=v2;}
-                G.inserttohead(value);
-            }
-            else if (iT().data=="^" && i>0) { //case "^":
-                if (!G.isempty()) {
-					G.skiphead();
-					if (Gdat[i-1].data=="m" && i-1>0) {
-						exp = -FromString<int>(Gdat[i-2].data);
-					}
-					else exp = FromString<int>(Gdat[i-1].data);
-				}
-                if (!G.isempty()) {
-                    value=G.actualvalue();
-                    G.skiphead();
-                    //std::cout<<"\n value = "<<value;
-                    //std::cout<<"\n exp = "<<exp<<std::endl;
-                    value=val::power(value,exp);
-                }
-                G.inserttohead(value);
-            }
-		}
-	}
-    G.resetactual();
-    value=zero;
-    if (!G.isempty()) value=G.actualvalue();
-    return value;
-}
-
-
-
-template <class T>
-T valfunction::rationaleval(const vector<T>& x) const
-{
-    T zero=val::zero_element<T>(),value,v2;
-    if (Gdat.isempty()) return zero;
-
-    GlistIterator<valfunction::token> iT;
-    Glist<T> G;
-    int i=0,exp,j,k;
-
-
-    for (iT=Gdat;iT;++i,iT++) {
-        G.resetactual();
-        if (iT().type==0) {
-            if (iT().data!="t" && iT().data!="PI")  {
-				G.inserttohead(val::FromString<T>(iT().data));
-			}
-        }
-        else if (iT().type==1) {
-			if (iT().data=="x" || iT().data=="x1") G.inserttohead(x(0));
-			else {
-				j=1;
-				k=val::FromString<int>(fparser::findnumber(iT().data,j));
-				G.inserttohead(x(k-1));
-			}
-		} //std::cout<<"  variable ";}
+            if (iT().data=="x" || iT().data=="x1") G.inserttohead(x);
+            else G.inserttohead(zero);
+        } //std::cout<<"  variable ";}
         else {
             value=zero;
             if (iT().data=="+") {   //case "+":
@@ -274,8 +196,86 @@ T valfunction::rationaleval(const vector<T>& x) const
                 }
                 G.inserttohead(value);
             }
-		}
-	}
+        }
+    }
+    G.resetactual();
+    value=zero;
+    if (!G.isempty()) value=G.actualvalue();
+    return value;
+}
+
+
+
+template <class T>
+T valfunction::rationaleval(const vector<T>& x) const
+{
+    T zero=val::zero_element<T>(),value,v2;
+    if (Gdat.isempty()) return zero;
+
+    GlistIterator<valfunction::token> iT;
+    Glist<T> G;
+    int i=0,exp,j,k;
+
+
+    for (iT=Gdat;iT;++i,iT++) {
+        G.resetactual();
+        if (iT().type==0) {
+            if (iT().data!="t" && iT().data!="PI")  {
+                G.inserttohead(val::FromString<T>(iT().data));
+            }
+        }
+        else if (iT().type==1) {
+            if (iT().data=="x" || iT().data=="x1") G.inserttohead(x(0));
+            else {
+                j=1;
+                k=val::FromString<int>(fparser::findnumber(iT().data,j));
+                G.inserttohead(x(k-1));
+            }
+        } //std::cout<<"  variable ";}
+        else {
+            value=zero;
+            if (iT().data=="+") {   //case "+":
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value+=G.actualvalue();G.skiphead();}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="-") {  // case "-":
+                if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();value-=v2;}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="m") {
+                if (!G.isempty()) G.actualvalue()=-G.actualvalue();
+            }
+            else if (iT().data=="*") {  //case "*":
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value*=G.actualvalue();G.skiphead();}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="/") {  //case "/":
+                if (!G.isempty()) {v2=G.actualvalue();G.skiphead();}
+                if (!G.isempty()) {value=G.actualvalue();G.skiphead();value/=v2;}
+                G.inserttohead(value);
+            }
+            else if (iT().data=="^" && i>0) { //case "^":
+                if (!G.isempty()) {
+                    G.skiphead();
+                    if (Gdat[i-1].data=="m" && i-1>0) {
+                        exp = -FromString<int>(Gdat[i-2].data);
+                    }
+                    else exp = FromString<int>(Gdat[i-1].data);
+                }
+                if (!G.isempty()) {
+                    value=G.actualvalue();
+                    G.skiphead();
+                    //std::cout<<"\n value = "<<value;
+                    //std::cout<<"\n exp = "<<exp<<std::endl;
+                    value=val::power(value,exp);
+                }
+                G.inserttohead(value);
+            }
+        }
+    }
     G.resetactual();
     value=zero;
     if (!G.isempty()) value=G.actualvalue();

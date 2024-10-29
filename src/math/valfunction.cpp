@@ -2250,6 +2250,10 @@ int valfunction::isdifferentiable() const
 int valfunction::islinearfunction() const
 {
     if (isconst()) return 1;
+    if (getfirstoperator() == "m") {
+        valfunction f = getfirstargument();
+        return f.islinearfunction();
+    }
     if (getfirstoperator() == "*") {
         valfunction f = getfirstargument() , g = getsecondargument();
         if (f.isconst()) return g.islinearfunction();
