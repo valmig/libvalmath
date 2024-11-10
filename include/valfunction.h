@@ -7,11 +7,12 @@
 #include <pol.h>
 #include <pol_arithmetic.h>
 
+/*
 namespace fparser
 {
 DLL_PUBLIC std::string findnumber(const std::string &s, int &i);
 }
-
+*/
 
 namespace val
 {
@@ -228,7 +229,7 @@ T valfunction::rationaleval(const vector<T>& x) const
             if (iT().data=="x" || iT().data=="x1") G.inserttohead(x(0));
             else {
                 j=1;
-                k=val::FromString<int>(fparser::findnumber(iT().data,j));
+                k=val::FromString<int>(findnumber(iT().data,j));
                 G.inserttohead(x(k-1));
             }
         } //std::cout<<"  variable ";}
@@ -372,7 +373,7 @@ n_polynom<T> valfunction::getn_polynom() const
                 j=1;
                 if (iT().data=="x" || iT().data=="x1") X[0]=1;
                 else {
-                    n=val::FromString<int>(fparser::findnumber(iT().data,j));
+                    n=val::FromString<int>(findnumber(iT().data,j));
                     X[n-1]=1;
                 }
                 G.inserttohead(n_polynom<T>(T(1),X));

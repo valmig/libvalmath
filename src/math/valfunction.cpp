@@ -165,7 +165,7 @@ int checkbrackets(const std::string& s)
     return 1;
 }
 
-
+/*
 std::string findnumber(const std::string &s, int &i)
 {
     int n=s.size(),e_set=0,p_set=0;
@@ -191,6 +191,7 @@ std::string findnumber(const std::string &s, int &i)
 
     return out;
 }
+*/
 
 int foundpattern(const std::string &s,const std::string &pattern, int& i)
 {
@@ -693,22 +694,7 @@ void valfunction::back_subst(d_array<token> & f_t,const d_array<d_array<token>> 
     n=f_t.length();
     
 
-    /*
-    for (k = 0; k < n; ) {
-		if (f_t[k].data[0] == 'x') {
-			l = f_t[k].data.length();
-			i = FromString<int>(tailofstring(f_t[k].data,l-1)) -1;
-			if (i >= nx && i < d) {
-				squeeze(f_t,toklist[i],k,k+1);
-				k+=toklist[i].length();
-				n = f_t.length();
-				continue;
-			}
-		}
-		++k;
-	}
-    */
-    
+
     
     for (i=d-1;i>=nx;--i) {
         ns="x" + ToString(i+1);
@@ -727,38 +713,18 @@ void valfunction::back_subst(d_array<token> & f_t,const d_array<d_array<token>> 
     
   
     for (k = 0; k < n; ) {
-		if (f_t[k].data[0] == 'x') {
-			l = f_t[k].data.length();
-			i = FromString<int>(tailofstring(f_t[k].data,l-1)) -1;
-			if (i >= 0 && i < nx) {
-				squeeze(f_t,toklist[i],k,k+1);
-				k+=toklist[i].length();
-				n = f_t.length();
-				continue;
-			}
-		}
-		++k;
-	}
-    
-    /*
-    for (i=0;i<nx;++i) {
-        ns="x" + ToString(i+1);
-        l=toklist[i].length();
-        for (k=0;k<n;) {
-            if (f_t[k].data==ns) {
-                //std::cout<<"\n data = "<<ns;
+        if (f_t[k].data[0] == 'x') {
+            l = f_t[k].data.length();
+            i = FromString<int>(tailofstring(f_t[k].data,l-1)) -1;
+            if (i >= 0 && i < nx) {
                 squeeze(f_t,toklist[i],k,k+1);
-                //std::cout<<", replaced with: "<<f_t[k].data;
-                k+=l;
-                n=f_t.length();
+                k+=toklist[i].length();
+                n = f_t.length();
+                continue;
             }
-            else ++k;
         }
-        //std::cout<<"\n Substitution i = "<<i+1<<"  f_t = ";
-        //for (auto& value : f_t) std::cout<<value.data<<" ";
+        ++k;
     }
-    */
-    
 }
 
 
@@ -771,14 +737,14 @@ void valfunction::simplify_exp(d_array<token> &f_t,int nvar,int prod)
 
     // log(exp):
     for (i=0;i<n-1;++i) {
-		if ((f_t[i].data=="log" && f_t[i+1].data=="exp") || (f_t[i].data == "exp" && f_t[i+1].data == "log")) {
-			k=i+2;
-			tok=splitfunction(f_t,k);
-			squeeze(f_t,tok,i,k);
-			n=f_t.length();
-			--i;
-		}
-	}
+        if ((f_t[i].data=="log" && f_t[i+1].data=="exp") || (f_t[i].data == "exp" && f_t[i+1].data == "log")) {
+            k=i+2;
+            tok=splitfunction(f_t,k);
+            squeeze(f_t,tok,i,k);
+            n=f_t.length();
+            --i;
+        }
+    }
 
     for (i=0;i<n-1;++i) {
         if (f_t[i].data=="^") {  // powers
@@ -1737,7 +1703,7 @@ double valfunction::operator() (const vector<double>& x) const
             if (iT().data=="x" || iT().data=="x1") G.inserttohead(x(0));
             else {
                 i=1;
-                k=val::FromString<int>(fparser::findnumber(iT().data,i));
+                k=val::FromString<int>(findnumber(iT().data,i));
                 G.inserttohead(x(k-1));
             }
         }
@@ -1915,7 +1881,7 @@ complex valfunction::operator() (const vector<complex>& x) const
             if (iT().data=="x" || iT().data=="x1") G.inserttohead(x(0));
             else {
                 i=1;
-                k=val::FromString<int>(fparser::findnumber(iT().data,i));
+                k=val::FromString<int>(findnumber(iT().data,i));
                 G.inserttohead(x(k-1));
             }
         }
@@ -2004,7 +1970,7 @@ valfunction valfunction::operator() (const vector<valfunction> &F) const
         else if (s_infix[i]=='x') {
             if (i<n-1 && s_infix[i+1]>='1' && s_infix[i+1]<='9') {
                 ++i;
-                k=val::FromString<int>(fparser::findnumber(s_infix,i));
+                k=val::FromString<int>(findnumber(s_infix,i));
                 s+=sf(k-1);
                 --i;
             }
@@ -2066,13 +2032,13 @@ const valfunction& valfunction::infix_to_postfix(const std::string &s)
             i++;
         }
         else if (s[i]>='0' && s[i] <='9') {
-            t = s_stack(fparser::findnumber(s,i),s_stack::NUMBER);
+            t = s_stack(findnumber(s,i),s_stack::NUMBER);
         }
         else if (s[i]=='x') {
             out="x";
             if (i!=n-1 && s[i+1]>='0' && s[i+1]<='9') {
                 ++i;
-                s_number = fparser::findnumber(s,i);
+                s_number = findnumber(s,i);
                 out+=s_number;
                 vnumber = val::FromString<int>(s_number);
                 nvar = val::Max(nvar,vnumber);
@@ -2477,7 +2443,7 @@ void valfunction::simplifypolynomial(d_array<token> &f_t)
             G.push(fraction<n_polynom<rational>>(n_polynom<rational>(r)));
         }
         else if (f_t[i].data[0]=='x') { // variables
-            j=1;k=val::FromString<int>(fparser::findnumber(f_t[i].data,j));
+            j=1;k=val::FromString<int>(findnumber(f_t[i].data,j));
             if (k<=0) return;
             X=n_expo(0,k);X[k-1]=1;
             r=rational(1);
@@ -2709,7 +2675,7 @@ void valfunction::simplify(int extended)
     for (auto& value : f_t) {
         if (value.data != "x" && value.data[0] == 'x') {
             i = 1;
-            s_number = fparser::findnumber(value.data, i);
+            s_number = findnumber(value.data, i);
             nvar = val::Max(nvar, val::FromString<int>(s_number));
         }
     }
@@ -2933,15 +2899,15 @@ void valfunction::simplify(int extended)
     //std::cout<<"\n f_t nach Rücksubstitution: ";
     //for (auto& value : f_t) std::cout<<value.data<<" ";
 
-	nvar=1;
+    nvar=1;
     for (auto& value : f_t) {
-		if (value.data != "x" && value.data[0]=='x') {
-			i=1;
-			s_number = fparser::findnumber(value.data,i);
-			nvar=val::Max(nvar,val::FromString<int>(s_number));
-		}
-		Gdat.push(value);
-	}
+        if (value.data != "x" && value.data[0]=='x') {
+            i=1;
+            s_number = findnumber(value.data,i);
+            nvar=val::Max(nvar,val::FromString<int>(s_number));
+        }
+        Gdat.push(value);
+    }
     s_infix=get_infix(Gdat,nvar);
 
     if (imsubst) simplify(extended);
@@ -3252,7 +3218,7 @@ valfunction valfunction::getfirstargument() const
         f.Gdat.push(value);
         if (value.data[0] == 'x') {
             i = 1;
-            mvar = FromString<int>(fparser::findnumber(value.data, i));
+            mvar = FromString<int>(findnumber(value.data, i));
             f.nvar = Max(f.nvar, mvar);
         }
     }
@@ -3277,7 +3243,7 @@ valfunction valfunction::getsecondargument() const
         f.Gdat.push(value);
         if (value.data[0] == 'x') {
             i = 1;
-            mvar = FromString<int>(fparser::findnumber(value.data, i));
+            mvar = FromString<int>(findnumber(value.data, i));
             f.nvar = Max(f.nvar, mvar);
         }
     }

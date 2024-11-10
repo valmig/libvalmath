@@ -42,7 +42,7 @@ template <template<typename> class C, typename T  = char>
 std::basic_string<T> getfirstwordofstring(const std::basic_string<T>& value, const C<T> &separators = C<T>{'\n', ' ', ';', ',', '.', ':'});
 
 template <class T>
-void replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std::basic_string<T> &to);
+int replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std::basic_string<T> &to);
 
 
 DLL_PUBLIC char* StringToChar(const std::string& s);
@@ -95,32 +95,32 @@ T FromString(const std::string& s)
 template <typename S, typename std::enable_if_t<val::is_string_type<S>::value,int> = 0> 
 S headofstring(const S &value, int m)
 {
-	int n = value.length();
-	S head;
-	
-	m = Min(n,m);
-	
-	if (m == 0) return head;
-	
-	for (int i = 0; i < m; ++i) {
-		head += value[i];
-	}
-	return head;
+    int n = value.length();
+    S head;
+
+    m = Min(n,m);
+
+    if (m == 0) return head;
+
+    for (int i = 0; i < m; ++i) {
+        head += value[i];
+    }
+    return head;
 }
 
 
 template <typename S, typename std::enable_if_t<val::is_string_type<S>::value,int> = 0> 
 S tailofstring(const S &value,int m)
 {
-	int n = value.length();
-	S tail;
-	
-	m = Min(m,n);
-	
-	for (int i = n-m; i < n; ++i) {
-		tail += value[i];
-	}
-	return tail;	
+    int n = value.length();
+    S tail;
+
+    m = Min(m, n);
+
+    for (int i = n - m; i < n; ++i) {
+        tail += value[i];
+    }
+    return tail;
 }
 
 //template <template<typename> class C, typename S,typename std::enable_if_t<val::is_string_type<S>::value,int> = 0>
@@ -128,29 +128,32 @@ S tailofstring(const S &value,int m)
 template <template<typename> class C, typename T>
 std::basic_string<T> getfirstwordofstring(const std::basic_string<T>& value, const C<T> &separators)
 {
-	std::basic_string<T> first, empty;
-	int n = value.length();
-	for (int i = 0; i < n; ++i) {
-		if (isinContainer(value[i],separators)) {
-			if (first != empty) return first;
-		}
-		else first += value[i];
-	}
-	return first;
+    std::basic_string<T> first, empty;
+    int n = value.length();
+    for (int i = 0; i < n; ++i) {
+        if (isinContainer(value[i],separators)) {
+            if (first != empty) return first;
+        }
+        else first += value[i];
+    }
+    return first;
 }
 
 
 // replace every appearende of 'from' to 'to' in string s
 template <class T>
-void replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std::basic_string<T> &to)
+int replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std::basic_string<T> &to)
 {
-    if (from.empty()) return;
+    int found = 0;
+    if (from.empty()) return found;
 
     size_t pos = 0, n = to.length(), m = from.length();
     while ((pos = s.find(from,pos)) != std::basic_string<T>::npos) {
         s.replace(pos,m,to);
         pos += n;
+        found = 1;
     }
+    return found;
 }
 
 
@@ -189,15 +192,15 @@ int isinteger(const STRG_TYPE &s)
 template <class STRG_TYPE>
 int isrationalnumber(const STRG_TYPE &s)
 {
-	int l = s.length();
-	if (!l) return 0;
-	
-	
-	for (int i = 0; i < l; ++i) {
-		if (s[i] == '-' || s[i]  == ',' || s[i] =='.' || s[i] == 'e' || s[i] == '/' ) continue;
-		else if (s[i]<48 || s[i] > 57) return 0;
-	}
-	return 1;
+    int l = s.length();
+    if (!l) return 0;
+
+
+    for (int i = 0; i < l; ++i) {
+        if (s[i] == '-' || s[i]  == ',' || s[i] =='.' || s[i] == 'e' || s[i] == '/' ) continue;
+        else if (s[i]<48 || s[i] > 57) return 0;
+    }
+    return 1;
 }
 
 
@@ -269,13 +272,43 @@ STRG_TYPE decapitalize(const STRG_TYPE &word)
 }
 
 
+// returns natural number found from s[i]. shifts i to the next char that is not 0,...,9.
+template <class STRG_TYPE>
+STRG_TYPE findnumber(const STRG_TYPE &s, int &i)
+{
+    int n=s.size(),e_set=0,p_set=0;
+    STRG_TYPE out;
+
+    for (;i<n;i++) {
+        if (s[i]>='0'  && s[i]<='9') out+=s[i];
+        else if (s[i]=='e' && i<n-1 && s[i+1]!='x') {
+            if (e_set) {i++; break;}
+            if (i==n-1) {i++;break;}
+            if (s[i+1] == '-' || s[i+1]=='+') {
+                out+=s[i];i++;out+=s[i];e_set=1;
+            }
+            else {out+=s[i];e_set=1;}
+        }
+        else if (s[i]==',' || s[i]=='.') {
+            if (p_set) {i++;break;}
+            out+=s[i];
+            p_set=1;
+        }
+        else {break;}
+    }
+
+    return out;
+}
+
+
+
 template <typename T,template <typename> class C>
 int isinContainer(const T& value, const C<T>& G)
 {
-	for (const auto& v : G) {
-		if (v == value) return 1;
-	}
-	return 0;
+    for (const auto& v : G) {
+        if (v == value) return 1;
+    }
+    return 0;
 }
 
 }
