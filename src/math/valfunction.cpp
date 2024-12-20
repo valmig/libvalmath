@@ -2216,15 +2216,20 @@ int valfunction::isdifferentiable() const
 int valfunction::islinearfunction() const
 {
     if (isconst()) return 1;
-    if (getfirstoperator() == "m") {
+    std::string op = getfirstoperator();
+    if (op == "m") {
         valfunction f = getfirstargument();
         return f.islinearfunction();
     }
-    if (getfirstoperator() == "*") {
+    if (op == "*") {
         valfunction f = getfirstargument() , g = getsecondargument();
         if (f.isconst()) return g.islinearfunction();
         else if (g.isconst()) return f.islinearfunction();
         else return 0;
+    }
+    if (op == "+" || op == "-") {
+        valfunction f = getfirstargument() , g = getsecondargument();
+        return  (f.islinearfunction() && g.islinearfunction());
     }
     for (const auto& value : Gdat) {
         if (value.type==2) {
