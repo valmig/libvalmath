@@ -378,10 +378,10 @@ int bbhommod(val::Glist<val::s_polynom<val::integer>> &H,int comment)
     }
     else if (comment) common_bb::WriteText("\n <H> = <G> !");
     if (!common_bb::isgroebner(G,nG,0)) {
-        if (comment) common_bb::MyMessage("\nG is not groebner basis!");
+        if (comment) common_bb::WriteText("\nG is not groebner basis!");
         return 0;
     }
-    else if (comment) common_bb::MyMessage("\nG is groebner basis!");
+    else if (comment) common_bb::WriteText("\nG is groebner basis!");
 
     if (comment) {
         common_bb::WriteText("\n\nTime in sec.: " + val::ToString(Chrono()));

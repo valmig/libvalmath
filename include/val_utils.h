@@ -189,15 +189,29 @@ int isinteger(const STRG_TYPE &s)
     return 1;
 }
 
+
 template <class STRG_TYPE>
 int isrationalnumber(const STRG_TYPE &s)
 {
     int l = s.length();
     if (!l) return 0;
 
-
     for (int i = 0; i < l; ++i) {
         if (s[i] == '-' || s[i]  == ',' || s[i] =='.' || s[i] == 'e' || s[i] == '/' ) continue;
+        else if (s[i]<48 || s[i] > 57) return 0;
+    }
+    return 1;
+}
+
+
+template <class STRG_TYPE>
+int isfloatnumber(const STRG_TYPE &s)
+{
+    int l = s.length();
+    if (!l) return 0;
+
+    for (int i = 0; i < l; ++i) {
+        if (s[i] == '-' || s[i] =='.' || s[i] == 'e') continue;
         else if (s[i]<48 || s[i] > 57) return 0;
     }
     return 1;
