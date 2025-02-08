@@ -692,10 +692,7 @@ void valfunction::back_subst(d_array<token> & f_t,const d_array<d_array<token>> 
 
     d=toklist.length();
     n=f_t.length();
-    
 
-
-    
     for (i=d-1;i>=nx;--i) {
         ns="x" + ToString(i+1);
         l=toklist[i].length();
@@ -711,7 +708,6 @@ void valfunction::back_subst(d_array<token> & f_t,const d_array<d_array<token>> 
         //for (auto& value : f_t) std::cout<<value.data<<" ";
     }
     
-  
     for (k = 0; k < n; ) {
         if (f_t[k].data[0] == 'x') {
             l = f_t[k].data.length();
@@ -881,21 +877,21 @@ void valfunction::simplify_exp(d_array<token> &f_t,int nvar,int prod)
                     break;
                 }
                 if (f_t[i].data=="*" &&  h_t[0].data=="exp" && tok[0].data=="*" && tok[1].data=="exp") {
-					l=1;
-					m1=h_t.length();m2=tok.length();
-					h1.del();
-					h1.reserve(m=m1+m2-1);
-					tok1 = splitfunction(tok,l);
-					tok2= splitfunction(tok,l);
-					h1.push_back(h_t[0]); h1.push_back(token("+",2));
-					for (l=1;l<m1;++l) h1.push_back(h_t[l]);
-					for (l=1;l<tok1.length();++l) h1.push_back(tok1[l]);
-					for (l=0;l<tok2.length();++l) h1.push_back(tok2[l]);
-					squeeze(f_t,h1,i+1,k);
-					n=f_t.length();
-					found=1;
-					break;
-				}
+                    l=1;
+                    m1=h_t.length();m2=tok.length();
+                    h1.del();
+                    h1.reserve(m=m1+m2-1);
+                    tok1 = splitfunction(tok,l);
+                    tok2= splitfunction(tok,l);
+                    h1.push_back(h_t[0]); h1.push_back(token("+",2));
+                    for (l=1;l<m1;++l) h1.push_back(h_t[l]);
+                    for (l=1;l<tok1.length();++l) h1.push_back(tok1[l]);
+                    for (l=0;l<tok2.length();++l) h1.push_back(tok2[l]);
+                    squeeze(f_t,h1,i+1,k);
+                    n=f_t.length();
+                    found=1;
+                    break;
+                }
             }
         }
     }
@@ -1325,29 +1321,29 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
 
 void valfunction::simplify_qsin(d_array<token> &f_t)
 {
-	int i,k,n=f_t.length(),l;
-	d_array<token> h1,h2,h;
+    int i,k,n=f_t.length(),l;
+    d_array<token> h1,h2,h;
 
-	for (i=0;i<n-3;++i) {
-		k=i+1;
-		if (!(f_t[i].data=="^" && f_t[i+1].data=="2" && f_t[i+2].data=="sin")) continue;
-		splitfunction(f_t,k);
-		h1=splitfunction(f_t,k);
-		l=1;
-		h2=splitfunction(h1,l);
-		//std::cout<<"\nh2 = ";
+    for (i=0;i<n-3;++i) {
+        k=i+1;
+        if (!(f_t[i].data=="^" && f_t[i+1].data=="2" && f_t[i+2].data=="sin")) continue;
+        splitfunction(f_t,k);
+        h1=splitfunction(f_t,k);
+        l=1;
+        h2=splitfunction(h1,l);
+        //std::cout<<"\nh2 = ";
         //for (const auto& value : h2) std::cout<<value.data + " ";
-		h.del();
-		h.reserve(h2.length()+5);
-		h.push_back(token("-",2)); h.push_back(token("^",2));h.push_back(token("2",0)); h.push_back(token("cos",2));
-		for (l=0;l<h2.length();++l) h.push_back(h2[l]);
-		h.push_back(token("1",0));
-		squeeze(f_t,h,i,k);
-		n=f_t.length();
-	}
-	//std::cout<<"\nNach qsin f = ";
+        h.del();
+        h.reserve(h2.length()+5);
+        h.push_back(token("-",2)); h.push_back(token("^",2));h.push_back(token("2",0)); h.push_back(token("cos",2));
+        for (l=0;l<h2.length();++l) h.push_back(h2[l]);
+        h.push_back(token("1",0));
+        squeeze(f_t,h,i,k);
+        n=f_t.length();
+    }
+    //std::cout<<"\nNach qsin f = ";
     //for (const auto& value : f_t) std::cout<<value.data + " ";
-	//std::cout<<std::endl;
+    //std::cout<<std::endl;
 }
 
 
@@ -2375,7 +2371,7 @@ std::string valfunction::get_infix(const Glist<valfunction::token>& Gdat,int nva
             Gtoken.push(value.data + tok1);Gtoken.resetactual();
             if (op2=="m") {
                 op2 = "-";
-                if (fparser::is_sum_operator(tok1)) op1="(" + op1 + ")";
+                if (fparser::is_sum_operator(tok1) || tok1[0] == '/') op1="(" + op1 + ")";
             }
             else op1 = "(" + op1 + ")";
             G.push(op2 + op1);
@@ -3329,14 +3325,14 @@ Glist<double> valfunction::double_roots(const double &x1,const double &x2,int it
 
         return d_roots;
     }
-    else if (oper =="exp") return d_roots;
+    else if (oper =="exp" || oper == "cosh") return d_roots;
 
     g_t=splitfunction(f_t,j);
     for (const auto& value: g_t) g.Gdat.push(value);
     g.s_infix = get_infix(g.Gdat,nvar);
 
-    if (oper == "sqrt" || oper == "m" || oper=="log" || oper == "abs") {
-        if (oper=="log") g-= valfunction("1");
+    if (oper == "sqrt" || oper == "m" || oper=="log" || oper == "abs" || oper == "sinh" || oper == "arsinh" || oper == "arcosh") {
+        if (oper=="log" || oper == "arcosh") g-= valfunction("1");
         return g.double_roots(x1,x2,iterations,epsilon);
     }
 
