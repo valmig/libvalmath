@@ -1316,6 +1316,87 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
 		n = f_t.length();
 		tok1.del();
 	}
+
+    // sin(const), cos(const)
+    int j , neg = 0, even;
+    integer z;
+    rational r;
+
+    n = f_t.length();
+    for (i = 0; i < n - 1; ++i) {
+        neg = 0;
+        even = 1;
+        if (f_t[i].data == "sin" || f_t[i].data == "cos") {
+            if (f_t[i+1].data == "0") {
+                tok.del();
+                if (f_t[i].data == "sin") tok.push_back(token("0",0));
+                else tok.push_back(token("1",0));
+                squeeze(f_t, tok, i, i+2);
+                n = f_t.length();
+                continue;
+            }
+            j = i + 1;
+            if (f_t[j].data == "m") {
+                neg = 1;
+                ++j;
+            }
+            if (j < n && f_t[j].data == "PI") {
+               tok.del();
+               if (f_t[i].data == "sin") tok.push_back(token("0",0));
+               else {
+                   tok.push_back(token("m",2));
+                   tok.push_back(token("1",0));
+               }
+               // std::cout << "\n Prev: f_t = ";
+               // for (k = 0; k < n; ++ k) std::cout << f_t[k].data << " ";
+               // std::cout << std::endl;
+               squeeze(f_t, tok, i, j+1);
+               n = f_t.length();
+               // std::cout << "\n f_t = ";
+               // for (k = 0; k < n; ++ k) std::cout << f_t[k].data << " ";
+               // std::cout << std::endl;
+               continue;
+            }
+            if (j < n-1 && f_t[j].data == "*" && f_t[j+1].data =="PI") {
+               j = j+2;
+               if (j < n && f_t[j].type == 0 && f_t[j].data != "t" && f_t[j].data != "PI") {
+                   z = FromString<integer>(f_t[j].data);
+                   if (z % integer(2) != 0) even = 0;
+                   tok.del();
+                   if (f_t[i].data == "sin") {
+                       tok.push_back(token("0",0));
+                   }
+                   else {
+                       if (!even) tok.push_back(token("m",2));
+                       tok.push_back(token("1",0));
+                   }
+                   squeeze(f_t, tok, i, j+1);
+                   n = f_t.length();
+                   continue;
+               }
+               if (j < n - 2 && f_t[j].data == "/" && f_t[j+1].type == 0 && f_t[j+2].type == 0) {
+                   j = j+1;
+                   if (f_t[j].data == "PI" || f_t[j].data == "t" || f_t[j+1].data == "PI" || f_t[j+1].data == "t") continue;
+                   r = rational(FromString<integer>(f_t[j+1].data),FromString<integer>(f_t[j].data));
+                   if (r.denominator() != integer(2)) continue;
+                   tok.del();
+                   if (f_t[i].data == "cos") {
+                       tok.push_back(token("0",0));
+                   }
+                   else {
+                       if (r.nominator()%integer(4) == 1) even = 1;
+                       else even = 0;
+                       if (neg) even = !even;
+                       if (!even) tok.push_back(token("m",2));
+                       tok.push_back(token("1",0));
+                   }
+                   squeeze(f_t, tok, i, j+2);
+                   n = f_t.length();
+                   continue;
+               }
+            }
+        }
+    }
 }
 
 
@@ -2800,8 +2881,8 @@ void valfunction::simplify(int extended)
         simplify_log(f_t,extended);
         n = f_t.length();
     }
-    // sqrt - rules
-    if (has_operator(f_t,"sqrt")) {
+    // sqrt + sin - cos - rules
+    if (has_operator(f_t,"sqrt") || has_operator(f_t, "sin") || has_operator(f_t, "cos")) {
         simplify_sqrt(f_t);
         n = f_t.length();
     }
