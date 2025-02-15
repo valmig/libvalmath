@@ -165,7 +165,7 @@ rational rational::char_to_rational(char* buf,int l)
 		  sign*=-1;
 		  i++;
 	  }
-	  else if (buf[i]=='0') {
+	  else if (buf[i]=='0' || buf[i] == '(' || buf[i] == ')') {
 		  i++;
 	  }
 	  else break;
@@ -175,6 +175,7 @@ rational rational::char_to_rational(char* buf,int l)
   }
   // Get digits:
   for (;i<l;i++) {
+      if (buf[i] == '(' || buf[i] == ')') continue;
       if (buf[i]=='.' || buf[i]==',') {
         if (kommastellen) continue;
         kommastellen=1;
@@ -189,11 +190,12 @@ rational rational::char_to_rational(char* buf,int l)
   if (kommastellen) kommastellen--;
 
   for (;i<l;i++) {
-      if (buf[i]=='+' || buf[i]=='0') continue;
+      if (buf[i]=='+' || buf[i]=='0' || buf[i] == '(' || buf[i] == ')') continue;
       else if (buf[i]=='-') {signexp*=-1;continue;}
       else break;
   }
   for (;i<l;i++) {
+      if (buf[i] == '(' || buf[i] == ')') continue;
       exp*=10;
       exp+= int(buf[i]-48);
   }
