@@ -197,7 +197,7 @@ int isrationalnumber(const STRG_TYPE &s)
     if (!l) return 0;
 
     for (int i = 0; i < l; ++i) {
-        if (s[i] == '-' || s[i]  == ',' || s[i] =='.' || s[i] == 'e' || s[i] == '/' ) continue;
+        if (s[i] == '-' || s[i]  == ',' || s[i] =='.' || s[i] == 'e' || s[i] == '/' || s[i] == ')' || s[i] == '(' ) continue;
         else if (s[i]<48 || s[i] > 57) return 0;
     }
     return 1;
