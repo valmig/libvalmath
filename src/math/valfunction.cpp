@@ -2448,11 +2448,12 @@ std::string valfunction::get_infix(const Glist<valfunction::token>& Gdat,int nva
             if (G.isempty()) return "";
             op1 = G.getelement();G.skiphead();
             op2 = value.data;
+            //std::cout << "\n op1 = " << op1 << "; op2 = " << op2 << "\n";
             tok1=Gtoken.getelement();Gtoken.skiphead();
             Gtoken.push(value.data + tok1);Gtoken.resetactual();
             if (op2=="m") {
                 op2 = "-";
-                if (fparser::is_sum_operator(tok1) || tok1[0] == '/') op1="(" + op1 + ")";
+                if (fparser::is_sum_operator(tok1)) op1="(" + op1 + ")";
             }
             else op1 = "(" + op1 + ")";
             G.push(op2 + op1);
