@@ -447,63 +447,63 @@ std::string factorize(const val::pol<val::rational> &f)
 
 std::string factorize(const val::rationalfunction &F)
 {
-	int bracket=0;
-	std::string sf;
+    int bracket=0;
+    std::string sf;
 
-	if (F.nominator().length()>1) {sf+='(';bracket=1;}
-	sf+=factorize(F.nominator());
+    if (F.nominator().length()>1) {sf+='(';bracket=1;}
+    sf+=factorize(F.nominator());
 
 
-	if (bracket) sf+=')';
-	bracket=0;
-	if (F.denominator()!=val::pol<val::rational>(1,0)) {
-		sf+='/';
-		if (F.denominator().length()>1) {
-			bracket=1;
-			sf+='(';
-		}
-		sf+=factorize(F.denominator());
-		if (bracket) sf+=')';
-	}
+    if (bracket) sf+=')';
+    bracket=0;
+    if (F.denominator()!=val::pol<val::rational>(1,0)) {
+        sf+='/';
+        if (F.denominator().length()>1) {
+            bracket=1;
+            sf+='(';
+        }
+        sf+=factorize(F.denominator());
+        if (bracket) sf+=')';
+    }
 
-	return sf;
+    return sf;
 }
 
 
 std::string PolfractionToString(const val::rationalfunction &F)
 {
-	int bracket=0;
-	std::string sf;
-	val::pol<val::rational> zero,one(1,0),minusone(-1,0);
+    int bracket=0;
+    std::string sf;
+    val::pol<val::rational> zero,one(1,0),minusone(-1,0);
 
-	if (F.nominator()==zero) return "0";
-	if (F.denominator()==one) return factorize(F.nominator());
-	if (F.denominator()==minusone) return factorize(-F.nominator());
+    if (F.nominator()==zero) return "0";
+    if (F.denominator()==one) return factorize(F.nominator());
+    if (F.denominator()==minusone) return factorize(-F.nominator());
 
-	val::pol<val::integer> nom,denom;
-	val::rational cont,c1;
+    val::pol<val::integer> nom,denom;
+    val::rational cont,c1;
 
-	val::primitivpart(F.nominator(),nom,cont);
-	val::primitivpart(F.denominator(),denom,c1);
-	cont/=c1;
-	nom*=val::nominator(cont);
-	denom*=val::denominator(cont);
+    val::primitivpart(F.nominator(),nom,cont);
+    val::primitivpart(F.denominator(),denom,c1);
+    cont/=c1;
+    nom*=val::nominator(cont);
+    denom*=val::denominator(cont);
 
-	if (F.nominator().length()>1) {sf+='(';bracket=1;}
-	sf+=factorize(val::toRationalPolynom(nom));
-	if (bracket) sf+=')';
-	bracket=0;
-	if (F.denominator()!=one) {
-		sf+='/';
-		if (F.denominator().length()>1) {
-			bracket=1;
-			sf+='(';
-		}
-		sf+=factorize(val::toRationalPolynom(denom));
-		if (bracket) sf+=')';
-	}
+    if (F.nominator().length()>1) {sf+='(';bracket=1;}
+    sf+=factorize(val::toRationalPolynom(nom));
+    if (bracket) sf+=')';
+    bracket=0;
+    if (F.denominator()!=one) {
+        sf+='/';
+        if (F.denominator().length()>1) {
+            bracket=1;
+            sf+='(';
+        }
+        sf+=factorize(val::toRationalPolynom(denom));
+        if (bracket) sf+=')';
+    }
 
-	return sf;
+    return sf;
 }
 
 */
@@ -587,12 +587,12 @@ void valfunction::subst_var_t_pi(d_array<token> &f_t,d_array<d_array<token>> &to
     d_array<int> invar(0,nvar);
 
     for (const auto& value : f_t) {
-		if (value.type==0 && value.data=="PI") {
-			toklist.push_back(d_array<token>{token("PI",0)});
-			par++;
-			break;
-		}
-	}
+        if (value.type==0 && value.data=="PI") {
+            toklist.push_back(d_array<token>{token("PI",0)});
+            par++;
+            break;
+        }
+    }
 
     for (const auto& value : f_t) {
         if (value.type==0 && value.data=="i") {
@@ -611,43 +611,43 @@ void valfunction::subst_var_t_pi(d_array<token> &f_t,d_array<d_array<token>> &to
     }
 
     for (i=1;i<=nvar;++i) {
-		svar="x" + val::ToString(i);
-		for (const auto& value : f_t) {
-			if (value.data==svar || (i==1 && value.data=="x")) {
-				toklist.push_back(d_array<token>{token(svar,1)});
-				invar[i-1]=1;
+        svar="x" + val::ToString(i);
+        for (const auto& value : f_t) {
+            if (value.data==svar || (i==1 && value.data=="x")) {
+                toklist.push_back(d_array<token>{token(svar,1)});
+                invar[i-1]=1;
                 realnvar++;
-				break;
-			}
-		}
-	}
-	//std::cout<<"\n realnvar = "<<realnvar;
-	//std::cout<<"\n invar = ";
-	for (i=nvar-1;i>=0;--i) {
+                break;
+            }
+        }
+    }
+    //std::cout<<"\n realnvar = "<<realnvar;
+    //std::cout<<"\n invar = ";
+    for (i=nvar-1;i>=0;--i) {
         if (invar[i]) {
             invar[i]=realnvar;
             realnvar--;
         }
         //std::cout<<invar[i]<<"  ";
-	}
-	
-	d_array<int> replaced(0,f_t.length());
+    }
+
+    d_array<int> replaced(0,f_t.length());
     for (i=nvar;i>=1;--i) {
-		if (!invar[i-1]) continue;
-		svar="x"+ val::ToString(i);
-		for (int j = 0; j < f_t.length(); ++j) {
-			if (replaced[j]) continue;
-			if (f_t[j].data==svar || (i==1 && f_t[j].data=="x")) {
-				//std::cout<<"\n original: "<<value.data;
-				f_t[j].data= "x" + val::ToString(invar[i-1]+par);
-				replaced[j] = 1;
-				//std::cout<<", replaced with: "<<value.data;
-			}
-		}
-	}
-	
-	//std::cout<<"\n After renaming vars, f_t = ";
-	//for (const auto& v : f_t) std::cout<<v.data<<"  ";
+        if (!invar[i-1]) continue;
+        svar="x"+ val::ToString(i);
+        for (int j = 0; j < f_t.length(); ++j) {
+            if (replaced[j]) continue;
+            if (f_t[j].data==svar || (i==1 && f_t[j].data=="x")) {
+                //std::cout<<"\n original: "<<value.data;
+                f_t[j].data= "x" + val::ToString(invar[i-1]+par);
+                replaced[j] = 1;
+                //std::cout<<", replaced with: "<<value.data;
+            }
+        }
+    }
+
+    //std::cout<<"\n After renaming vars, f_t = ";
+    //for (const auto& v : f_t) std::cout<<v.data<<"  ";
 
     // Find and replace PI:
     nx=toklist.length();
@@ -680,8 +680,8 @@ void valfunction::subst_var_t_pi(d_array<token> &f_t,d_array<d_array<token>> &to
         }
     }
     if (found) par++;
-	//std::cout<<"\n After renaming all, f_t = ";
-	//for (const auto& v : f_t) std::cout<<v.data<<"  ";
+    //std::cout<<"\n After renaming all, f_t = ";
+    //for (const auto& v : f_t) std::cout<<v.data<<"  ";
 
 }
 
@@ -992,93 +992,93 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
     
     // sqrt(1)
     for (i = 0; i < n; ++i) {
-		if (f_t[i].data != "sqrt") continue;
-		k = i+1;
-		h_t = splitfunction(f_t,k);
-		if (h_t[0].type != 0 || h_t[0].data != "1") continue;
-		tok.del();
-		tok.push_back(token("1",0));
-		squeeze(f_t,tok,i,k);
-		n = f_t.length();
-	}
-	
+        if (f_t[i].data != "sqrt") continue;
+        k = i+1;
+        h_t = splitfunction(f_t,k);
+        if (h_t[0].type != 0 || h_t[0].data != "1") continue;
+        tok.del();
+        tok.push_back(token("1",0));
+        squeeze(f_t,tok,i,k);
+        n = f_t.length();
+    }
+
     if (prod) {
-	    // Put all sqrt-products together:
-	    subst_var_t_pi(f_t,toklist,nx,nvar);
-	    // Replace sqrt:
-	    for (i=n-1;i>=0;--i) {
-	        if (f_t[i].data=="sqrt") {
-	            k=i;
-	            splitfunction(f_t,k);
-	            tok.del();
-	            tok.reserve(k-i);
-	            for (int j=i;j<k;++j) tok.push_back(f_t[j]);
-	            l=toklist.length()+1;
-	            toklist.push_back(std::move(tok));
-	            //Replace operators from i to k-1 by xl:
-	            f_t[i] = token("x"+val::ToString(l),1);
-	            for (int j=k;j<n;++j) f_t[j-k+i+1]=std::move(f_t[j]);
-	            n-=k-i-1;
-	            f_t.resize(n);
-	        }
-	    }
-	    //std::cout<<"\n Nach sqrt-Subst. f_t : ";
-	    //for (auto& value : f_t) std::cout<<value.data<<" ";
-	
-	    // Replace other operators:
-	    n = f_t.length();
-	    for (i=n-1;i>=0;--i) {
-	        if (f_t[i].type==2 && f_t[i].data!="+" && f_t[i].data!="-" && f_t[i].data!="*" && f_t[i].data!="/" && f_t[i].data!="m" && f_t[i].data[0]!='x') {
-	            k=i;
-	
-	            if (f_t[i].data=="^") {
-	                if (i>= n-1) continue;
-	                if (f_t[i+1].type==0 && f_t[i+1].data!="t" && isinteger(f_t[i+1].data)) continue;
-	            }	
-	            splitfunction(f_t,k);
-	            tok.del();
-	            tok.reserve(k-i);
-	            for (int j=i;j<k;++j) tok.push_back(f_t[j]);
-	            l=toklist.length()+1;
-	            toklist.push_back(std::move(tok));
-	            //Replace operators from i to k-1 by xl:
-	            f_t[i] = token("x"+val::ToString(l),1);
-	            for (int j=k;j<n;++j) f_t[j-k+i+1]=std::move(f_t[j]);
-	            n-=k-i-1;
-	            f_t.resize(n);
-	        }
-	    }
-	    //std::cout<<"\n Nach äußere Subst. f_t : ";
-	    //for (auto& value : f_t) std::cout<<value.data<<" ";
-	    simplifypolynomial(f_t);
-	
-	    back_subst(f_t,toklist,nx);
-	    n=f_t.length();
-	    //std::cout<<"\n after back-substitution f_t : ";
-	    //for (auto& value : f_t) std::cout<<value.data<<" ";
-		int isequal;
-	    do {
-	        found=0;
-	        for (i=0;i<n;++i) {
-	            if (f_t[i].data=="*" || f_t[i].data=="/") {
-	                k=i+1;
-	                h_t=splitfunction(f_t,k);
-	                tok=splitfunction(f_t,k);
-	                if (h_t[0].data=="sqrt" && tok[0].data=="sqrt") {
-	                    //std::cout<<"\nHere!";
-	                    m1=h_t.length(),m2=tok.length(),m=m1+m2-1;
-	                    isequal = 1;
-	                    if (m1 != m2) isequal = 0;
-	                    else {
-							for (int j = 1; j < m1; j++) {
-								if (h_t[j].data != tok[j].data || h_t[j].type != tok[j].type) {
-									isequal = 0;
-									break;
-								}
-							}
-						}	 
-	                    h1.del();
-	                    if (isequal) {
+        // Put all sqrt-products together:
+        subst_var_t_pi(f_t,toklist,nx,nvar);
+        // Replace sqrt:
+        for (i=n-1;i>=0;--i) {
+            if (f_t[i].data=="sqrt") {
+                k=i;
+                splitfunction(f_t,k);
+                tok.del();
+                tok.reserve(k-i);
+                for (int j=i;j<k;++j) tok.push_back(f_t[j]);
+                l=toklist.length()+1;
+                toklist.push_back(std::move(tok));
+                //Replace operators from i to k-1 by xl:
+                f_t[i] = token("x"+val::ToString(l),1);
+                for (int j=k;j<n;++j) f_t[j-k+i+1]=std::move(f_t[j]);
+                n-=k-i-1;
+                f_t.resize(n);
+            }
+        }
+        //std::cout<<"\n Nach sqrt-Subst. f_t : ";
+        //for (auto& value : f_t) std::cout<<value.data<<" ";
+
+        // Replace other operators:
+        n = f_t.length();
+        for (i=n-1;i>=0;--i) {
+            if (f_t[i].type==2 && f_t[i].data!="+" && f_t[i].data!="-" && f_t[i].data!="*" && f_t[i].data!="/" && f_t[i].data!="m" && f_t[i].data[0]!='x') {
+                k=i;
+
+                if (f_t[i].data=="^") {
+                    if (i>= n-1) continue;
+                    if (f_t[i+1].type==0 && f_t[i+1].data!="t" && isinteger(f_t[i+1].data)) continue;
+                }
+                splitfunction(f_t,k);
+                tok.del();
+                tok.reserve(k-i);
+                for (int j=i;j<k;++j) tok.push_back(f_t[j]);
+                l=toklist.length()+1;
+                toklist.push_back(std::move(tok));
+                //Replace operators from i to k-1 by xl:
+                f_t[i] = token("x"+val::ToString(l),1);
+                for (int j=k;j<n;++j) f_t[j-k+i+1]=std::move(f_t[j]);
+                n-=k-i-1;
+                f_t.resize(n);
+            }
+        }
+        //std::cout<<"\n Nach äußere Subst. f_t : ";
+        //for (auto& value : f_t) std::cout<<value.data<<" ";
+        simplifypolynomial(f_t);
+
+        back_subst(f_t,toklist,nx);
+        n=f_t.length();
+        //std::cout<<"\n after back-substitution f_t : ";
+        //for (auto& value : f_t) std::cout<<value.data<<" ";
+        int isequal;
+        do {
+            found=0;
+            for (i=0;i<n;++i) {
+                if (f_t[i].data=="*" || f_t[i].data=="/") {
+                    k=i+1;
+                    h_t=splitfunction(f_t,k);
+                    tok=splitfunction(f_t,k);
+                    if (h_t[0].data=="sqrt" && tok[0].data=="sqrt") {
+                        //std::cout<<"\nHere!";
+                        m1=h_t.length(),m2=tok.length(),m=m1+m2-1;
+                        isequal = 1;
+                        if (m1 != m2) isequal = 0;
+                        else {
+                            for (int j = 1; j < m1; j++) {
+                                if (h_t[j].data != tok[j].data || h_t[j].type != tok[j].type) {
+                                    isequal = 0;
+                                    break;
+                                }
+                            }
+                        }
+                        h1.del();
+                        if (isequal) {
                             if (f_t[i].data == "*") {
                                 h1.reserve(m1-1);
                                 for (int j = 1; j < m1; ++j) h1.push_back(tok[j]);
@@ -1091,111 +1091,111 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
                             break;
                         }
                         h1.reserve(m);
-	                    if (f_t[i].data=="*") h1[0] = token("*",2);
-	                    else h1[0] = token("/",2);
-	                    for (l=1;l<m1;++l) h1[l] = h_t[l];
-	                    for (l=1;l<m2;++l) h1[l+m1-1] = tok[l];
-	                    f_t[i].data="sqrt";
-	                    squeeze(f_t,h1,i+1,k);
-	                    n=f_t.length();
-	                    found=1;
-	                    //std::cout<<"\nexp simplified f_t = ";
-	                    //for (const auto& value : f_t) std::cout<<value.data + " ";
-	                    break;
-	                }
-	                if (f_t[i].data=="*" &&  h_t[0].data=="sqrt" && tok[0].data=="*" && tok[1].data=="sqrt") {
-						m1 = h_t.length();
-						l = 1;
-						tok11 = splitfunction(tok,l);
-						m2 = tok11.length();
-						isequal = 1;
-						if (m1 != m2) isequal = 0;
-						else {
-							for (int j = 1; j < m1; ++j) {
-								if (h_t[j].data != tok11[j].data || h_t[j].type != tok11[j].type) {
-									isequal = 0;
-									break;
-								}
-							}
-						}
-						if (isequal) {
-							tok12 = splitfunction(tok,l);
-							m2 = h_t.length() + tok12.length() -1;
-							h1.del();
-							h1.reserve(m2);
-							for (int j = 1; j < m1; ++j) h1.push_back(h_t[j]);
-							for (int j = 0; j < tok12.length(); ++j) h1.push_back(tok12[j]);
-							squeeze(f_t,h1,i+1,k);
-							n = f_t.length();
-							break;
-						}
-						
-						l=1;
-						m2=tok.length();
-						h1.del();
-						h1.reserve(m=m1+m2-1);
-						tok1 = splitfunction(tok,l);
-						tok2= splitfunction(tok,l);
-						h1.push_back(h_t[0]); h1.push_back(token("*",2));
-						for (l=1;l<m1;++l) h1.push_back(h_t[l]);
-						for (l=1;l<tok1.length();++l) h1.push_back(tok1[l]);
-						for (l=0;l<tok2.length();++l) h1.push_back(tok2[l]);
-						squeeze(f_t,h1,i+1,k);
-						n=f_t.length();
-						found=1;
-						break;
-					}
-					if (f_t[i].data == "/" && h_t[0].data=="sqrt" && tok[0].data=="*" && tok[1].data=="sqrt") {
-						m1 = h_t.length();
-						l = 1;
-						tok11 = splitfunction(tok,l);
-						m2 = tok11.length();
-						isequal = 1;
-						if (m1 != m2) isequal = 0;
-						else {
-							for (int j = 1; j < m1; ++j) {
-								if (h_t[j].data != tok11[j].data || h_t[j].type != tok11[j].type) {
-									isequal = 0;
-									break;
-								}
-							}
-						}
-						if (isequal) {
-							tok12 = splitfunction(tok,l);
-							m2 = tok12.length();
-							h1.del();
-							h1.reserve(m2);
-							for (int j = 0; j < tok12.length(); ++j) h1.push_back(tok12[j]);
-							squeeze(f_t,h1,i,k);
-							n = f_t.length();
-							break;
-						}
+                        if (f_t[i].data=="*") h1[0] = token("*",2);
+                        else h1[0] = token("/",2);
+                        for (l=1;l<m1;++l) h1[l] = h_t[l];
+                        for (l=1;l<m2;++l) h1[l+m1-1] = tok[l];
+                        f_t[i].data="sqrt";
+                        squeeze(f_t,h1,i+1,k);
+                        n=f_t.length();
+                        found=1;
+                        //std::cout<<"\nexp simplified f_t = ";
+                        //for (const auto& value : f_t) std::cout<<value.data + " ";
+                        break;
+                    }
+                    if (f_t[i].data=="*" &&  h_t[0].data=="sqrt" && tok[0].data=="*" && tok[1].data=="sqrt") {
+                        m1 = h_t.length();
+                        l = 1;
+                        tok11 = splitfunction(tok,l);
+                        m2 = tok11.length();
+                        isequal = 1;
+                        if (m1 != m2) isequal = 0;
+                        else {
+                            for (int j = 1; j < m1; ++j) {
+                                if (h_t[j].data != tok11[j].data || h_t[j].type != tok11[j].type) {
+                                    isequal = 0;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isequal) {
+                            tok12 = splitfunction(tok,l);
+                            m2 = h_t.length() + tok12.length() -1;
+                            h1.del();
+                            h1.reserve(m2);
+                            for (int j = 1; j < m1; ++j) h1.push_back(h_t[j]);
+                            for (int j = 0; j < tok12.length(); ++j) h1.push_back(tok12[j]);
+                            squeeze(f_t,h1,i+1,k);
+                            n = f_t.length();
+                            break;
+                        }
 
-						m = h_t.length() + tok.length() -2;
-						f_t[i].data = "*";
-						h1.del();
-						h1.reserve(m);
-						h1.push_back(token("sqrt",2)); h1.push_back(token("/",2));
-						for (l = 1; l < h_t.length(); ++l) h1.push_back(h_t[l]);
-						for (l = 2; l < tok.length(); ++l) h1.push_back(tok[l]);
-						squeeze(f_t,h1,i+1,k);
-						n=f_t.length();
-						found=1;
-						break;
-					}						
-	            }
-	        }
-	    }
-	    while (found);
-	    //std::cout<<"\n after product f_t : ";
-	    //for (auto& value : f_t) std::cout<<value.data<<" ";
-	}
+                        l=1;
+                        m2=tok.length();
+                        h1.del();
+                        h1.reserve(m=m1+m2-1);
+                        tok1 = splitfunction(tok,l);
+                        tok2= splitfunction(tok,l);
+                        h1.push_back(h_t[0]); h1.push_back(token("*",2));
+                        for (l=1;l<m1;++l) h1.push_back(h_t[l]);
+                        for (l=1;l<tok1.length();++l) h1.push_back(tok1[l]);
+                        for (l=0;l<tok2.length();++l) h1.push_back(tok2[l]);
+                        squeeze(f_t,h1,i+1,k);
+                        n=f_t.length();
+                        found=1;
+                        break;
+                    }
+                    if (f_t[i].data == "/" && h_t[0].data=="sqrt" && tok[0].data=="*" && tok[1].data=="sqrt") {
+                        m1 = h_t.length();
+                        l = 1;
+                        tok11 = splitfunction(tok,l);
+                        m2 = tok11.length();
+                        isequal = 1;
+                        if (m1 != m2) isequal = 0;
+                        else {
+                            for (int j = 1; j < m1; ++j) {
+                                if (h_t[j].data != tok11[j].data || h_t[j].type != tok11[j].type) {
+                                    isequal = 0;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isequal) {
+                            tok12 = splitfunction(tok,l);
+                            m2 = tok12.length();
+                            h1.del();
+                            h1.reserve(m2);
+                            for (int j = 0; j < tok12.length(); ++j) h1.push_back(tok12[j]);
+                            squeeze(f_t,h1,i,k);
+                            n = f_t.length();
+                            break;
+                        }
+
+                        m = h_t.length() + tok.length() -2;
+                        f_t[i].data = "*";
+                        h1.del();
+                        h1.reserve(m);
+                        h1.push_back(token("sqrt",2)); h1.push_back(token("/",2));
+                        for (l = 1; l < h_t.length(); ++l) h1.push_back(h_t[l]);
+                        for (l = 2; l < tok.length(); ++l) h1.push_back(tok[l]);
+                        squeeze(f_t,h1,i+1,k);
+                        n=f_t.length();
+                        found=1;
+                        break;
+                    }
+                }
+            }
+        }
+        while (found);
+        //std::cout<<"\n after product f_t : ";
+        //for (auto& value : f_t) std::cout<<value.data<<" ";
+    }
     {
         // simplify sqrt or squares:
         rational r, root;
         integer one(1);
         int s_found = 0;
-	    for (i = 0; i < n; ++i) {
+        for (i = 0; i < n; ++i) {
             s_found = 0;
             if (f_t[i].data != "sqrt") continue;
             if (i < n-1 && f_t[i+1].type == 0) {
@@ -1226,8 +1226,8 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
                 n = f_t.length();
             }
         }
-	    //std::cout<<"\n after square f_t : ";
-	    //for (auto& value : f_t) std::cout<<value.data<<" ";
+        //std::cout<<"\n after square f_t : ";
+        //for (auto& value : f_t) std::cout<<value.data<<" ";
     }
     
     // sqrt (h^n)
@@ -1287,35 +1287,35 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
     Glist<token> G;
     std::string sf; 
     for (i = 0; i < n - 3; ++i) {
-		if (f_t[i].data != "^") continue;
-		k = i + 1;
-		tok = splitfunction(f_t,k);
-		h_t = splitfunction(f_t,k);
-		if (h_t[0].data != "sqrt") continue;
-		//std::cout<<"\n h_t:\n";
-		//for (int l = 0; l < h_t.length(); ++l) std::cout<<h_t[l].data<<"  ";
-		G.dellist();
-		for (const auto& v : tok) G.push(v);
-		sf = get_infix(G);
-		if (!val::isinteger(sf)) continue;
-		//std::cout<<"\n sf = "<<sf;
-		p = FromString<int>(sf);
-		q = 0;
-		if (p%2) continue;//q = 1;
-		p /= 2;
-		m = h_t.length();
-		if (q) ++m;
-		if (p < 0) ++m;
-		tok1.reserve(m);
-		if (p <  0) tok1.push_back(token("m",2));
-		sf = ToString(abs(p));
-		tok1.push_back(token(sf,0)); 
-		if (q) tok1.push_back(token("sqrt",2));
-		for (int j = 1; j < h_t.length(); ++j) tok1.push_back(h_t[j]);
-		squeeze(f_t,tok1,i+1,k);
-		n = f_t.length();
-		tok1.del();
-	}
+        if (f_t[i].data != "^") continue;
+        k = i + 1;
+        tok = splitfunction(f_t,k);
+        h_t = splitfunction(f_t,k);
+        if (h_t[0].data != "sqrt") continue;
+        //std::cout<<"\n h_t:\n";
+        //for (int l = 0; l < h_t.length(); ++l) std::cout<<h_t[l].data<<"  ";
+        G.dellist();
+        for (const auto& v : tok) G.push(v);
+        sf = get_infix(G);
+        if (!val::isinteger(sf)) continue;
+        //std::cout<<"\n sf = "<<sf;
+        p = FromString<int>(sf);
+        q = 0;
+        if (p%2) continue;//q = 1;
+        p /= 2;
+        m = h_t.length();
+        if (q) ++m;
+        if (p < 0) ++m;
+        tok1.reserve(m);
+        if (p <  0) tok1.push_back(token("m",2));
+        sf = ToString(abs(p));
+        tok1.push_back(token(sf,0));
+        if (q) tok1.push_back(token("sqrt",2));
+        for (int j = 1; j < h_t.length(); ++j) tok1.push_back(h_t[j]);
+        squeeze(f_t,tok1,i+1,k);
+        n = f_t.length();
+        tok1.del();
+    }
 
     // sin(const), cos(const)
     int j , neg = 0, even;
@@ -2283,9 +2283,16 @@ int valfunction::isrationalfunction() const
 
 int valfunction::isdifferentiable() const
 {
+    int i = 0 , n = Gdat.length();
     for (const auto &value : Gdat) {
-        if (value.data == "abs")
-            return 0;
+        if (value.data == "abs") {
+            if (i < n-1 && Gdat[i+1].data == "log") {
+                ++i;
+                continue;
+            }
+            else return 0;
+        }
+        ++i;
     }
     return 1;
 }
@@ -2861,12 +2868,12 @@ void valfunction::simplify(int extended)
     std::cout<<"\n After inner substitutions, f_t = ";
     for (auto& value : f_t) std::cout<<value.data<<" ";
     {
-		valfunction g;
-		for (const auto& value : f_t) g.Gdat.push(value);
-		g.s_infix = get_infix(g.Gdat,nvar);
-		std::cout << "\n f = " << g.s_infix << "\n";
-	}
-	*/
+        valfunction g;
+        for (const auto& value : f_t) g.Gdat.push(value);
+        g.s_infix = get_infix(g.Gdat,nvar);
+        std::cout << "\n f = " << g.s_infix << "\n";
+    }
+    */
 
     // outer - functions: ------------------------------------------------
 
@@ -2892,12 +2899,12 @@ void valfunction::simplify(int extended)
     std::cout<<"\n After extended rules: f_t = ";
     for (const auto& value : f_t) std::cout<<value.data + " ";
     {
-		valfunction g;
-		for (const auto& value : f_t) g.Gdat.push(value);
-		g.s_infix = get_infix(g.Gdat,nvar);
-		std::cout << "\n f = " << g.s_infix << "\n";
-	}
-	*/
+        valfunction g;
+        for (const auto& value : f_t) g.Gdat.push(value);
+        g.s_infix = get_infix(g.Gdat,nvar);
+        std::cout << "\n f = " << g.s_infix << "\n";
+    }
+    */
 
     // Create toklist
     subst_var_t_pi(f_t,toklist,nx,nvar);
@@ -3188,11 +3195,11 @@ valfunction valfunction::derive(int k) const
     else if (f_t[0].data=="m") return -g.derive(k);
     else if (f_t[0].data=="exp") return g.derive(k)*(*this);
     else if (f_t[0].data=="log" && f_t[1].data == "abs") {
-		h.Gdat.push(f_t[0]);
-		for (int i = 2; i < n; ++i) h.Gdat.push(f_t[i]);
-		h.s_infix = get_infix(h.Gdat,nvar);
-		return(h.derive(k));
-	}
+        h.Gdat.push(f_t[0]);
+        for (int i = 2; i < n; ++i) h.Gdat.push(f_t[i]);
+        h.s_infix = get_infix(h.Gdat,nvar);
+        return(h.derive(k));
+    }
     else if (f_t[0].data=="log") return g.derive(k)/g;
     else if (f_t[0].data=="sqrt") {
         return g.derive(k)/(valfunction("2")*(*this));
@@ -3339,7 +3346,7 @@ valfunction valfunction::getsecondargument() const
 
 Glist<double> valfunction::double_roots(const double &x1,const double &x2,int iterations,const double &epsilon,int methoditerations) const
 {
-	Glist<double> d_roots;
+    Glist<double> d_roots;
 
     if (is_zero() || nvar>1) return d_roots;
 
@@ -3584,27 +3591,27 @@ Glist<GPair<double>> valfunction::get_undefined_intervals(const double &x1,const
     }
 
     if (oper=="^") {
-		valfunction f;
+        valfunction f;
         if (!has_variable(g_t)) {
-			std::string s_g = g.getinfixnotation();
-			if (isinteger(s_g)) {
-				int e = FromString<int>(s_g);
-				if (e<0) {
-					f = valfunction("1/(" + h.getinfixnotation() + ")");
-				}
-				else f = h;
-			}
-			else {
-				f = valfunction("sqrt(" + h.getinfixnotation() + ")");
-			}
-		}
+            std::string s_g = g.getinfixnotation();
+            if (isinteger(s_g)) {
+                int e = FromString<int>(s_g);
+                if (e<0) {
+                    f = valfunction("1/(" + h.getinfixnotation() + ")");
+                }
+                else f = h;
+            }
+            else {
+                f = valfunction("sqrt(" + h.getinfixnotation() + ")");
+            }
+        }
         else {
-			f = valfunction("log("+h.getinfixnotation()+")*(" + g.getinfixnotation()+")");
-		}
-		return f.get_undefined_intervals(x1,x2,iterations,epsilon,methoditerations);
+            f = valfunction("log("+h.getinfixnotation()+")*(" + g.getinfixnotation()+")");
+        }
+        return f.get_undefined_intervals(x1,x2,iterations,epsilon,methoditerations);
     }
 
-	return intervals;
+    return intervals;
 }
 
 } //end namespace val
