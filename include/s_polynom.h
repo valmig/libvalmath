@@ -281,24 +281,24 @@ void s_polynom<T>::merge(term* &basis1,term* &basis2,int degoption)
 
  p1=basis1;p2=basis2;
  if (bigger(p2,basis1,degoption)) {      // p2->X > basis1->X
-	 while ((p2->next!=NULL) && bigger(p2->next,basis1,degoption)) p2=p2->next;   // p2->next->X > basis1->X 
-	 basis1=basis2;
-	 basis2=p2->next;
-	 p2->next=p1;
+     while ((p2->next!=NULL) && bigger(p2->next,basis1,degoption)) p2=p2->next;   // p2->next->X > basis1->X
+     basis1=basis2;
+     basis2=p2->next;
+     p2->next=p1;
  }
  // now p2<p1
  if (basis2==NULL) return;
  p2=basis2;
  while (p1->next!=NULL) {
-	 if ((basis2!=NULL) && bigger(basis2,p1->next,degoption) ) {                        // basis2->X > p1->next->X
-		 while ((p2->next!=NULL) && bigger(p2->next,p1->next,degoption) ) p2=p2->next;  // p2->next->X > p1->next->X
-		 r=p1->next;
-		 p1->next=basis2;
-		 basis2=p2->next;
-		 p2->next=r;
-		 p1=r;p2=basis2;;
-	 }
-	 else p1=p1->next;
+     if ((basis2!=NULL) && bigger(basis2,p1->next,degoption) ) {                        // basis2->X > p1->next->X
+         while ((p2->next!=NULL) && bigger(p2->next,p1->next,degoption) ) p2=p2->next;  // p2->next->X > p1->next->X
+         r=p1->next;
+         p1->next=basis2;
+         basis2=p2->next;
+         p2->next=r;
+         p1=r;p2=basis2;;
+     }
+     else p1=p1->next;
  }
  p1->next=basis2;
  basis2=NULL;
@@ -509,7 +509,7 @@ const s_polynom<T>& s_polynom<T>::insert(const T& wert,const s_expo& g)
  else {
     if (g==head->X) {
        head->coeff+=wert;
-       if (head->coeff!=zero)      			 // coeff == 0
+       if (head->coeff!=zero)                    // coeff == 0
            return *this;                     // => delete term
        else {
            p=head;
@@ -532,7 +532,7 @@ const s_polynom<T>& s_polynom<T>::insert(const T& wert,const s_expo& g)
     if (stop)
        if (g==q->next->X) {
             q->next->coeff+=wert;
-            if (q->next->coeff!=zero)     		// coeff == 0
+            if (q->next->coeff!=zero)           // coeff == 0
                 return *this;                   // => delete term
             else {
                 p=q->next;
@@ -563,7 +563,7 @@ const s_polynom<T>& s_polynom<T>::insert(T&& wert,const s_expo& g)
  else {
     if (g==head->X) {
        head->coeff+=wert;
-       if (head->coeff!=zero)      			// coeff == 0
+       if (head->coeff!=zero)                   // coeff == 0
            return *this;                    // => delete term
        else {
            p=head;
@@ -586,7 +586,7 @@ const s_polynom<T>& s_polynom<T>::insert(T&& wert,const s_expo& g)
     if (stop)
        if (g==q->next->X) {
             q->next->coeff+=wert;
-            if (q->next->coeff!=zero)     		// coeff == 0
+            if (q->next->coeff!=zero)           // coeff == 0
                 return *this;                   // => delete term
             else {
                 p=q->next;
@@ -617,7 +617,7 @@ const s_polynom<T>& s_polynom<T>::insert(T&& wert,s_expo&& g)
  else {
     if (g==head->X) {
        head->coeff+=wert;
-       if (head->coeff!=zero)      			// coeff == 0
+       if (head->coeff!=zero)                   // coeff == 0
            return *this;                    // => delete term
        else {
            p=head;
@@ -640,7 +640,7 @@ const s_polynom<T>& s_polynom<T>::insert(T&& wert,s_expo&& g)
     if (stop)
        if (g==q->next->X) {
             q->next->coeff+=wert;
-            if (q->next->coeff!=zero)     		// coeff == 0
+            if (q->next->coeff!=zero)           // coeff == 0
                 return *this;                   // => delete term
             else {
                 p=q->next;
@@ -681,8 +681,8 @@ s_polynom<T> s_polynom<T>::add(const s_polynom<T>& p,int plus) const
     }
     else { 
        if ( (r->X) > (s->X) ){
-	  q.head = new term(r->coeff,r->X);
-	  r=r->next;
+      q.head = new term(r->coeff,r->X);
+      r=r->next;
        }
        else if ( (r->X) == (s->X) ) {
             if (plus) z = r->coeff + s->coeff;
@@ -706,7 +706,7 @@ s_polynom<T> s_polynom<T>::add(const s_polynom<T>& p,int plus) const
           u= new term(r->coeff,r->X);
           t->next=u;
           r=r->next;
-	      t=t->next;
+          t=t->next;
        }
        else {
             if ( (r->X) == (s->X) ) {
@@ -809,42 +809,42 @@ void s_polynom<T>::addto(const s_polynom<T>& t,int plus)
  while (p!=NULL && q!=NULL && !stop)
        if (p->next==NULL) stop=1;      // q must be appended to p 
        else {
-	  fall= !( (q->X) < (p->next->X) );
-	  if ( (q->X) > (p->next->X) ) fall=2;
-	  switch (fall) {
-	      case 0 : p=p->next; break;       // q->X < p->next->X
+      fall= !( (q->X) < (p->next->X) );
+      if ( (q->X) > (p->next->X) ) fall=2;
+      switch (fall) {
+          case 0 : p=p->next; break;       // q->X < p->next->X
 
-	      case 1 :
-	          if (plus) z = (p->next->coeff) + (q->coeff);
-	          else z = (p->next->coeff) - (q->coeff);
-	          if ( z == zero ) {  // == !
+          case 1 :
+              if (plus) z = (p->next->coeff) + (q->coeff);
+              else z = (p->next->coeff) - (q->coeff);
+              if ( z == zero ) {  // == !
                   r=p->next;
                   p->next=r->next;
                   delete r;
-		       }
-		       else {
+              }
+              else {
                     p->next->coeff=std::move(z);
                     p=p->next;
-		       }
-		       q=q->next;
-		       break;
+              }
+              q=q->next;
+              break;
 
-	      case 2 :
-	           if (plus) r = new term(q->coeff,q->X,p->next);
-	           else r = new term(-q->coeff,q->X,p->next);    // < !
-		       p->next=r;
-		       p=p->next;
-		       q=q->next;
-		       break;
-	  }
+          case 2 :
+               if (plus) r = new term(q->coeff,q->X,p->next);
+               else r = new term(-q->coeff,q->X,p->next);    // < !
+               p->next=r;
+               p=p->next;
+               q=q->next;
+               break;
+      }
        }
  if (stop)
     while (q!=NULL) {
-	  if (plus) r=new term(q->coeff,q->X);
-	  else r=new term(-q->coeff,q->X);
-	  p->next=r;
-	  p=p->next;
-	  q=q->next;
+      if (plus) r=new term(q->coeff,q->X);
+      else r=new term(-q->coeff,q->X);
+      p->next=r;
+      p=p->next;
+      q=q->next;
     }
  s.head=NULL;
  return;
@@ -928,14 +928,14 @@ void s_polynom<T>::makeinitforms(s_polynom<T> &f,s_polynom<T> &h,const val::vect
  qh=h.head;
  d=degw(head->X,w);
  for (p=head->next;p!=NULL;p=p->next) {
-	 if (degw(p->X,w)==d) {
-		 rf=new term(p->coeff,p->X,p->deg);
-		 qf->next=rf;
-		 qf=qf->next;
-		 rh=new term(p->coeff,p->X);
-		 qh->next=rh;
-		 qh=qh->next;
-	 }
+     if (degw(p->X,w)==d) {
+         rf=new term(p->coeff,p->X,p->deg);
+         qf->next=rf;
+         qf=qf->next;
+         rh=new term(p->coeff,p->X);
+         qh->next=rh;
+         qh=qh->next;
+     }
  }
 }
 
@@ -958,80 +958,80 @@ void s_polynom<T>::minusmalmonom(const s_polynom<T> &g,const T &a,const s_expo &
 
  // 1. Setze head:
  for (q=g.head;q!=NULL;q=q->next) {
-	 if (head==NULL) break;
-	 Z=q->X*Y;
-	 c=expocompare(Z,head->X);
-	 if (c==-1) break;
-	 else if (c==1) {                       // head->X < Z
-		 b=q->coeff*a;
-		 changesign(b);
-		 r=new term(std::move(b),Z,head);
-		 head=r;
-		 q=q->next;
-		 break;
-	 }
-	 else {
+     if (head==NULL) break;
+     Z=q->X*Y;
+     c=expocompare(Z,head->X);
+     if (c==-1) break;
+     else if (c==1) {                       // head->X < Z
          b=q->coeff*a;
          changesign(b);
-		 head->coeff+=b; //h
-		 if (head->coeff==zero) {
-			 r=head;
-			 head=head->next;
-			 delete r;
-		 }
-		 else { q=q->next; break; }
-	 }
+         r=new term(std::move(b),Z,head);
+         head=r;
+         q=q->next;
+         break;
+     }
+     else {
+         b=q->coeff*a;
+         changesign(b);
+         head->coeff+=b; //h
+         if (head->coeff==zero) {
+             r=head;
+             head=head->next;
+             delete r;
+         }
+         else { q=q->next; break; }
+     }
  }
  p=head;
  if (p!=NULL) {
-	 // Invariant: p->X > q->X :
-	 while (q!=NULL && p->next!=NULL) {
-		 Z=q->X*Y;
-		 c=expocompare(Z,p->next->X);
-		 if (c==-1) p=p->next;
-		 else if (c==1) {                    // p->next->X < Z
-			 b=q->coeff*a;
-			 changesign(b);
-			 r=new term(std::move(b),Z,p->next);
-			 p->next=r;
-			 p=p->next;
-			 q=q->next;
-		 }
-		 else {
+     // Invariant: p->X > q->X :
+     while (q!=NULL && p->next!=NULL) {
+         Z=q->X*Y;
+         c=expocompare(Z,p->next->X);
+         if (c==-1) p=p->next;
+         else if (c==1) {                    // p->next->X < Z
              b=q->coeff*a;
              changesign(b);
-			 p->next->coeff+=b;
-			 if (p->next->coeff==zero) {
-				 r=p->next;
-				 p->next=r->next;
-				 delete r;
-			 }
-			 else p=p->next;
-			 q=q->next;
-		 }
-	 }
+             r=new term(std::move(b),Z,p->next);
+             p->next=r;
+             p=p->next;
+             q=q->next;
+         }
+         else {
+             b=q->coeff*a;
+             changesign(b);
+             p->next->coeff+=b;
+             if (p->next->coeff==zero) {
+                 r=p->next;
+                 p->next=r->next;
+                 delete r;
+             }
+             else p=p->next;
+             q=q->next;
+         }
+     }
  }
  // Append rest :
  if (head==NULL) {
-	 for(;q!=NULL;q=q->next) {
-		 b=q->coeff*a;
-		 changesign(b);
-		 if (b!=zero) {
-			 head = new term(std::move(b),q->X*Y);
-			 p=head;
-			 q=q->next;
-			 break;
-		 }
-	 }
+     for(;q!=NULL;q=q->next) {
+         b=q->coeff*a;
+         changesign(b);
+         if (b!=zero) {
+             head = new term(std::move(b),q->X*Y);
+             p=head;
+             q=q->next;
+             break;
+         }
+     }
  }
  for (;q!=NULL;q=q->next) {
      b=q->coeff*a;
      changesign(b);
-	 if (b!=zero) {
-		 r = new term(std::move(b),q->X*Y);
-		 p->next=r;
-		 p=p->next;
-	 }
+     if (b!=zero) {
+         r = new term(std::move(b),q->X*Y);
+         p->next=r;
+         p=p->next;
+     }
  }
 
  return;
@@ -1054,81 +1054,81 @@ void s_polynom<T>::minusmalmonom(const s_polynom<T> &g,const T &a,const s_expo &
 
  // 1. Set head
  for (q=g.head;q!=NULL;q=q->next) {
-	 if (head==NULL) break;
-	 Z=q->X*Y;
-	 d1=q->deg +d;
-	 c=wexpocompare(Z,d1,head->X,head->deg);
-	 if (c==-1) break;
-	 else if (c==1) {			// head->X < Z 
-		 b=q->coeff*a;
-		 changesign(b);
-		 r=new term(std::move(b),Z,std::move(d1),head);
-		 this->head=r;
-		 q=q->next;
-		 break;
-	 }
-	 else {
+     if (head==NULL) break;
+     Z=q->X*Y;
+     d1=q->deg +d;
+     c=wexpocompare(Z,d1,head->X,head->deg);
+     if (c==-1) break;
+     else if (c==1) {           // head->X < Z
          b=q->coeff*a;
          changesign(b);
-		 head->coeff+=b; 
-		 if (head->coeff==zero) {
-			 r=this->head;
-			 head=head->next;
-			 delete r;
-		 }
-		 else { q=q->next; break; }
-	 }
+         r=new term(std::move(b),Z,std::move(d1),head);
+         this->head=r;
+         q=q->next;
+         break;
+     }
+     else {
+         b=q->coeff*a;
+         changesign(b);
+         head->coeff+=b;
+         if (head->coeff==zero) {
+             r=this->head;
+             head=head->next;
+             delete r;
+         }
+         else { q=q->next; break; }
+     }
  }
  p=head;
  if (p!=NULL) {
-	 // Invariant p->X > q->X :
-	 while (q!=NULL && p->next!=NULL) {
-		 Z=q->X*Y;
-		 d1=q->deg+d;
-		 c=wexpocompare(Z,d1,p->next->X,p->next->deg);
-		 if (c==-1) p=p->next;
-		 else if (c==1) {					// p->next->X < Z
-			 b=q->coeff*a;
-			 changesign(b);
-			 r=new term(std::move(b),Z,std::move(d1),p->next);
-			 p->next=r;
-			 p=p->next;
-			 q=q->next;
-		 }
-		 else {
+     // Invariant p->X > q->X :
+     while (q!=NULL && p->next!=NULL) {
+         Z=q->X*Y;
+         d1=q->deg+d;
+         c=wexpocompare(Z,d1,p->next->X,p->next->deg);
+         if (c==-1) p=p->next;
+         else if (c==1) {                   // p->next->X < Z
              b=q->coeff*a;
              changesign(b);
-			 p->next->coeff+=b;
-			 if (p->next->coeff==zero) {
-				 r=p->next;
-				 p->next=r->next;
-				 delete r;
-			 }
-			 else p=p->next;
-			 q=q->next;
-		 }
-	 }
+             r=new term(std::move(b),Z,std::move(d1),p->next);
+             p->next=r;
+             p=p->next;
+             q=q->next;
+         }
+         else {
+             b=q->coeff*a;
+             changesign(b);
+             p->next->coeff+=b;
+             if (p->next->coeff==zero) {
+                 r=p->next;
+                 p->next=r->next;
+                 delete r;
+             }
+             else p=p->next;
+             q=q->next;
+         }
+     }
  }
  if (this->head==NULL) {
-	 for(;q!=NULL;q=q->next) {
-		 b=q->coeff*a;
-		 changesign(b);
-		 if (b!=zero) {
-			 head = new term(std::move(b),q->X*Y,q->deg+d);
-			 p=head;
-			 q=q->next;
-			 break;
-		 }
-	 }
+     for(;q!=NULL;q=q->next) {
+         b=q->coeff*a;
+         changesign(b);
+         if (b!=zero) {
+             head = new term(std::move(b),q->X*Y,q->deg+d);
+             p=head;
+             q=q->next;
+             break;
+         }
+     }
  }
  for (;q!=NULL;q=q->next) {
      b=q->coeff*a;
      changesign(b);
-	 if (b!=zero) {
-		 r = new term(std::move(b),q->X*Y,q->deg+d);
-		 p->next=r;
-		 p=p->next;
-	 }
+     if (b!=zero) {
+         r = new term(std::move(b),q->X*Y,q->deg+d);
+         p->next=r;
+         p=p->next;
+     }
  }
 
  return;

@@ -2,7 +2,8 @@
 #define MULTIFLOAT_H_INCLUDED
 
 #include <iostream>
-#include <cstdlib>
+#include <val_basics.h>
+//#include <cstdlib>
 
 
 namespace val
@@ -12,9 +13,8 @@ class multifloat;
 
 namespace hilfmultifloat
 {
-int abs(int x) {if (x<0) return -x; else return x;}
-int highestbit(unsigned x); // Stelle 1<= i <= 32 des höchsten bit in x
-
+int highestbit(unsigned x); // Stelle 1<= i <= 32 des hÃ¶chsten bit in x
+int abs(int);
 }
 
 
@@ -24,7 +24,7 @@ class multifloat
 {
 public:
     // Konstruktoren:
-    multifloat() = default;//:exp(0),laenge(0) {mantissa=NULL;}
+    multifloat() = default;//:exp(0),laenge(0) {mantissa=nullptr;}
     multifloat(const multifloat&);
     multifloat(multifloat&&);
     multifloat(int);
@@ -58,7 +58,7 @@ public:
     int lowestexp() const {return exp;}
     int highestexp() const;
     //
-    multifloat round(int precisionbits) const;    // x = *round(*zhis) rundet, so dass x.mantissa höchstens precisionbits bits  enthält
+    multifloat round(int precisionbits) const;    // x = *round(*zhis) rundet, so dass x.mantissa hÃ¶chstens precisionbits bits  enthÃ¤lt
     //
     operator double() const;
     //

@@ -20,6 +20,12 @@ int hilfmultifloat::highestbit(unsigned x)
     return i;
 }
 
+int hilfmultifloat::abs(int x)
+{
+    if (x<0) return -x;
+    else return x;
+}
+
 
 int multifloat::prec=1;
 
@@ -28,7 +34,7 @@ const int multifloat::numberofbits = 8*sizeof(unsigned);
 
 multifloat::multifloat(const multifloat& x) : exp(x.exp),laenge(x.laenge)
 {
-    if (x.mantissa!=NULL) {
+    if (x.mantissa!=nullptr) {
         if (laenge==0) {   // NaN
             mantissa = new unsigned[1];
             mantissa[0] = 0;
@@ -40,7 +46,7 @@ multifloat::multifloat(const multifloat& x) : exp(x.exp),laenge(x.laenge)
         }
 
     }
-    else mantissa=NULL;
+    else mantissa=nullptr;
 }
 
 
@@ -48,7 +54,7 @@ multifloat::multifloat(multifloat&& x)
 {
     mantissa=x.mantissa;
     exp=x.exp;laenge=x.laenge;
-    x.mantissa=NULL;x.exp=x.laenge=0;
+    x.mantissa=nullptr;x.exp=x.laenge=0;
 }
 
 
@@ -57,7 +63,7 @@ multifloat::multifloat(int x)
 {
     if (x==0) {
         exp=laenge=0;
-        mantissa=NULL;
+        mantissa=nullptr;
     }
     else {
         exp=0;laenge=1;
@@ -75,8 +81,9 @@ multifloat::multifloat(const double& a)
     //double c=a;
     int sign=1,i;
     //unsigned bit=1;
-    __int64 b,eins(1),bit;
-    b =  *((__int64*) &a);
+    __int64 eins(1),bit, b;// b =  *((__int64*) &a);
+
+    val::MemCopy(b, a);
 
     exp=0;
 
@@ -93,8 +100,8 @@ multifloat::multifloat(const double& a)
     }
     exp>>=1;
     //std::cout<<"\n exp = "<<exp;
-    //Sonderfälle:
-    if (exp==0) {laenge=0;mantissa=NULL;return;} // subnormale werden als 0 behandelt.
+    //SonderfÃ¤lle:
+    if (exp==0) {laenge=0;mantissa=nullptr;return;} // subnormale werden als 0 behandelt.
 
     if (exp==2047) {   //+ oder - inf oder nan
         mantissa=new unsigned[1];
@@ -185,11 +192,11 @@ multifloat::multifloat(const double& a)
 const multifloat& multifloat::operator =(const multifloat& x)
 {
     if (mantissa == x.mantissa) return *this;
-    if (mantissa!= NULL) delete[] mantissa;
+    if (mantissa!= nullptr) delete[] mantissa;
 
     exp=x.exp;laenge=x.laenge;
-    if (x.mantissa==NULL) {
-        mantissa=NULL;
+    if (x.mantissa==nullptr) {
+        mantissa=nullptr;
         return *this;
     }
     if (laenge==0) { // Fall Nan
@@ -209,10 +216,10 @@ const multifloat& multifloat::operator =(const multifloat& x)
 const multifloat& multifloat::operator=(multifloat&& x)
 {
     if (mantissa == x.mantissa) return *this;
-    if (mantissa!=NULL) delete[] mantissa;
+    if (mantissa!=nullptr) delete[] mantissa;
     mantissa=x.mantissa;
     exp=x.exp;laenge=x.laenge;
-    x.mantissa=NULL;x.exp=x.laenge=0;
+    x.mantissa=nullptr;x.exp=x.laenge=0;
     return *this;
 }
 
@@ -220,7 +227,7 @@ const multifloat& multifloat::operator=(multifloat&& x)
 
 int multifloat::operator==(const multifloat &x) const
 {
-    if (mantissa==NULL) return (x.mantissa==NULL);
+    if (mantissa==nullptr) return (x.mantissa==nullptr);
     if (isNaN() || isInfNeg() || isInfPos()) return 0;
 
     if (laenge!=x.laenge) return 0;
@@ -251,11 +258,11 @@ int multifloat::operator <(const multifloat &x) const
 
     if (sign!=signx) return 1+signx;
     // Nun sind Vorzeichen gleich.
-    if (mantissa==NULL) return 0;    // denn dann ist auch x.mantissa=NULL
+    if (mantissa==nullptr) return 0;    // denn dann ist auch x.mantissa=nullptr
 
     if (hexpo<hexpox) return 1 + sign;
     if (hexpox<hexpo) return 1 - sign;
-    // Nun sind höchste Exponente gleich
+    // Nun sind hÃ¶chste Exponente gleich
     first=hilfmultifloat::highestbit(mantissa[l-1]);
     firstx=hilfmultifloat::highestbit(x.mantissa[lx-1]);
     last=numberofbits-first; lastx=numberofbits-firstx;
@@ -306,11 +313,11 @@ int multifloat::operator <=(const multifloat &x) const
 
     if (sign!=signx) return 1+signx;
     // Nun sind Vorzeichen gleich.
-    if (mantissa==NULL) return 1;    // denn dann ist auch x.mantissa=NULL
+    if (mantissa==nullptr) return 1;    // denn dann ist auch x.mantissa=nullptr
 
     if (hexpo<hexpox) return 1 + sign;
     if (hexpox<hexpo) return 1 - sign;
-    // Nun sind höchste Exponente gleich
+    // Nun sind hÃ¶chste Exponente gleich
     first=hilfmultifloat::highestbit(mantissa[l-1]);
     firstx=hilfmultifloat::highestbit(x.mantissa[lx-1]);
     last=numberofbits-first; lastx=numberofbits-firstx;
@@ -362,20 +369,20 @@ void multifloat::setprecision(int p)
 
 int multifloat::isNaN() const
 {
-    if (mantissa==NULL) return 0;
+    if (mantissa==nullptr) return 0;
     else return (laenge==0 && mantissa[0]==0);
 }
 
 
 int multifloat::isInfPos() const
 {
-    if (mantissa==NULL) return 0;
+    if (mantissa==nullptr) return 0;
     else return (laenge==1 && mantissa[0]==0);
 }
 
 int multifloat::isInfNeg() const
 {
-    if (mantissa==NULL) return 0;
+    if (mantissa==nullptr) return 0;
     else return (laenge==-1 && mantissa[0]==0);
 }
 
@@ -391,7 +398,7 @@ int multifloat::signum() const
 
 int multifloat::highestexp() const
 {
-    if (mantissa==NULL || isNaN() || isInfPos() || isInfNeg()) return 0;
+    if (mantissa==nullptr || isNaN() || isInfPos() || isInfNeg()) return 0;
     int exponent=exp,l=abslength();
 
     exponent+=(l-1)*numberofbits + hilfmultifloat::highestbit(mantissa[l-1]);
@@ -401,10 +408,10 @@ int multifloat::highestexp() const
 
 multifloat multifloat::round(int precisionbits) const
 {
-    if (mantissa==NULL || isNaN() || isInfPos() || isInfNeg()) return *this;
+    if (mantissa==nullptr || isNaN() || isInfPos() || isInfNeg()) return *this;
     precisionbits = hilfmultifloat::abs(precisionbits);
     int l=abslength(),k,i,wert,maxlength,highest,rest,thisbits,pos,s;
-    unsigned bit(1),*m=NULL;
+    unsigned bit(1),*m=nullptr;
 
     multifloat x;
     if (precisionbits==0) return x;
@@ -414,7 +421,7 @@ multifloat multifloat::round(int precisionbits) const
     maxlength = precisionbits/numberofbits;
     if ((precisionbits%numberofbits)) maxlength++;
 
-    // x.mantissa ist höchstens maxlength lang.
+    // x.mantissa ist hÃ¶chstens maxlength lang.
 
     //if (maxlength>l) return *this;
     // Nun maxlength<=l:
@@ -481,7 +488,7 @@ multifloat multifloat::round(int precisionbits) const
     }
     if (x.laenge==maxlength) {
         x.mantissa=m;
-        m=NULL;
+        m=nullptr;
     }
     else {
         x.mantissa=new unsigned[x.laenge];
@@ -497,7 +504,7 @@ multifloat multifloat::round(int precisionbits) const
 
 multifloat::operator double() const
 {
-    if (mantissa==NULL) return 0.0;
+    if (mantissa==nullptr) return 0.0;
     if (isInfPos()) return (1.0/0.0);
     if (isInfNeg()) return (-1.0/0.0);
     if (isNaN()) return (0.0/0.0);
@@ -551,7 +558,7 @@ multifloat::operator double() const
 
 std::istream& operator >>(std::istream& is ,multifloat& x)
 {
-    //Vorläufig:
+    //VorlÃ¤ufig:
     double b;
     is>>b;
     x = multifloat(b);
@@ -561,7 +568,7 @@ std::istream& operator >>(std::istream& is ,multifloat& x)
 
 std::ostream& operator <<(std::ostream& os,const multifloat& x)
 {
-    //Vorläufig:
+    //VorlÃ¤ufig:
     double b(x);
     os<<b;
     return os;
@@ -571,7 +578,7 @@ std::ostream& operator <<(std::ostream& os,const multifloat& x)
 void multifloat::write() const
 {
     int i,l=abslength();
-    if (mantissa==NULL) std::cout<<"0 0   0";
+    if (mantissa==nullptr) std::cout<<"0 0   0";
     for (i=l-1;i>=0;i--) std::cout<<"  "<<mantissa[i];
     //std::cout<<"    "<<exp;
 }

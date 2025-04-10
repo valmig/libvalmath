@@ -303,22 +303,22 @@ std::istream& operator >>(std::istream& is,n_expo& x)
 
 
   while ((wert!=10) && is) {
-	wert=is.get();
-	if (wert==10){
-		if (l!=0) buf[l]='\0';
-		else wert=0;
-	}
-	else buf[l++]=wert;
-	if (l>=(k*1000)) {
+    wert=is.get();
+    if (wert==10){
+        if (l!=0) buf[l]='\0';
+        else wert=0;
+    }
+    else buf[l++]=wert;
+    if (l>=(k*1000)) {
         k++;
         hbuf= new char[k*1000];
         for (i=0;i<((k-1)*1000);i++) hbuf[i]=buf[i];
         delete[] buf;
         buf=hbuf;
         hbuf=NULL;
-	}
+    }
 
-	if (!is) l--;
+    if (!is) l--;
   }
 
   x=char_to_nexpo(buf,l);
@@ -498,62 +498,62 @@ int n_polynom<integer>::reduction(const Glist<n_polynom<integer> >& P,int top,in
  }
 
  if (top || head==NULL) {
-	 g.head=NULL;
-	 return reduced;
+     g.head=NULL;
+     return reduced;
  }
 
  // 2. inter-reductions:
  p=head;
 
  while (p->next!=NULL) {
-	 reduzbar=0;
-	 for (ItP.settohead(P),i=0;ItP.actualvalid() && i<maxnG;ItP.moveactual(),i++) {
-		 if (ItP.getelement().head->X|p->next->X) {
-			 reduzbar=reduced=1;
-			 if (!interreduced) {
-				 r=p->next;p->next=NULL;
-				 gcd=content();
-				 p->next=r;r=NULL;
-				 interreduced=1;
-			 }
-			 break;
-		 }
+     reduzbar=0;
+     for (ItP.settohead(P),i=0;ItP.actualvalid() && i<maxnG;ItP.moveactual(),i++) {
+         if (ItP.getelement().head->X|p->next->X) {
+             reduzbar=reduced=1;
+             if (!interreduced) {
+                 r=p->next;p->next=NULL;
+                 gcd=content();
+                 p->next=r;r=NULL;
+                 interreduced=1;
+             }
+             break;
+         }
          if (p->next->X<ItP.getelement().head->X){  
-			 maxnG=i;
-			 break;
-		 }
+             maxnG=i;
+             break;
+         }
 
-	 }
-	 if (reduzbar) {
+     }
+     if (reduzbar) {
          nreduction++;
-		 h.head=p->next;p->next=NULL;
-		 g.head=ItP.getelement().head;
-		 hgcd=ggTspez(h.head->coeff,g.head->coeff);
-		 a1=EDIV(g.head->coeff,hgcd);
-		 X=h.head->X/g.head->X;
-		 b=EDIV(h.head->coeff,hgcd);
-		 g.head=g.head->next;
-		 r=h.head;
-		 h.head=h.head->next;
+         h.head=p->next;p->next=NULL;
+         g.head=ItP.getelement().head;
+         hgcd=ggTspez(h.head->coeff,g.head->coeff);
+         a1=EDIV(g.head->coeff,hgcd);
+         X=h.head->X/g.head->X;
+         b=EDIV(h.head->coeff,hgcd);
+         g.head=g.head->next;
+         r=h.head;
+         h.head=h.head->next;
          delete r;
-		 p->next=h.head;
-		 operator*=(a1);
-		 gcd*=a1;
-		 h.minusmalmonom(g,b,X);
-		 div=gcd;
-		 for (r=h.head;r!=NULL;r=r->next) {
-			 if (div==integer(1) || div==integer(-1)) break;
-			 else (div=ggTspez(div,r->coeff));
-		 }
+         p->next=h.head;
+         operator*=(a1);
+         gcd*=a1;
+         h.minusmalmonom(g,b,X);
+         div=gcd;
+         for (r=h.head;r!=NULL;r=r->next) {
+             if (div==integer(1) || div==integer(-1)) break;
+             else (div=ggTspez(div,r->coeff));
+         }
 
-		 gcd.EDIVBY(div);
-		 p->next=h.head;
-		 edivby(div);
-	 }
-	 else {
-		 p=p->next;
-		 if (p!=NULL && interreduced) gcd=ggTspez(gcd,p->coeff);
-	 }
+         gcd.EDIVBY(div);
+         p->next=h.head;
+         edivby(div);
+     }
+     else {
+         p=p->next;
+         if (p!=NULL && interreduced) gcd=ggTspez(gcd,p->coeff);
+     }
  }
  h.head=NULL;
  g.head=NULL;
@@ -574,8 +574,8 @@ int n_polynom<modq>::reduction(const Glist<n_polynom<modq> >& P,int top,int inte
 
  if (head==NULL) return 0;
  if (P.isempty()) {
-	 normalize();
-	 return 0;
+     normalize();
+     return 0;
  }
 
  if (interred) top=0;
@@ -588,17 +588,17 @@ int n_polynom<modq>::reduction(const Glist<n_polynom<modq> >& P,int top,int inte
 
         for (ItP.settohead(P),i=0;ItP.actualvalid() && i<maxnG;ItP.moveactual(),i++) {
             if ((ItP.getelement().head->X)|head->X) {//(divisible(Y,X,m.X)) {//(X|Y) {
-			 reduzbar=reduced=1;
-			 break;
+             reduzbar=reduced=1;
+             break;
             }
 
             if (head->X<ItP.getelement().head->X){  
-				maxnG=i;
-				break;
+                maxnG=i;
+                break;
             }
         }
         if (reduzbar) {
-		    nreduction++;
+            nreduction++;
             g.head=ItP.getelement().head;
             b=head->coeff/g.head->coeff;
             X=head->X/ItP.getelement().head->X;  
@@ -613,42 +613,42 @@ int n_polynom<modq>::reduction(const Glist<n_polynom<modq> >& P,int top,int inte
     while (reduzbar);
  }
  if (top || head==NULL) {
-	 normalize();
-	 g.head=NULL;
-	 return reduced;
+     normalize();
+     g.head=NULL;
+     return reduced;
  }
 
  // 2. inter-reductions
  p=head;
 
  while (p->next!=NULL) {
-	 reduzbar=0;
+     reduzbar=0;
 
-	 for (ItP.settohead(P),i=0;ItP.actualvalid() && i<maxnG;ItP.moveactual(),i++) {
-		 if (ItP.getelement().head->X|p->next->X){
-			 reduzbar=reduced=1;
-			 break;
-		 }
+     for (ItP.settohead(P),i=0;ItP.actualvalid() && i<maxnG;ItP.moveactual(),i++) {
+         if (ItP.getelement().head->X|p->next->X){
+             reduzbar=reduced=1;
+             break;
+         }
          if (p->next->X < ItP.getelement().head->X){  
-			 maxnG=i;
-			 break;
-		 }
-	 }
-	 if (reduzbar) {
-		 nreduction++;
-		 h.head=p->next;
-		 g.head=ItP.getelement().head;
-		 b=h.head->coeff/g.head->coeff;
-		 X=p->next->X/g.head->X; 
-		 p->next=NULL;
-		 g.head=g.head->next;
-		 r=h.head;
-		 h.head=h.head->next;
-		 delete r;
-		 h.minusmalmonom(g,b,X);
-		 p->next=h.head;
-	 }
-	 else p=p->next;
+             maxnG=i;
+             break;
+         }
+     }
+     if (reduzbar) {
+         nreduction++;
+         h.head=p->next;
+         g.head=ItP.getelement().head;
+         b=h.head->coeff/g.head->coeff;
+         X=p->next->X/g.head->X;
+         p->next=NULL;
+         g.head=g.head->next;
+         r=h.head;
+         h.head=h.head->next;
+         delete r;
+         h.minusmalmonom(g,b,X);
+         p->next=h.head;
+     }
+     else p=p->next;
  }
  normalize();
  h.head=NULL;

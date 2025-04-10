@@ -27,7 +27,7 @@ int iszerodimensional(const val::Glist<val::s_polynom<T>> &G);
 
 
 DLL_PUBLIC val::pol<val::rational> modint_minimalpolynom(const val::Glist<val::s_polynom<val::integer> > &Gint,int k,
-                                              val::Glist<int>& Primlist,int n,int comment=1);
+                                              val::Glist<int>& Primlist,int nthreads,int comment=1);
 
 // returns variable of univariate polynomial with maximal degree
 DLL_PUBLIC int zero_dim_radical_ideal(val::Glist<val::s_polynom<val::integer>>& G,int nthreads=3,int comment=1);

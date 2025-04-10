@@ -215,32 +215,32 @@ pol<rational> Hilbertpolynomial(const std::string &name,int affin)
 
 pol<rational> Hilbertpolynomial(const Glist<s_polynom<integer>>& G,int affin)
 {
-	val::vector<s_expo> In(G.length());
-	int i=0,ord=s_expo::getordtype();
+    val::vector<s_expo> In(G.length());
+    int i=0,ord=s_expo::getordtype();
 
-	for (const auto& f : G) {
-		In(i) = f.LT();
-		++i;
-	}
-	s_expo::setordtype(-1);
-	In.sort();
-	s_expo::setordtype(ord);
-	return hilbert::Hilbertpolynomial(In,affin);
+    for (const auto& f : G) {
+        In(i) = f.LT();
+        ++i;
+    }
+    s_expo::setordtype(-1);
+    In.sort();
+    s_expo::setordtype(ord);
+    return hilbert::Hilbertpolynomial(In,affin);
 }
 
 pol<rational> Hilbertpolynomial(const Glist<s_polynom<modq>>& G,int affin)
 {
-	val::vector<s_expo> In(G.length());
-	int i=0,ord=s_expo::getordtype();
+    val::vector<s_expo> In(G.length());
+    int i=0,ord=s_expo::getordtype();
 
-	for (const auto& f : G) {
-		In(i) = f.LT();
-		++i;
-	}
-	s_expo::setordtype(-1);
-	In.sort();
-	s_expo::setordtype(ord);
-	return hilbert::Hilbertpolynomial(In,affin);
+    for (const auto& f : G) {
+        In(i) = f.LT();
+        ++i;
+    }
+    s_expo::setordtype(-1);
+    In.sort();
+    s_expo::setordtype(ord);
+    return hilbert::Hilbertpolynomial(In,affin);
 }
 
 

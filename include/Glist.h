@@ -31,31 +31,31 @@ protected:
         node(T&& v,node *nex = nullptr) : value(std::move(v)), next(nex) {}
      };
 
-	 node *head=nullptr;
-	 node *actual=nullptr;
-	 node *last=nullptr;
-	 int anz=0;          						// number of nodes (from the German word 'Anzahl')
+     node *head=nullptr;
+     node *actual=nullptr;
+     node *last=nullptr;
+     int anz=0;                                 // number of nodes (from the German word 'Anzahl')
 
-	 static void merge(node* &basis1,node* &basis2);
-	 static void sort(node* &basis,int l);
+     static void merge(node* &basis1,node* &basis2);
+     static void sort(node* &basis,int l);
 public:
-	Glist() = default;
-	Glist(const Glist<T>&);
-	Glist(Glist<T>&&);
-	Glist(std::initializer_list<T> args);
-	~Glist() {dellist();}
-	//
-	const Glist<T>& operator =(const Glist<T>&);
-	const Glist<T>& operator =(Glist<T>&&);
-	//
-	void dellist();                          	// deletes whole list
-	void skiphead();                         	// deletes first node
-	void skipnextelement();                  	// deletes next node to actual
-	int delelement(int);
-	void inserttoend(const T&);              	// inserts element at the end;
-	void inserttohead(const T&);             	// inserts element at the beginning;
-	void insertnexttoactual(const T&);
-	void sinsert(const T&);                  	// ordered insertion in increasing order. Operator < in class T must be defined.
+    Glist() = default;
+    Glist(const Glist<T>&);
+    Glist(Glist<T>&&);
+    Glist(std::initializer_list<T> args);
+    ~Glist() {dellist();}
+    //
+    const Glist<T>& operator =(const Glist<T>&);
+    const Glist<T>& operator =(Glist<T>&&);
+    //
+    void dellist();                             // deletes whole list
+    void skiphead();                            // deletes first node
+    void skipnextelement();                     // deletes next node to actual
+    int delelement(int);
+    void inserttoend(const T&);                 // inserts element at the end;
+    void inserttohead(const T&);                // inserts element at the beginning;
+    void insertnexttoactual(const T&);
+    void sinsert(const T&);                     // ordered insertion in increasing order. Operator < in class T must be defined.
     void inserttoend(T&&);
     void inserttohead(T&&);
     void insertnexttoactual(T&&);
@@ -64,27 +64,27 @@ public:
     void push_back(const T& value) {inserttoend(value);}
     void push_back(T&& value) {inserttoend(std::move(value));}
     void sinsert(T&&);
-	const T& getelement() const;   				// returns value of actual
-	const T& getnextelement() const;  			// returns value of  actual->next.
-	T& actualvalue();              				// returns value of actual
-	const T& actualvalue() const;
-	void resetactual() {actual=head;} 			// Sets actual to head
-	void resetlast(); 							// Sets last to last element of list
-	void moveactual();    						// Moves actual one position forward.
-	void setnexttohead();   					// Sets successor of actual to the head of the list.
-	int actualvalid() const {if (actual==nullptr) return 0; else return 1;}
-	int nextvalid() const {if (actual==nullptr) return 0; else if (actual->next==nullptr) return 0; else return 1;}
-	int isempty() const {return (head==nullptr);}
-	void copyanddelete(Glist<T>& G);             // equivalent to *this = std::move(G)
-	void appendtoend(Glist<T>& G);               // equivalent to append(std::move(G))
-	void movenextelementtohead(Glist<T>& G);     // node next to actual is set at the beginning of G
-	void moveheadtoend(Glist<T>& G);             // head is set at the end of G
-	void append(const Glist<T>& G);
-	void append(Glist<T>&& G);
-	T& operator[](int);
-	const T& operator[](int) const;
-	const T& operator() (int i) const {return operator[](i);}
-	int length() const {return anz;}
+    const T& getelement() const;                    // returns value of actual
+    const T& getnextelement() const;            // returns value of  actual->next.
+    T& actualvalue();                               // returns value of actual
+    const T& actualvalue() const;
+    void resetactual() {actual=head;}           // Sets actual to head
+    void resetlast();                           // Sets last to last element of list
+    void moveactual();                          // Moves actual one position forward.
+    void setnexttohead();                       // Sets successor of actual to the head of the list.
+    int actualvalid() const {if (actual==nullptr) return 0; else return 1;}
+    int nextvalid() const {if (actual==nullptr) return 0; else if (actual->next==nullptr) return 0; else return 1;}
+    int isempty() const {return (head==nullptr);}
+    void copyanddelete(Glist<T>& G);             // equivalent to *this = std::move(G)
+    void appendtoend(Glist<T>& G);               // equivalent to append(std::move(G))
+    void movenextelementtohead(Glist<T>& G);     // node next to actual is set at the beginning of G
+    void moveheadtoend(Glist<T>& G);             // head is set at the end of G
+    void append(const Glist<T>& G);
+    void append(Glist<T>&& G);
+    T& operator[](int);
+    const T& operator[](int) const;
+    const T& operator() (int i) const {return operator[](i);}
+    int length() const {return anz;}
     void sort(int l=-1);
     void merge(Glist<T> &H);                     // list is merged with H. Afterwards H is empty.
     GlistIterator<T> begin() const {GlistIterator<T> It;It.actual=head;return It;}
@@ -181,24 +181,24 @@ void Glist<T>::merge(node* &basis1,node* &basis2)
 
  p1=basis1;p2=basis2;
  if (p2->value<basis1->value) {
-	 while ((p2->next!=nullptr) && (p2->next->value<basis1->value)) p2=p2->next;
-	 basis1=basis2;
-	 basis2=p2->next;
-	 p2->next=p1;
+     while ((p2->next!=nullptr) && (p2->next->value<basis1->value)) p2=p2->next;
+     basis1=basis2;
+     basis2=p2->next;
+     p2->next=p1;
  }
  // jetzt p2<p1
  if (basis2==nullptr) return;
  p2=basis2;
  while (p1->next!=nullptr) {
-	 if ((basis2!=nullptr) && (basis2->value<p1->next->value)) {
-		 while ((p2->next!=nullptr) && (p2->next->value<p1->next->value)) p2=p2->next;
-		 r=p1->next;
-		 p1->next=basis2;
-		 basis2=p2->next;
-		 p2->next=r;
-		 p1=r;p2=basis2;;
-	 }
-	 else p1=p1->next;
+     if ((basis2!=nullptr) && (basis2->value<p1->next->value)) {
+         while ((p2->next!=nullptr) && (p2->next->value<p1->next->value)) p2=p2->next;
+         r=p1->next;
+         p1->next=basis2;
+         basis2=p2->next;
+         p2->next=r;
+         p1=r;p2=basis2;;
+     }
+     else p1=p1->next;
  }
  p1->next=basis2;
  basis2=nullptr;
@@ -325,26 +325,26 @@ void Glist<T>::skipnextelement()
 template <class T>
 int Glist<T>::delelement(int i)
 {
-	if (head==nullptr || i<0) return 0;
-	if (i==0) {
+    if (head==nullptr || i<0) return 0;
+    if (i==0) {
         skiphead();
         return 0;
     }
-	node *p;
-	int j;
+    node *p;
+    int j;
 
-	for (p=head,j=0;p->next!=nullptr;p=p->next,++j) {
-	    if (j==i-1) {
-			if (actual==p->next) actual=p;
-			if (last==p->next) last=p;
-			node *r = p->next;
-			p->next = r->next;
-			delete r;
-			--anz;
-			return 1;
-		}
-	}
-	return 0;
+    for (p=head,j=0;p->next!=nullptr;p=p->next,++j) {
+        if (j==i-1) {
+            if (actual==p->next) actual=p;
+            if (last==p->next) last=p;
+            node *r = p->next;
+            p->next = r->next;
+            delete r;
+            --anz;
+            return 1;
+        }
+    }
+    return 0;
 }
 
 
@@ -356,7 +356,7 @@ void Glist<T>:: inserttoend(const T &val)
  ++anz;
  if (head==nullptr) {
     head= new node(val);
-	actual=head;last=head;
+    actual=head;last=head;
     return;
  }
  p= new node(val);
@@ -371,10 +371,10 @@ void Glist<T>:: inserttohead(const T &val)
  node *p;
 
  if (head==nullptr) {
-	 head= new node(val);
-	 actual=last=head;
-	 ++anz;
-	 return;
+     head= new node(val);
+     actual=last=head;
+     ++anz;
+     return;
  }
 
  p=new node(val,head);
@@ -407,26 +407,26 @@ void Glist<T>::sinsert(const T& s)
  ++anz;
  if (head==nullptr) {
     head= new node(s);
-	actual=head;last=head;
+    actual=head;last=head;
     return;
  }
  r=new node(s);
  if (s<head->value) {
-	 r->next=head;
-	 head=r;
-	 return;
+     r->next=head;
+     head=r;
+     return;
  }
  if (head->next==nullptr) {
-	 head->next=r;
-	 r->next=nullptr;
-	 last=r;
-	 return;
+     head->next=r;
+     r->next=nullptr;
+     last=r;
+     return;
  }
  if (last->value<s) {
-	 last->next=r;
-	 r->next=nullptr;
-	 last=last->next;
-	 return;
+     last->next=r;
+     r->next=nullptr;
+     last=last->next;
+     return;
  }
  // now: list has at least 2 nodes, s has to be inserted between them.
  for(p=head;(p->next->value)<s;p=p->next);
@@ -443,7 +443,7 @@ void Glist<T>:: inserttoend(T &&val)
  ++anz;
  if (head==nullptr) {
     head= new node(std::move(val));
-	actual=head;last=head;
+    actual=head;last=head;
     return;
  }
  p= new node(std::move(val));
@@ -458,10 +458,10 @@ void Glist<T>:: inserttohead(T &&val)
  node *p;
 
  if (head==nullptr) {
-	 head= new node(std::move(val));
-	 actual=last=head;
-	 ++anz;
-	 return;
+     head= new node(std::move(val));
+     actual=last=head;
+     ++anz;
+     return;
  }
 
  ++anz;
@@ -495,26 +495,26 @@ void Glist<T>::sinsert(T&& s)
  ++anz;
  if (head==nullptr) {
     head= new node(std::move(s));
-	actual=head;last=head;
+    actual=head;last=head;
     return;
  }
  r=new node(std::move(s));
  if (r->value<head->value) {
-	 r->next=head;
-	 head=r;
-	 return;
+     r->next=head;
+     head=r;
+     return;
  }
  if (head->next==nullptr) {
-	 head->next=r;
-	 r->next=nullptr;
-	 last=r;
-	 return;
+     head->next=r;
+     r->next=nullptr;
+     last=r;
+     return;
  }
  if (last->value<r->value) {
-	 last->next=r;
-	 r->next=nullptr;
-	 last=last->next;
-	 return;
+     last->next=r;
+     r->next=nullptr;
+     last=last->next;
+     return;
  }
  // now: list has at least 2 nodes, s has to be inserted between them.
  for(p=head;(p->next->value)<r->value;p=p->next);
@@ -528,7 +528,7 @@ void Glist<T>::sinsert(T&& s)
 template <class T>
 const T& Glist<T>:: getelement() const
 {
-	if (actual==nullptr) {
+    if (actual==nullptr) {
         /*
         std::string msg= "\n" + val::gettypename(*this);
         msg +="::getelement(): NULL-POINTER!!";
@@ -536,7 +536,7 @@ const T& Glist<T>:: getelement() const
         */
         Error::error("::getelement(): NULL-POINTER!!",*this);
     }
-	return actual->value;
+    return actual->value;
 }
 
 template <class T>
@@ -556,30 +556,30 @@ const T& Glist<T>:: getnextelement() const
 template <class T>
 T& Glist<T>::actualvalue()
 {
-	if (actual==nullptr) {
+    if (actual==nullptr) {
         /*
         std::string msg = "\n" + val::gettypename(*this);
         msg += "::actualvalue(): NULL-POINTER!!";
         Error::error(msg.c_str());
         */
         Error::error("::actualvalue(): NULL-POINTER!!",*this);
- 	}
-	return actual->value;
+    }
+    return actual->value;
 }
 
 
 template <class T>
 const T& Glist<T>::actualvalue() const
 {
-	if (actual==nullptr) {
+    if (actual==nullptr) {
         /*
         std::string msg = "\n" + val::gettypename(*this);
         msg += "::actualvalue(): NULL-POINTER!!";
         Error::error(msg.c_str());
         */
         Error::error("::actualvalue(): NULL-POINTER!!",*this);
- 	}
-	return actual->value;
+    }
+    return actual->value;
 }
 
 
@@ -589,8 +589,8 @@ void Glist<T>:: resetlast()
 {
 
  if (head==nullptr) {
-	 last=head;
-	 return;
+     last=head;
+     return;
  }
  for (last=head;last->next!=nullptr;last=last->next);
 }
@@ -599,15 +599,15 @@ void Glist<T>:: resetlast()
 template <class T>
 void Glist<T>:: moveactual()
 {
-	if (actual==nullptr) {
+    if (actual==nullptr) {
         /*
         std::string msg = "\n" + val::gettypename(*this);
         msg += "::moveactual(): NULL-POINTER!!";
         Error::error(msg.c_str());
         */
         Error::error("::moveactual(): NULL-POINTER!!",*this);
- 	}
-	actual=actual->next;
+    }
+    actual=actual->next;
 }
 
 
@@ -743,9 +743,9 @@ T& Glist<T>:: operator[](int i)
 
  if (i<0 || i>=anz)  {
 
-	 std::string msg = "\n" + val::gettypename(*this);
-	 msg+=": ERROR: Index out of range!\nIndex: "+ToString(i) + ". Size: " + ToString(anz)+"\n";
-	 Error::error(msg.c_str());
+     std::string msg = "\n" + val::gettypename(*this);
+     msg+=": ERROR: Index out of range!\nIndex: "+ToString(i) + ". Size: " + ToString(anz)+"\n";
+     Error::error(msg.c_str());
  }
 
  for (p=head;(p!=nullptr)&&(j<i);p=p->next,j++);
@@ -762,9 +762,9 @@ const T& Glist<T>:: operator[](int i) const
 
 
  if (i<0 || i>=anz)  {
-	 std::string msg = "\n" + val::gettypename(*this);
-	 msg+=": ERROR: Index out of range!\nIndex: "+ToString(i) + ". Size: " + ToString(anz)+"\n";
-	 Error::error(msg.c_str());
+     std::string msg = "\n" + val::gettypename(*this);
+     msg+=": ERROR: Index out of range!\nIndex: "+ToString(i) + ". Size: " + ToString(anz)+"\n";
+     Error::error(msg.c_str());
  }
 
  for (p=head;(p!=nullptr)&&(j<i);p=p->next,j++);
@@ -811,28 +811,28 @@ template <class T>
 void GlistIterator<T>::moveactual()
 {
 
-	if (actual==nullptr) {
+    if (actual==nullptr) {
         //std::string msg = "\n" + val::gettypename(*this);
         //msg += "::moveactual(): NULL-POINTER!!";
         //Error::error(msg.c_str());
         //Error::error("\nval::GlistIterator<T>::moveactual(): NULL-POINTER!!");
         Error::error("::moveactual(): NULL-POINTER!!",*this);
- 	}
-	actual=actual->next;
+    }
+    actual=actual->next;
 }
 
 template <class T>
 const T& GlistIterator<T>:: getelement() const
 {
-	if (actual==nullptr) {
+    if (actual==nullptr) {
         //std::string msg = "\n" + val::gettypename(*this);
         //msg += "::getelement(): NULL-POINTER!!";
         //Error::error(msg.c_str());
         //Error::error("\nval::GlistIterator<T>::getlement(): NULL-POINTER!!");
         Error::error("::getlement(): NULL-POINTER!!",*this);
 
- 	}
-	return actual->value;
+    }
+    return actual->value;
 }
 
 
@@ -840,31 +840,31 @@ const T& GlistIterator<T>:: getelement() const
 template <class T>
 const T& GlistIterator<T>:: actualvalue() const
 {
-	if (actual==nullptr) {
+    if (actual==nullptr) {
         //std::string msg = "\n" + val::gettypename(*this);
         //msg += "::actualvalue(): NULL-POINTER!!";
         //Error::error(msg.c_str());
         //Error::error("\nval::GlistIterator<T>::actualvalue(): NULL-POINTER!!");
         Error::error("::actualvalue(): NULL-POINTER!!",*this);
- 	}
+    }
 
-	return actual->value;
+    return actual->value;
 }
 
 
 template <class T>
 const T& GlistIterator<T>::operator() (void) const
 {
-	if (actual==nullptr) {
+    if (actual==nullptr) {
         //std::string msg = "\n" + val::gettypename(*this);
         //msg += "::operator(): NULL-POINTER!!";
         //Error::error(msg.c_str());
         //Error::error("\nval::GlistIterator<T>::operator(): NULL-POINTER!!");
         Error::error("::operator(): NULL-POINTER!!",*this);
 
- 	}
+    }
 
-	return actual->value;
+    return actual->value;
 }
 
 
@@ -883,56 +883,56 @@ GlistIterator<T>& GlistIterator<T>::operator =(const GlistIterator<T> &It)
 template <class T>
 void GlistManipulator<T>::moveactual()
 {
-	if (actual==nullptr) {
+    if (actual==nullptr) {
         //std::string msg = "\n" + val::gettypename(*this);
         //msg += "::moveactual(): NULL-POINTER!!";
         //Error::error(msg.c_str());
         //Error::error("\nval::GlistManipulator<T>::moveactual(): NULL-POINTER!!");
         Error::error("::moveactual(): NULL-POINTER!!",*this);
- 	}
+    }
 
-	actual=actual->next;
+    actual=actual->next;
 }
 
 template <class T>
 const T& GlistManipulator<T>:: getelement() const
 {
-	if (actual==nullptr) {
+    if (actual==nullptr) {
         //std::string msg = "\n" + val::gettypename(*this);
         //msg += "::getelement(): NULL-POINTER!!";
         //Error::error(msg.c_str());
         //Error::error("\nval::GlistManipulator<T>::getlement(): NULL-POINTER!!");
         Error::error("getlement(): NULL-POINTER!!",*this);
- 	}
-	return actual->value;
+    }
+    return actual->value;
 }
 
 
 template <class T>
 T& GlistManipulator<T>:: actualvalue() const
 {
-	if (actual==nullptr) {
+    if (actual==nullptr) {
         //std::string msg = "\n" + val::gettypename(*this);
         //msg += "::actualvalue(): NULL-POINTER!!";
         //Error::error(msg.c_str());
         //Error::error("\nval::GlistManipulator<T>::actualvalue(): NULL-POINTER!!");
         Error::error("::actualvalue(): NULL-POINTER!!",*this);
- 	}
-	return actual->value;
+    }
+    return actual->value;
 }
 
 
 template <class T>
 T& GlistManipulator<T>::operator() (void) const
 {
-	if (actual==nullptr) {
+    if (actual==nullptr) {
         //std::string msg = "\n" + val::gettypename(*this);
         //msg += "::operator(): NULL-POINTER!!";
         //Error::error(msg.c_str());
         //Error::error("\nval::GlistManipulator<T>::getlement(): NULL-POINTER!!");
         Error::error("::getlement(): NULL-POINTER!!",*this);
- 	}
-	return actual->value;
+    }
+    return actual->value;
 }
 
 

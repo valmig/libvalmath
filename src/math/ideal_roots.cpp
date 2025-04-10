@@ -110,34 +110,34 @@ void extendordermatrix()
 {
     using namespace val;
     int i,order=s_expo::getordtype(),n=s_expo::getdim();
-	if (order==-1000) {
-		val::matrix<int> Mnew(0,n+1,n+1);
-		int j;
-		Mnew(0,0)=1;
+    if (order==-1000) {
+        val::matrix<int> Mnew(0,n+1,n+1);
+        int j;
+        Mnew(0,0)=1;
         for (i=0;i<n;i++) {
             for (j=0;j<n;j++) Mnew(i+1,j+1) = (s_expo::getordmatrix())(i,j);
         }
 
-		val::s_expo::setordtype(-1000);
-		val::s_expo::setordmatrix(Mnew);
-	}
-	else if (order==-1) val::s_expo::setordtype(-1);
-	else if (order==0) {
+        val::s_expo::setordtype(-1000);
+        val::s_expo::setordmatrix(Mnew);
+    }
+    else if (order==-1) val::s_expo::setordtype(-1);
+    else if (order==0) {
         val::matrix<int> Mnew(0,n+1,n+1);
         Mnew(0,0)=1;
         for (i=0;i<n;i++) Mnew(1,i+1)=1;
         for (i=2;i<=n;i++) Mnew(i,i-2)=1;
-		val::s_expo::setordtype(-1000);
-		val::s_expo::setordmatrix(Mnew);
-	}
-	else { // order=-2
+        val::s_expo::setordtype(-1000);
+        val::s_expo::setordmatrix(Mnew);
+    }
+    else { // order=-2
         val::matrix<int> Mnew(0,n+1,n+1);
         Mnew(0,0)=1;
         for (i=0;i<n;i++) Mnew(1,i+1)=1;
         for (i=2;i<=n;i++) Mnew(i,n+2-i) =-1;
-		val::s_expo::setordtype(-1000);
-		val::s_expo::setordmatrix(Mnew);
-	}
+        val::s_expo::setordtype(-1000);
+        val::s_expo::setordmatrix(Mnew);
+    }
     val::s_expo::setdim(n+1);
 }
 
@@ -148,30 +148,30 @@ val::Glist<val::s_polynom<val::integer>> preparenormalposition(const val::Glist<
     s_polynom<integer> f;
     Glist<val::s_polynom<integer>> H;
 
-	val::s_expo X(0);
-	val::rational coeff,zero;
-	val::RandomClass Rand;
+    val::s_expo X(0);
+    val::rational coeff,zero;
+    val::RandomClass Rand;
 
-	// First polynomial : f = X0 + ciXi
-	X[0] = 1;
-	f.insert(integer(1),X);
-	for (i=1;i<n;++i) {
+    // First polynomial : f = X0 + ciXi
+    X[0] = 1;
+    f.insert(integer(1),X);
+    for (i=1;i<n;++i) {
         X = s_expo(0);
         X[i] = 1;
         f.insert(integer(Rand.random(-50,50)),X);
-	}
-	H.sinsert(std::move(f));
+    }
+    H.sinsert(std::move(f));
 
-	for (const auto& g : G) {
+    for (const auto& g : G) {
         for (const auto& it : g) {
             X = s_expo(0);
             for (i=0;i<n-1;++i) X[i+1] = it.actualterm()[i];
             f.insert(it.actualcoef(),X);
         }
         H.sinsert(std::move(f));
-	}
+    }
 
-	return H;
+    return H;
 }
 
 
@@ -221,7 +221,7 @@ void CreatemodintBasis(const val::Glist<val::s_polynom<val::integer> > &Gint,val
 
 void ComputeFint(const val::Glist<val::s_polynom<val::integer> > &Gint,val::pol<val::integer>& Fint,int k,int q)
 {
-	using namespace val;
+    using namespace val;
     Glist<s_polynom<modint> > Gmodq;
     pol<modint> fmodq;
 
@@ -296,8 +296,8 @@ void computesquarefreepartmodq(const val::d_array<val::pol<val::modq>>& f,val::d
         sqr_f = squarefreepart(f[i]);
         if (comment) val::WriteText("\n compute square-free part for i = " + val::ToString(i) + " ; degree = " + val::ToString(sqr_f.degree()));
         if (f[i].degree() != sqr_f.degree()) {
-			F[i] = val::To_s_polynom(sqr_f,i);
-		}
+            F[i] = val::To_s_polynom(sqr_f,i);
+        }
     }
 }
 
@@ -363,89 +363,89 @@ const val::pol<double>& RoundPol(val::pol<double>& f,const double &eps)
 int isinnormalposition(const std::string &name,val::vector<val::pol<double> > &F,int &var_index)
 {
 
-	std::ifstream file(name,std::ios::in); 
-	if (!file) {                                     
-		MyMessage("\nCannot read file " + name + " !\n");
+    std::ifstream file(name,std::ios::in);
+    if (!file) {
+        MyMessage("\nCannot read file " + name + " !\n");
         return 0;
-	}
+    }
 
-	int i,j,dim,ordtype,n=0,is,uni_index=-1;
-	val::matrix<int> M;
+    int i,j,dim,ordtype,n=0,is,uni_index=-1;
+    val::matrix<int> M;
     val::s_polynom<val::rational> f;
     val::s_polynomIterator<val::rational> It_f;
 
-	file>>dim>>ordtype;
+    file>>dim>>ordtype;
 
-	val::s_expo::setordtype(ordtype);
-	val::s_expo::setdim(dim);
-	F=val::vector<val::pol<double> >(dim);
+    val::s_expo::setordtype(ordtype);
+    val::s_expo::setdim(dim);
+    F=val::vector<val::pol<double> >(dim);
 
-	if (ordtype==-1000) {
-		M=val::matrix<int>(dim);
-		for (i=0;i<dim;i++)
-			for (j=0;j<dim;j++) file>>M(i,j);
-		val::s_expo::setordmatrix(std::move(M));
-	}
-	else if (ordtype!=-2 && ordtype!=-1 && ordtype!=0) val::s_expo::setordtype(-2);
+    if (ordtype==-1000) {
+        M=val::matrix<int>(dim);
+        for (i=0;i<dim;i++)
+            for (j=0;j<dim;j++) file>>M(i,j);
+        val::s_expo::setordmatrix(std::move(M));
+    }
+    else if (ordtype!=-2 && ordtype!=-1 && ordtype!=0) val::s_expo::setordtype(-2);
 
-	val::rational coef,zero;
-	val::s_expo X;
-	val::vector<val::s_polynom<val::rational> > G(dim);
+    val::rational coef,zero;
+    val::s_expo X;
+    val::vector<val::s_polynom<val::rational> > G(dim);
 
-	do {
-		file>>coef;
-		if (coef!=zero) {
+    do {
+        file>>coef;
+        if (coef!=zero) {
             file>>X;
-			f.insert(std::move(coef),X);
+            f.insert(std::move(coef),X);
         }
-		else break;
-		do {
-			file>>coef;
-			if (coef!=zero) {
-			    file>>X;
-			    f.insert(std::move(coef),X);
-			}
-			else break;
-		}
-		while (1);
+        else break;
+        do {
+            file>>coef;
+            if (coef!=zero) {
+                file>>X;
+                f.insert(std::move(coef),X);
+            }
+            else break;
+        }
+        while (1);
 
-		if (!f.iszero()){
-			if (n==dim) return 0;
-			G(n)=std::move(f);
-			n++;
-		}
-	}
-	while (file);
-	file.close();
+        if (!f.iszero()){
+            if (n==dim) return 0;
+            G(n)=std::move(f);
+            n++;
+        }
+    }
+    while (file);
+    file.close();
 
-	if (n!=dim) return 0;
+    if (n!=dim) return 0;
 
-	val::s_expo degX;
+    val::s_expo degX;
 
-	// check if zero-dimensional:
+    // check if zero-dimensional:
 
-	if (!val::iszerodimensional(G,degX)) return 0;
+    if (!val::iszerodimensional(G,degX)) return 0;
 
 
-	// Search univariate polynomial:
-	is=-1;
-	for (i=0;i<dim;++i) {
+    // Search univariate polynomial:
+    is=-1;
+    for (i=0;i<dim;++i) {
         if ((is=val::isunivariate(G(i))) != -1) {
             uni_index=i;
             var_index=is;
             break;
         }
-	}
-	if (is==-1) return 0;
+    }
+    if (is==-1) return 0;
 
-	// Check if all polynomials but G(uni_index) are of degree 1;
-	for (i=0;i<n;i++) {
+    // Check if all polynomials but G(uni_index) are of degree 1;
+    for (i=0;i<n;i++) {
         if (i==var_index) continue;
         if (degX[i]!=1) return 0;
-	}
+    }
 
-	// Check if all polynomials, but G(uni_index), are univariate in all terms but their leading term:
-	for (i=0;i<n;i++) {
+    // Check if all polynomials, but G(uni_index), are univariate in all terms but their leading term:
+    for (i=0;i<n;i++) {
         if (i==uni_index) continue;
         It_f=G(i);It_f++;
         for(;It_f;It_f++) {
@@ -454,10 +454,10 @@ int isinnormalposition(const std::string &name,val::vector<val::pol<double> > &F
                 if (It_f.actualterm()[j]!=0) return 0;
             }
         }
-	}
-	// Basis is in normal position: Write polynomials as pol<double>;
-	for (i=0;i<n;i++) G(i).normalize();
-	for (i=0;i<n;i++) {
+    }
+    // Basis is in normal position: Write polynomials as pol<double>;
+    for (i=0;i<n;i++) G(i).normalize();
+    for (i=0;i<n;i++) {
         It_f=G(i);
         if (i!=uni_index) {
                 for (j=0;j<dim;j++)
@@ -466,7 +466,7 @@ int isinnormalposition(const std::string &name,val::vector<val::pol<double> > &F
         }
         else j=var_index;
         for (;It_f;It_f++) F[j].insert(double(It_f.actualcoef()),It_f.actualterm()[var_index]);
-	}
+    }
 
     return 1;
 }
@@ -509,7 +509,7 @@ val::pol<val::rational> modint_minimalpolynom(const val::Glist<val::s_polynom<va
             m[j+1] = integer(q[j]);
             M[j+1] = M[j] * integer(q[j]);
             ++p;
-		}
+        }
         if (isempty) {f.del();break;}
         for (j=0;j<n;++j) t[j] = new std::thread(ComputeFint,std::cref(Gint),std::ref(Fint[j+1]),k,q[j]);
         for (j=0;j<n;++j) t[j]->join();

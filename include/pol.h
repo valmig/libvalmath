@@ -55,85 +55,85 @@ class pol
 {
 //public:
 private:
-	term<T> *head=nullptr;
-	static const T zero;
+    term<T> *head=nullptr;
+    static const T zero;
 public:
 // Konstruktoren und Destruktoren
-	pol() = default;
-	pol(const T&);                 // f = pol(a) => f(x) = a*x^0
-	pol(T&& wert);
-	pol(const T&,int);               // f = pol(a,n) => f(x) a*x^n
-	pol(T&&,int);
-	pol(const pol<T>&);              
-	pol(pol<T> &&);
-	pol(std::initializer_list<val::GPair<T,int> > args);
-	~pol();
+    pol() = default;
+    pol(const T&);                 // f = pol(a) => f(x) = a*x^0
+    pol(T&& wert);
+    pol(const T&,int);               // f = pol(a,n) => f(x) a*x^n
+    pol(T&&,int);
+    pol(const pol<T>&);
+    pol(pol<T> &&);
+    pol(std::initializer_list<val::GPair<T,int> > args);
+    ~pol();
 // 
-	void del();              		//  delete all terms in polynomial
-	void insert(const T&,int);      //  insert term ordered in polynomial
-	void insert(T&&,int);
+    void del();                     //  delete all terms in polynomial
+    void insert(const T&,int);      //  insert term ordered in polynomial
+    void insert(T&&,int);
 // Misc
     int iszero() const {return (head==NULL);}
-	int degree() const {if (head==NULL) return -1; else return head->grad;}
-	friend const T& leader<T>(const pol&);
-	const T& leader() const {if (head==NULL) return zero; else return head->coef;}  // Leading coefficient
-	const T& LC() const {return leader();}                                        
-	friend int length<T>(const pol&);
-	int length() const {return val::length(*this);}
-	friend int deg<T>(const pol&);
-	const T& getlastcoef() const;
-	int getlastdeg() const;
-	const T& operator[](int) const;
-	T eval(const T&) const;                                                      // Evaluation
-	T operator() (const T& wert) const {return eval(wert);}
-	pol<T> eval (const pol<T>&) const;                                           // Pol.-evaluation ( f(g)) )
-	pol<T> operator() (const pol<T>& f) const {return eval(f);}
+    int degree() const {if (head==NULL) return -1; else return head->grad;}
+    friend const T& leader<T>(const pol&);
+    const T& leader() const {if (head==NULL) return zero; else return head->coef;}  // Leading coefficient
+    const T& LC() const {return leader();}
+    friend int length<T>(const pol&);
+    int length() const {return val::length(*this);}
+    friend int deg<T>(const pol&);
+    const T& getlastcoef() const;
+    int getlastdeg() const;
+    const T& operator[](int) const;
+    T eval(const T&) const;                                                      // Evaluation
+    T operator() (const T& wert) const {return eval(wert);}
+    pol<T> eval (const pol<T>&) const;                                           // Pol.-evaluation ( f(g)) )
+    pol<T> operator() (const pol<T>& f) const {return eval(f);}
     template <class Z> Z operator() (const Z& x) const {return eval(x);}
-	template <class Z> Z eval(const Z&) const;
-	template <class Z> Z derivation(const Z&) const;
-	pol<T> derive(int n=1) const;                                                // n-th derivative
-	pol<T> integrate() const;        											 // Integral.
-	template <class Z> Z integrate(const Z& a,const Z& b) const;  				 // integrates from a to b.
-	void trans(int m=1);            											 // replace p(X) with p(X^m)
-	pol<T> multbypower(int n) const;   											 // *this * x^n
-	const pol<T>& getmultbypower(int n);    									 // *this = x^n * *this
-	pol<T> divbypower(int n) const; 											 // division with remainder : *this div x^n
-	const pol<T>& getdivbypower(int n); 										 // *this = this->divbypower(n);
-	T norm(int n) const;                										 // not defined here
+    template <class Z> Z eval(const Z&) const;
+    template <class Z> Z derivation(const Z&) const;
+    pol<T> derive(int n=1) const;                                                // n-th derivative
+    pol<T> integrate() const;                                                    // Integral.
+    template <class Z> Z integrate(const Z& a,const Z& b) const;                 // integrates from a to b.
+    void trans(int m=1);                                                         // replace p(X) with p(X^m)
+    pol<T> multbypower(int n) const;                                                 // *this * x^n
+    const pol<T>& getmultbypower(int n);                                         // *this = x^n * *this
+    pol<T> divbypower(int n) const;                                              // division with remainder : *this div x^n
+    const pol<T>& getdivbypower(int n);                                          // *this = this->divbypower(n);
+    T norm(int n) const;                                                         // not defined here
 // Assignment
-	const pol<T>& operator =(const pol<T>&);
-	const pol<T>& operator =(pol<T>&&);
-	const pol<T>& operator =(const T&);
+    const pol<T>& operator =(const pol<T>&);
+    const pol<T>& operator =(pol<T>&&);
+    const pol<T>& operator =(const T&);
 // Comparisons
-	int operator ==(const pol<T>&) const;
-	int operator !=(const pol<T>&) const;
-	int operator ==(const T&) const;
-	int operator !=(const T&) const;
+    int operator ==(const pol<T>&) const;
+    int operator !=(const pol<T>&) const;
+    int operator ==(const T&) const;
+    int operator !=(const T&) const;
 // Additive
-	pol<T> operator +(const pol<T>&) const;
-	const pol<T>& operator +=(const pol<T>&);
-	pol<T> operator -() const;
-	pol<T> operator -(const pol<T>&) const;
-	const pol<T>& operator -=(const pol<T>&);
+    pol<T> operator +(const pol<T>&) const;
+    const pol<T>& operator +=(const pol<T>&);
+    pol<T> operator -() const;
+    pol<T> operator -(const pol<T>&) const;
+    const pol<T>& operator -=(const pol<T>&);
 // Multiplicative
-	const pol<T>& operator *=(const T&);                 //  Scalar-mult.
-	friend pol<T> operator *<T>(const T&,const pol&);
-	pol<T> operator *(const pol<T>&) const;
-	const pol<T>& operator *=(const pol<T>&);
-	friend T* horner<T>(const pol&,const pol&);
-	friend void divrest<T>(const pol&,const pol&,pol&,pol&);   // Same as divrem : division with remainder 
-	pol<T> operator /(const pol<T>&) const;
-	pol<T> operator %(const pol<T>&) const;
-	const pol<T>& operator /=(const pol<T>&);
-	const pol<T>& operator %=(const pol<T>&);
-	const pol<T>& normalize();                               // Division by leader coefficient 
+    const pol<T>& operator *=(const T&);                 //  Scalar-mult.
+    friend pol<T> operator *<T>(const T&,const pol&);
+    pol<T> operator *(const pol<T>&) const;
+    const pol<T>& operator *=(const pol<T>&);
+    friend T* horner<T>(const pol&,const pol&);
+    friend void divrest<T>(const pol&,const pol&,pol&,pol&);   // Same as divrem : division with remainder
+    pol<T> operator /(const pol<T>&) const;
+    pol<T> operator %(const pol<T>&) const;
+    const pol<T>& operator /=(const pol<T>&);
+    const pol<T>& operator %=(const pol<T>&);
+    const pol<T>& normalize();                               // Division by leader coefficient
 //
     polIterator<T> begin() const {polIterator<T> it;it=*this;return it;}
     polIterator<T> end() const {return polIterator<T>();}
 // Input/Output
-	friend std::istream& operator >><T>(std::istream&,pol<T>&);
-	friend std::ostream& operator <<<T>(std::ostream&,const pol<T>&);
-	friend class polIterator<T>;
+    friend std::istream& operator >><T>(std::istream&,pol<T>&);
+    friend std::ostream& operator <<<T>(std::ostream&,const pol<T>&);
+    friend class polIterator<T>;
 };
 
 
@@ -229,7 +229,7 @@ template <class T>
 pol<T>:: pol(const T& coef,int n)
 {
  if (coef!=zero)
-	 head = new term<T>(coef,n);
+     head = new term<T>(coef,n);
  else head=NULL;
 }
 
@@ -238,7 +238,7 @@ template <class T>
 pol<T>:: pol(T&& coef,int n)
 {
  if (coef!=zero)
-	 head = new term<T>(std::move(coef),n);
+     head = new term<T>(std::move(coef),n);
  else head=NULL;
 }
 
@@ -392,15 +392,15 @@ void pol<T>::insert(T&& wert,int g)
     }
     q=head;
     while ((q->next!=NULL) && !stop) {
-	  if ( q->next->grad > g)
-	     q=q->next;
-	  else stop=1;
+      if ( q->next->grad > g)
+         q=q->next;
+      else stop=1;
     }
     if (stop)
        if (g==q->next->grad) {
           q->next->coef+=wert;
-          if (q->next->coef!=zero)     		// coef == 0
-             return;                     	// => delete term
+          if (q->next->coef!=zero)              // coef == 0
+             return;                        // => delete term
           else {
              p=q->next;
              q->next=p->next;
@@ -477,9 +477,9 @@ const T& pol<T>::operator [](int n) const
 
  if (n<0) return zero;
  while (p!=NULL) {
-	 if (n>p->grad) return zero;
-	 else if (n==p->grad) return p->coef;
-	 else p=p->next;
+     if (n>p->grad) return zero;
+     else if (n==p->grad) return p->coef;
+     else p=p->next;
  }
  return zero;
 }
@@ -498,10 +498,10 @@ T pol<T>:: eval(const T& beta) const
  for (i=deg(*this)-1;i>=0;i--) {
      wert*=beta;
      if (p!=NULL)
-		 if (p->grad==i) {
-			 wert+=p->coef;
-			 p=p->next;
-		 }
+         if (p->grad==i) {
+             wert+=p->coef;
+             p=p->next;
+         }
  }
  return wert;
 }
@@ -521,10 +521,10 @@ pol<T> pol<T>:: eval(const pol<T>& beta) const
  for (i=deg(*this)-1;i>=0;i--) {
      wert*=beta;
      if (p!=NULL)
-		 if (p->grad==i) {
-			 wert.insert(p->coef,0);
-			 p=p->next;
-		 }
+         if (p->grad==i) {
+             wert.insert(p->coef,0);
+             p=p->next;
+         }
  }
  return wert;
 }
@@ -542,10 +542,10 @@ template <class Z> Z pol<T>::eval(const Z& beta) const
  for (i=deg(*this)-1;i>=0;i--) {
      wert*=beta;
      if (p!=NULL)
-		 if (p->grad==i) {
-			 wert+=Z(p->coef);
-			 p=p->next;
-		 }
+         if (p->grad==i) {
+             wert+=Z(p->coef);
+             p=p->next;
+         }
  }
  return wert;
 }
@@ -564,10 +564,10 @@ template <class Z> Z pol<T>::derivation(const Z& beta) const
  for (i=head->grad-2;i>=0;i--) {
      wert*=beta;
      if (p!=NULL)
-		 if (p->grad==i+1) {
-			 wert+=Z(T(p->grad)*p->coef);
-			 p=p->next;
-		 }
+         if (p->grad==i+1) {
+             wert+=Z(T(p->grad)*p->coef);
+             p=p->next;
+         }
  }
  return wert;
 }
@@ -645,11 +645,11 @@ template <class Z> Z pol<T>::integrate(const Z& a,const Z& b) const
      wert1*=a;
      wert2*=b;
      if (p!=NULL)
-		 if (p->grad==i) {
-			 wert1+=Z(p->coef/T(i+1));
-			 wert2+=Z(p->coef/T(i+1));
-			 p=p->next;
-		 }
+         if (p->grad==i) {
+             wert1+=Z(p->coef/T(i+1));
+             wert2+=Z(p->coef/T(i+1));
+             p=p->next;
+         }
  }
  wert1*=a;
  wert2*=b;
@@ -873,17 +873,17 @@ pol<T> pol<T>::operator +(const pol<T>& p) const
     }
     else { //(r!=NULL && s!=NULL) {
        if ( (r->grad) > (s->grad) ){
-	  q.insert(r->coef,r->grad);
-	  r=r->next;
+      q.insert(r->coef,r->grad);
+      r=r->next;
        }
        else if ( (r->grad) == (s->grad) ) {
-	  q.insert((r->coef)+(s->coef),r->grad);
-	  r=r->next;
-	  s=s->next;
+      q.insert((r->coef)+(s->coef),r->grad);
+      r=r->next;
+      s=s->next;
        }
        else {
-	  q.insert(s->coef,s->grad);
-	  s=s->next;
+      q.insert(s->coef,s->grad);
+      s=s->next;
        }
     }
   }
@@ -895,7 +895,7 @@ pol<T> pol<T>::operator +(const pol<T>& p) const
           u= new term<T>(r->coef,r->grad);
           t->next=u;
           r=r->next;
-	      t=t->next;
+          t=t->next;
        }
        else {
             if ( (r->grad) == (s->grad) ) {
@@ -971,17 +971,17 @@ const pol<T>& pol<T>::operator +=(const pol<T>& t)
  while (p!=NULL && q!=NULL && !stop)
        if (p->next==NULL) stop=1;                   // q must be appended to  p 
        else {
-	  fall= ( (q->grad) >= (p->next->grad) );
-	  if ( (q->grad) > (p->next->grad) ) fall=2;
-	  switch (fall) {
-	      case 0 : p=p->next; break;                    // q->grad < p->next->grad
+      fall= ( (q->grad) >= (p->next->grad) );
+      if ( (q->grad) > (p->next->grad) ) fall=2;
+      switch (fall) {
+          case 0 : p=p->next; break;                    // q->grad < p->next->grad
 
-	      case 1 :
+          case 1 :
               if ( ( (p->next->coef) + (q->coef) ) == zero ) {  // == !
                   r=p->next;
                   p->next=r->next;
                   delete r;
-		      }
+              }
               else {
                   p->next->coef+=q->coef;
                   p=p->next;
@@ -989,19 +989,19 @@ const pol<T>& pol<T>::operator +=(const pol<T>& t)
               q=q->next;
               break;
 
-	      case 2 : r = new term<T>(q->coef,q->grad,p->next);    // < !
-		       p->next=r;
-		       p=p->next;
-		       q=q->next;
-		       break;
-	  }
+          case 2 : r = new term<T>(q->coef,q->grad,p->next);    // < !
+               p->next=r;
+               p=p->next;
+               q=q->next;
+               break;
+      }
        }
  if (stop)
     while (q!=NULL) {
-	  r=new term<T>(q->coef,q->grad);
-	  p->next=r;
-	  p=p->next;
-	  q=q->next;
+      r=new term<T>(q->coef,q->grad);
+      p->next=r;
+      p=p->next;
+      q=q->next;
     }
  s.head=NULL;
  return *this;
@@ -1077,39 +1077,39 @@ const pol<T>& pol<T>::operator -=(const pol<T>& t)
  }
  p=head;
  while (p!=NULL && q!=NULL && !stop)
-       if (p->next==NULL) stop=1;      					// q must be appended tp p
+       if (p->next==NULL) stop=1;                           // q must be appended tp p
        else {
-	  fall= ( (q->grad) >= (p->next->grad) );
-	  if ( (q->grad) > (p->next->grad) ) fall=2;
-	  switch (fall) {
-	      case 0 : p=p->next; break;     				// q->grad < p->next->grad
+      fall= ( (q->grad) >= (p->next->grad) );
+      if ( (q->grad) > (p->next->grad) ) fall=2;
+      switch (fall) {
+          case 0 : p=p->next; break;                    // q->grad < p->next->grad
 
-	      case 1 :
+          case 1 :
               if ( ( (p->next->coef) - (q->coef) ) == zero ) {  // == !
                   r=p->next;
                   p->next=r->next;
                   delete r;
-		       }
+               }
               else {
                   p->next->coef-=q->coef;
                   p=p->next;
-		       }
-		       q=q->next;
-		       break;
+               }
+               q=q->next;
+               break;
 
-	      case 2 : r = new term<T>(-(q->coef),q->grad,p->next);    // < !
-		       p->next=r;
-		       p=p->next;
-		       q=q->next;
-		       break;
-	  }
+          case 2 : r = new term<T>(-(q->coef),q->grad,p->next);    // < !
+               p->next=r;
+               p=p->next;
+               q=q->next;
+               break;
+      }
        }
  if (stop)
     while (q!=NULL) {
-	  r=new term<T>(-(q->coef),q->grad);
-	  p->next=r;
-	  p=p->next;
-	  q=q->next;
+      r=new term<T>(-(q->coef),q->grad);
+      p->next=r;
+      p=p->next;
+      q=q->next;
     }
  s.head=NULL;
  return *this;
@@ -1134,24 +1134,24 @@ const pol<T>& pol<T>::operator *=(const T& wert)
     return *this;
  }
  while (head!=NULL) {
-	head->coef*=wert;
-	if (head->coef==zero) {
-	   r=head;
-	   head=head->next;
-	   delete r;
-	}
-	else break;
+    head->coef*=wert;
+    if (head->coef==zero) {
+       r=head;
+       head=head->next;
+       delete r;
+    }
+    else break;
  }
  if (head==NULL) return *this;
  p=head;
  while (p->next!=NULL) {
-	p->next->coef*=wert;
-	if (p->next->coef==zero) {
-	   r=p->next;
-	   p->next=r->next;
-	   delete r;
-	}
-	if ((p=p->next)==NULL) return *this;
+    p->next->coef*=wert;
+    if (p->next->coef==zero) {
+       r=p->next;
+       p->next=r->next;
+       delete r;
+    }
+    if ((p=p->next)==NULL) return *this;
  }
  return *this;
 }
@@ -1170,17 +1170,17 @@ pol<T> operator *(const T& wert,const pol<T>& f)
  while (p!=NULL)
        if ((wert*p->coef)==pol<T>::zero) p=p->next;
        else {
-	  g.insert(wert*p->coef,p->grad);
-	  q=g.head;
-	  p=p->next;
-	  break;
+      g.insert(wert*p->coef,p->grad);
+      q=g.head;
+      p=p->next;
+      break;
        }
 
  for (;p!=NULL;p=p->next)
       if ((wert*p->coef)!=pol<T>::zero) {
-	  r = new term<T>(wert*p->coef,p->grad);
-	  q->next=r;
-	  q=q->next;
+      r = new term<T>(wert*p->coef,p->grad);
+      q->next=r;
+      q=q->next;
        }
  return g;
 }
@@ -1200,20 +1200,22 @@ pol<T> pol<T>::operator *(const pol<T>& f) const
      if (p==NULL) return g;
      d=p->grad;
      wert=p->coef;
-     for (q=f.head;q!=NULL;q=q->next)
-	 if ( (wert*q->coef) != zero) {
-	    s= new term<T>(wert*q->coef,d+q->grad);
-	    h.head=s;
-	    r=h.head;
-	    q=q->next;
-	    break;
-	 }
-     for (;q!=NULL;q=q->next)
-	 if ( (wert*q->coef) != zero ) {
-	    s= new term<T>(wert*q->coef,d+q->grad);
-	    r->next=s;
-	    r=r->next;
-	 }
+     for (q=f.head;q!=NULL;q=q->next) {
+         if ( (wert*q->coef) != zero) {
+             s= new term<T>(wert*q->coef,d+q->grad);
+             h.head=s;
+             r=h.head;
+             q=q->next;
+             break;
+         }
+     }
+     for (;q!=NULL;q=q->next) {
+         if ( (wert*q->coef) != zero ) {
+             s= new term<T>(wert*q->coef,d+q->grad);
+             r->next=s;
+             r=r->next;
+         }
+     }
      g+=h;
      h.del();
  }
@@ -1261,7 +1263,7 @@ T* horner(const pol<T>& f,const pol<T>& g)
      //k=min(m-1,n1-1-i);
      j= (m-1-i>1)? m-1-i:1;
      for (;j<=k;j++)
-	 eps[i]-=gv[m-1-j]*eps[i+j];
+     eps[i]-=gv[m-1-j]*eps[i+j];
  }
  delete[] gv;
  delete[] fv;
@@ -1293,8 +1295,8 @@ pol<T> pol<T>::operator /(const pol<T>& g) const
  p=NULL;
  for (grad=0,i=m;i<=n1;i++,grad++)
       if (eps[i]!=zero) {
-	 q = new term<T>((one/wert)*eps[i],grad,p);
-	 p=q;
+     q = new term<T>((one/wert)*eps[i],grad,p);
+     p=q;
       }
  h.head=p;
  delete[] eps;

@@ -58,82 +58,82 @@ class DLL_PUBLIC integer
 public:
        static int mem_optimized;
        // constructors and destructor
-	   integer() = default;//{dat=NULL;laenge=0;}
-	   integer(int);
-	   integer(unsigned);
-	   integer(const integer&);
-	   integer(const rational&);
-	   integer(integer&&);// Move-Konstruktor:
-	   integer(const integer&,int); // entspr. integer(const integer&)*2^(n*numberofbits)
-	   ~integer() {delete[] dat;}
+          integer() = default;//{dat=NULL;laenge=0;}
+          integer(int);
+          integer(unsigned);
+          integer(const integer&);
+          integer(const rational&);
+          integer(integer&&);// Move-Konstruktor:
+          integer(const integer&,int); // entspr. integer(const integer&)*2^(n*numberofbits)
+          ~integer() {delete[] dat;}
        // cast-operators 
-	   operator int() const;
-	   operator unsigned() const;
-	   operator double() const;    //nutzt ieee 754 - Eigenschaften.
+          operator int() const;
+          operator unsigned() const;
+          operator double() const;    //nutzt ieee 754 - Eigenschaften.
        // assignment-operators
-	   integer& operator =(const integer&);
-	   integer& operator =(integer&&); //move-Zuweisung.
+          integer& operator =(const integer&);
+          integer& operator =(integer&&); //move-Zuweisung.
        integer& operator =(int);
-	   // misc
-	   int signum() const {return (laenge < 0) ? -1:1;}         // x.signum=1 <=> x>=0; x.signum=-1 <=> x<0
-	   int length() const {return laenge;}
-	   int abslength() const {return hilfinteger::abs(laenge);}
-	   int iseven() const;
-	   int isodd() const;
-	   int isNull() const {return (dat==NULL);}
-	   int iszero() const {return (dat==NULL);}
-	   int isunit() const {return ((laenge==1 || laenge==-1) && dat[0]==1);}
-	   static int GetMaxlength(){return Maxlength;}
-	   unsigned operator[] (int i) const {if (i<0 || i>=hilfinteger::abs(laenge)) return 0; else return dat[i];}
+          // misc
+          int signum() const {return (laenge < 0) ? -1:1;}         // x.signum=1 <=> x>=0; x.signum=-1 <=> x<0
+          int length() const {return laenge;}
+          int abslength() const {return hilfinteger::abs(laenge);}
+          int iseven() const;
+          int isodd() const;
+          int isNull() const {return (dat==NULL);}
+          int iszero() const {return (dat==NULL);}
+          int isunit() const {return ((laenge==1 || laenge==-1) && dat[0]==1);}
+          static int GetMaxlength(){return Maxlength;}
+          unsigned operator[] (int i) const {if (i<0 || i>=hilfinteger::abs(laenge)) return 0; else return dat[i];}
        // compare-operators 
-	   int operator ==(const integer&) const;
-	   int operator !=(const integer&) const;
-	   int operator ==(int) const;
-	   int operator !=(int) const;
-	   int operator <(const integer&) const;
-	   int operator <=(const integer&) const;
-	   int operator >(const integer&) const;
-	   int operator >=(const integer&) const;
-	   int operator <(int) const;
-	   int operator <=(int) const;
-	   int operator >(int) const;
-	   int operator >=(int) const;
-	   int abslower(const integer&) const;
-	   // bit-operators
-	   integer operator <<(int) const;
-	   integer operator >>(int) const;
-	   //additive operators
-	   integer operator +(const integer&) const;
-	   integer operator -(const integer&) const;
-	   integer operator -() const;
-	   integer& operator +=(const integer&);
-	   integer& operator -=(const integer&);
-	   integer& operator++();     // praefix ++ Gibt neuen Wert zurueck
-	   integer& operator++(int);  // postfix ++ Gibt neuen Wert zurueck
-	   integer& operator--();     // praefix --
-	   integer& operator--(int);  // postfix --
-	   const integer& changesign() {laenge*=-1;return *this;}
-	   //multiplicative operators
-	   friend integer shift(const integer&,int);  // shift(x,n) = x * 2^(n*numberofbits)
-	   friend integer trunc(const integer&,int);
-	   friend integer rest(const integer&,int); // Regel: x = shift(trunc(x,n),n) + rest(x,n)
-	   integer operator *(const integer&) const;
-	   integer& operator *=(const integer&);
-	   friend void divrem(const integer&,const integer&,integer&,integer&);
-	   integer operator /(const integer&) const;
-	   integer& operator /=(const integer&);
-	   integer operator %(const integer&) const;
-	   integer& operator %=(const integer&);
-	   integer& EDIVBY(const integer&);           
-	   friend integer ggTspez(const integer &a,const integer &b);
-	   friend integer EDIV(const integer&,const integer&);
-	   friend integer gcdeuk(integer,integer);
-	   friend DLL_PUBLIC integer abs(const integer& a);
-	   friend DLL_PUBLIC integer hilfinteger::exactdivision(integer,integer);
-	   friend DLL_PUBLIC integer hilfinteger::restsingle(const integer&,const integer&);
-	   // random generator
-	   friend integer integerrand(int);
-	   // ----------------------------------------
+          int operator ==(const integer&) const;
+          int operator !=(const integer&) const;
+          int operator ==(int) const;
+          int operator !=(int) const;
+          int operator <(const integer&) const;
+          int operator <=(const integer&) const;
+          int operator >(const integer&) const;
+          int operator >=(const integer&) const;
+          int operator <(int) const;
+          int operator <=(int) const;
+          int operator >(int) const;
+          int operator >=(int) const;
+          int abslower(const integer&) const;
+          // bit-operators
+          integer operator <<(int) const;
+          integer operator >>(int) const;
+          //additive operators
+          integer operator +(const integer&) const;
+          integer operator -(const integer&) const;
+          integer operator -() const;
+          integer& operator +=(const integer&);
+          integer& operator -=(const integer&);
+          integer& operator++();     // praefix ++ Gibt neuen Wert zurueck
+          integer& operator++(int);  // postfix ++ Gibt neuen Wert zurueck
+          integer& operator--();     // praefix --
+          integer& operator--(int);  // postfix --
+          const integer& changesign() {laenge*=-1;return *this;}
+          //multiplicative operators
+          friend integer shift(const integer&,int);  // shift(x,n) = x * 2^(n*numberofbits)
+          friend integer trunc(const integer&,int);
+          friend integer rest(const integer&,int); // Regel: x = shift(trunc(x,n),n) + rest(x,n)
+          integer operator *(const integer&) const;
+          integer& operator *=(const integer&);
+          friend void divrem(const integer&,const integer&,integer&,integer&);
+          integer operator /(const integer&) const;
+          integer& operator /=(const integer&);
+          integer operator %(const integer&) const;
+          integer& operator %=(const integer&);
+          integer& EDIVBY(const integer&);
+          friend integer ggTspez(const integer &a,const integer &b);
+          friend integer EDIV(const integer&,const integer&);
+          friend integer gcdeuk(integer,integer);
+          friend DLL_PUBLIC integer abs(const integer& a);
+          friend DLL_PUBLIC integer hilfinteger::exactdivision(integer,integer);
+          friend DLL_PUBLIC integer hilfinteger::restsingle(const integer&,const integer&);
+          // random generator
+          friend integer integerrand(int);
+          // ----------------------------------------
        // friend class 
        friend class rational;
        // input, output:
@@ -142,25 +142,25 @@ public:
        static void SetOutput_Style(Output_Type t) {Output_Style=t;}
        static void SetOutput_Digits(int n) {if (n<2) n=2;Output_Digits=n;}
        static integer char_to_integer(char* buf,int l=-1);
-	   friend DLL_PUBLIC std::istream& operator >>(std::istream&,integer&);
-	   friend DLL_PUBLIC std::ostream& operator <<(std::ostream&,integer);
+          friend DLL_PUBLIC std::istream& operator >>(std::istream&,integer&);
+          friend DLL_PUBLIC std::ostream& operator <<(std::ostream&,integer);
 private:
        // -----------------------------------------------------------------------------
        unsigned int *dat=nullptr;
-	   int laenge=0;                             // |laenge| = length of dat. laenge < 0 <=> *this < 0. laenge = 0  <=> *this = 0
-	   // -----------------------------------------------------------------------------
-	   static int Maxlength;
-	   static Output_Type Output_Style;
-	   static int Output_Digits;
-	   //int abslower(const integer&) const;
-	   void add(const integer&,integer&) const;
-	   integer& addto(const integer&);
-	   void sub(const integer&,integer&) const;
-	   void subto(const integer&);
-	   void truncby(int);
-	   void shiftrightby(int);
-	   void classicmult(const integer&,integer&) const;
-	   static integer gcdbin(const integer&,const integer&);
+          int laenge=0;                             // |laenge| = length of dat. laenge < 0 <=> *this < 0. laenge = 0  <=> *this = 0
+          // -----------------------------------------------------------------------------
+          static int Maxlength;
+          static Output_Type Output_Style;
+          static int Output_Digits;
+          //int abslower(const integer&) const;
+          void add(const integer&,integer&) const;
+          integer& addto(const integer&);
+          void sub(const integer&,integer&) const;
+          void subto(const integer&);
+          void truncby(int);
+          void shiftrightby(int);
+          void classicmult(const integer&,integer&) const;
+          static integer gcdbin(const integer&,const integer&);
        static void divrestsingle(const integer&,const integer&,integer&,integer&);
        static void divsingle(const integer&,const integer&,integer&);
        static void restsingle(const integer&,const integer&,integer&);

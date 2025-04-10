@@ -16,32 +16,32 @@ std::string primlistpath = val::primlistpath;
 template <class T>
 void subsets(const val::Glist<T>& G,val::Glist<val::Glist<T>>& S,int m,int i0=0)
 {
-	int i,n=G.length();
-	if ((m==0) || m>n-i0) {
-		val::Glist<T> A;
-		S.push_back(A);
-		return;
-	}
-	else if (m==n-i0) {
-		val::Glist<T> A;
-		for (i=i0;i<n;++i) A.push_back(G[i]);
-		S.push_back(A);
-		return;
-	}
-	else if (m==1) {
-		for (i=i0;i<n;++i) {
-			S.push_back(val::Glist<T>{G[i]});
-		}
-	}
-	else {
-		val::Glist<val::Glist<T>> R;
-		const T &a=G[i0];
-		subsets(G,R,m-1,i0+1);
-		for (auto& A : R) A.push(a);
-		S.append(std::move(R));
-		subsets(G,S,m,i0+1);
-		return;
-	}
+    int i,n=G.length();
+    if ((m==0) || m>n-i0) {
+        val::Glist<T> A;
+        S.push_back(A);
+        return;
+    }
+    else if (m==n-i0) {
+        val::Glist<T> A;
+        for (i=i0;i<n;++i) A.push_back(G[i]);
+        S.push_back(A);
+        return;
+    }
+    else if (m==1) {
+        for (i=i0;i<n;++i) {
+            S.push_back(val::Glist<T>{G[i]});
+        }
+    }
+    else {
+        val::Glist<val::Glist<T>> R;
+        const T &a=G[i0];
+        subsets(G,R,m-1,i0+1);
+        for (auto& A : R) A.push(a);
+        S.append(std::move(R));
+        subsets(G,S,m,i0+1);
+        return;
+    }
 }
 
 template <class T>
@@ -218,6 +218,9 @@ val::d_array<val::d_array<henselnode>> createhenseltree(const val::d_array<val::
         }
         if (!even) {
             F[i][r-1].f = F[i+1][k-1].f;
+
+            // F[i][r-1].s = F[i+1][k-1].s;
+            // F[i][r-1].t = F[i+1][k-1].t;
         }
     }
 
@@ -240,7 +243,9 @@ void hensellift(val::d_array<val::d_array<henselnode>> &F,int l)
             for (j=0;j<n-1;j+=2) {
                 hensellift(F[i-1][j/2].f,F[i][j].f,F[i][j+1].f,F[i-1][j/2].s,F[i-1][j/2].t);
             }
-            if (!even) F[i][n-1] = F[i-1][F[i-1].length() -1];
+            if (!even) {
+                F[i][n-1] = F[i-1][F[i-1].length() -1];
+            }
         }
         std::cout<<"\n factors modulo "<<val::s_modinteger::q;
         for (i=0;i<F[m-1].length();++i) {
@@ -286,8 +291,17 @@ val::d_array<val::pol<val::s_modinteger>> factorlift(const val::pol<val::integer
             for (j=0;j<n-1;j+=2) {
                 hensellift(F[i-1][j/2].f,F[i][j].f,F[i][j+1].f,F[i-1][j/2].s,F[i-1][j/2].t);
             }
-            if (!even) F[i][n-1] = F[i-1][F[i-1].length() -1];
+            if (!even) F[i][n-1].f = F[i-1][F[i-1].length() -1].f;
         }
+        // {
+        //     pol<s_modinteger> h(s_modinteger(1));
+        //     for (int i = 0; i < r; ++i) h *= F[m-1][i].f;
+        //     if (F[0][0].f != h) {
+        //         std::cout << "\n error in factorlift. k = " << k << ". m = " << m;
+        //         std::cout << "\n F[0].length() = " << F[0].length();
+        //         std::cout << "\n log2(4) = " << log2(4);
+        //     }
+        // }
     }
 
     for (i=0;i<r;++i) factor[i] = std::move(F[m-1][i].f);
@@ -481,14 +495,14 @@ pol<modq> findirreducible(int n)
        if (f[0]==val::modq(0)) f.insert(val::modq(1),0);
        g=potenzmod(x,q,f);
        for (i=1;i<=m;i++)
-	   if (val::gcd(g-x,f)!=one) {
-	      fertig=0;
-	      break;
-	   }
-	   else {
-	      fertig=1;
-	      g=potenzmod(g,q,f);
-	   }
+       if (val::gcd(g-x,f)!=one) {
+          fertig=0;
+          break;
+       }
+       else {
+          fertig=1;
+          g=potenzmod(g,q,f);
+       }
  }
  return f;
 }
@@ -531,13 +545,13 @@ int polfactor(const pol<modq> &f,d_array<pol<modq>> &afaktor,d_array<int> &amult
        agi=val::d_array<val::pol<val::modq>>(s);
        equaldegree(g,i,agi);
        for (j=0;j<s;j++) {
-			e=0;
-			while ((f0%agi[j])==zeropol) {
-				f0/=agi[j];
-				e++;
-			}
-			afaktor[anzahl]=agi[j];
-			amult[anzahl++]=e;
+            e=0;
+            while ((f0%agi[j])==zeropol) {
+                f0/=agi[j];
+                e++;
+            }
+            afaktor[anzahl]=agi[j];
+            amult[anzahl++]=e;
        }
     }
  }
@@ -574,9 +588,9 @@ d_array<pol<rational>> polfactor(const pol<rational> &g,int comment)
     pol<rational> X(rational(1),1);
     
     if (f[0] == integer(0)) {
-		divbyx = 1;
-		f.getdivbypower(1);
-	}
+        divbyx = 1;
+        f.getdivbypower(1);
+    }
     
 
     int n=f.degree(),p=5,l,i,j,r,found;// ,m
@@ -618,6 +632,20 @@ d_array<pol<rational>> polfactor(const pol<rational> &g,int comment)
 
     d_array<pol<s_modinteger>> F = factorlift(f,factormodq,l);
 
+    //for ( const auto &h : F ) std::cout << "\n deg: " << h.degree();
+    // {
+    //     pol<s_modinteger> fmi = TomodintegerPol(f), hmi(s_modinteger(1));
+    //     pol<modq> hmq(modq(1));
+    //     for (const auto &h : F) hmi *= h;
+    //     if ( hmi != fmi ) {
+    //         std::cout << "\n factors mod p^l incorrect!";
+    //     }
+    //     for (const auto &h : factormodq) hmq *= h;
+    //     if (hmq != fmodq) {
+    //         std::cout << "\n factors mod p incorrect!";
+    //     }
+    // }
+
     b1=s_modinteger(b);
 
     if (divbyx) afaktor.push_back(X);
@@ -627,6 +655,10 @@ d_array<pol<rational>> polfactor(const pol<rational> &g,int comment)
         subsets(T,S,i);
         found=0;
         for (const auto& H : S) {
+            // if (i == 3) {
+            //     std::cout << "\n H = ";
+            //     for (const auto &k : H) std::cout << k << "  ";
+            // }
             g1=g2=pol<s_modinteger>(b1);
             for (j=0;j<r;++j) {
                 if (inSet(H,T[j])) g1*=F[T[j]];
@@ -634,6 +666,14 @@ d_array<pol<rational>> polfactor(const pol<rational> &g,int comment)
             }
             f1=TointegerPol(g1);
             f2=TointegerPol(g2);
+            // //std::cout << "\n deg(f1) = " << f1.degree();i
+            //if (f1.degree() == 18) std::cout << "\n f1 = " << PolToString(f1);
+            // if (f1.degree() == 18) {
+            //     pol<rational> fr1 = toRationalPolynom(f1);
+            //     if ((g%fr1).iszero()) {
+            //         std::cout << "\n f1 divides f";
+            //     }
+            // }
             if (Norm1(f1)*Norm1(f2)<B) {
                 found=1;
                 for (const auto& k : H) {
