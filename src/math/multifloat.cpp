@@ -27,6 +27,10 @@ int hilfmultifloat::abs(int x)
 }
 
 
+multifloat multifloat::NaN(double(0.0/0.0));
+multifloat multifloat::InfPos(1.0/0.0);
+multifloat multifloat::InfNeg(-1.0/0.0);
+
 int multifloat::prec=1;
 
 const int multifloat::numberofbits = 8*sizeof(unsigned);
@@ -550,10 +554,252 @@ multifloat::operator double() const
     *bint|=Exp;
 
     return b;
-
-
 }
 
+// z.mantissa = nullptr and z.exp inititalized, l is length of c. Get z.mantissa from c
+void multifloat::normalizemantissa(unsigned *c, int l, multifloat &z)
+{
+    unsigned wert;
+    int i, start = l - prec;
+    unsigned highon = 1 << (numberofbits -1); //highest bit is 1, rest 0.
+                                              //
+    if (z.exp > (z.exp + start * numberofbits)) {
+        z = InfPos;
+        return;
+    }
+    z.exp += start * numberofbits;
+    // round:
+    wert = 0;
+    if (c[start-1] & highon) wert = 1;
+
+
+    for (i = start; i < l; ++i) {
+        c[i] += wert;
+        if ((!c[i])) {
+            start++;
+            wert = 1;
+            if (z.exp > 0 && (z.exp > z.exp + numberofbits)) {
+                z = InfPos;
+                return;
+            }
+            z.exp += numberofbits;
+        }
+        else {
+            wert = 0;
+            break;
+        }
+    }
+    if (wert) {
+        z.mantissa = new unsigned[1];
+        z.mantissa[0] = 1;
+        z.laenge = 1;
+        return;
+    }
+
+    // eliminate 0 at end:
+    //
+    unsigned last;
+    int r, s;
+
+    r = 0;
+    wert = c[start];
+    while (wert % 2 == 0) {
+        ++r;
+        ++z.exp;
+        wert /= 2;
+        if (z.exp == 0) {
+            z = InfPos;
+            return;
+        }
+    }
+
+    last = c[l-1] >> r;
+    if (last) z.laenge = l - start;
+    else z.laenge = l - 1 - start;
+    s = numberofbits - r;
+
+    z.mantissa = new unsigned[z.laenge];
+
+    for (i = start; i < l-1; ++i) {
+        wert = c[i+1] << s;
+        z.mantissa[i-start] = wert | (c[i] >> r);
+    }
+    if (last) z.mantissa[z.laenge - 1] = last;
+
+    return;
+}
+
+// Additive functions:
+
+// ahexp = a.highestexp(), bhexp = b.highestexp()   |ahexp| >= |bhexp|.
+multifloat multifloat::add(const multifloat& a,const multifloat& b, int ahexp, int bhexp)  // |a| + |b|
+{
+    int la = a.abslength(), lb = b.abslength(), aexp = a.exp, bexp = b.exp, mexp = Min(aexp,bexp),
+        digits = ahexp - mexp, maxdigits = numberofbits * prec,l;
+    multifloat z;
+
+    std::cout << "\n digits = " << digits << "; maxdigits = " << maxdigits;
+    digits = Min(maxdigits,digits);
+    l = digits / numberofbits;
+    if (digits % numberofbits) ++l;
+    mexp = ahexp - digits;
+    std::cout << "\n New length: " << l << "; Minimal exp = " << mexp;
+    if ((bhexp + 1) < mexp) return a;
+    return z;
+}
+
+
+multifloat multifloat::operator +(const multifloat &y) const
+{
+    if (mantissa == nullptr) return y;
+    if (y.mantissa == nullptr) return *this;
+    if (laenge == 0 || y.laenge == 0) return NaN;
+
+    int lx = abslength(), ly = y.abslength(), signx = signum(), signy = y.signum();
+
+    if (lx == 1 && mantissa[0] == 0) {
+        if (ly == 1 && y.mantissa[0] == 0) {
+            if (signx * signy < 0) return NaN;
+            else return (*this);
+        }
+        else return *this;
+    }
+    if (ly == 1 && y.mantissa[0] == 0) return y;
+
+    multifloat z;
+
+    if (signx == signy) {
+        int ahexp = highestexp(), bhexp = y.highestexp();
+        if (ahexp >= bhexp) {
+            z = add(*this, y, ahexp, bhexp);
+        }
+        else z = add(y,*this, bhexp, ahexp);
+        z.laenge *= signx;
+    }
+
+    return z;
+}
+
+
+
+// Multiplicative functions:
+
+
+void multifloat::multunsigned(unsigned a, unsigned b, unsigned &high, unsigned &low)
+{
+    __int64 c;
+    c=(__int64) (a) * (__int64)(b);
+    high=unsigned(c>>numberofbits);
+    low=unsigned(c);
+}
+
+
+int multifloat::multbyunsigned(unsigned *dat,int l,unsigned x,unsigned *c)
+{
+    unsigned high,low,wert=0;
+    int i;
+
+    for (i = 0; i < l; ++i, ++c) {
+        multunsigned(dat[i], x, high, low);
+        *c = wert + low;
+        if (*c < wert) wert = 1;
+        else wert = 0;
+        wert += high;
+    }
+    if (wert) {
+        *c = wert;
+        l++;
+    }
+    else *c = 0;
+
+    return l;
+}
+
+
+multifloat multifloat::operator *(const multifloat &y) const
+{
+    multifloat z;
+    int expz = exp + y.exp, signz = signum() * y.signum();
+
+    if (isNaN() || y.isNaN()) return NaN;
+    if (iszero() && (y.isInfNeg() || y.isInfPos())) return NaN;
+    if (y.iszero() && (isInfNeg() || isInfPos())) return NaN;
+    if (isInfPos()) {
+        if (y.signum() == 1) return InfPos;
+        else return InfNeg;
+    }
+    if (isInfNeg()) {
+        if (y.signum() == 1) return  InfNeg;
+        else return InfPos;
+    }
+    if (iszero() || y.iszero()) return z;
+    if (exp > 0 && y.exp > 0) {
+        if (expz < exp || expz < y.exp) {
+            if (signz > 0) return  InfPos;
+            else return  InfNeg;
+        }
+    }
+    if (exp < 0 && y.exp < 0)  {
+        if (expz > exp || expz > y.exp) return z;
+    }
+
+    int i, j, lx = hilfmultifloat::abs(laenge), ly = hilfmultifloat::abs(y.laenge), la, lb, l = lx + ly;
+    unsigned wert, *c, *h = nullptr, *a, *b, *ph;
+
+    if (lx<ly) {
+        la = ly; lb = lx;
+        a = y.mantissa ; b=mantissa;
+    }
+    else {
+        la = lx; lb = ly;
+        a = mantissa; b = y.mantissa;
+    }
+    c = new unsigned int[l];
+    c[l-1] = 0;
+
+    if (lb > 1) {
+        h = new unsigned int[la+1];
+    }
+    // 1.:
+    multbyunsigned(a, la, b[0], c);
+
+    for (i = 1; i < lb; ++i) {
+        multbyunsigned(a, la, b[i], h);
+        // add now:
+        wert = 0;
+        ph = h;
+        for (j = 0; j < la; ++j, ++ph) {
+            *ph += wert;
+            c[j+i] += *ph;
+            if (wert && !(*ph)) wert = 1;
+            else if (c[j+i] < *ph) wert = 1;
+            else wert = 0;
+        }
+        c[i+la] = wert + *ph;
+    }
+    if (lb>1) delete[] h;
+
+    if (!c[l-1]) l--;
+
+    // since both mantissas are odd, so their product.
+
+    if (l <= prec) {
+        z.mantissa = c;
+        c = nullptr;
+        z.laenge = signz * l;
+        z.exp = expz;
+        return z;
+    }
+
+    // now l > prec:
+
+    normalizemantissa(c, l, z);
+
+    z.laenge *= signz;
+    delete [] c;
+
+    return z;
+}
 
 
 std::istream& operator >>(std::istream& is ,multifloat& x)
@@ -569,6 +815,22 @@ std::istream& operator >>(std::istream& is ,multifloat& x)
 std::ostream& operator <<(std::ostream& os,const multifloat& x)
 {
     //Vorläufig:
+    if (x.isNaN()) {
+        os << "nan";
+        return os;
+    }
+    if (x.isInfNeg()) {
+        os << "-inf";
+        return os;
+    }
+    if (x.isInfPos()) {
+        os << "inf";
+        return os;
+    }
+    if (x.iszero()) {
+        os << "0";
+        return os;
+    }
     double b(x);
     os<<b;
     return os;

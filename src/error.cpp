@@ -18,7 +18,7 @@ void SetWarningMessage(char1_function &F)
 
 namespace Error
 {
-void ErrorMessage(const char* c) {std::cout<<c;}
+void ErrorMessage(const char* c) {std::cerr << c;}
 
 void error(const char* c) {errormessage(c);exit(-1);}
 
@@ -43,6 +43,6 @@ void warning(const char* c)
 
 int (*warningmessage)(const char*) = &WarningMessage;
 
-}
+}  // End namespace Error
 
 }  //End namespace val

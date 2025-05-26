@@ -195,10 +195,10 @@ template <class T>
 T& d_array<T>::operator [](int i)
 {
     if (i<0 || i >= cap) {  //Error::error("\nERROR: d_array<T>::operator[] : NULL-Pointer!");
-		std::string msg=val::gettypename(*this);
-		msg+=": ERROR: Index out of range!\nIndex: "+ToString(i) + ". Capacity: " + ToString(cap)+"\n";
-		Error::error(msg.c_str());
-	}
+        std::string msg=val::gettypename(*this);
+        msg+=": ERROR: Index out of range!\nIndex: "+ToString(i) + ". Capacity: " + ToString(cap)+"\n";
+        Error::error(msg.c_str());
+    }
     else if (i>=len) len=i+1;
     return dat[i];
 }
@@ -208,10 +208,10 @@ template <class T>
 const T& d_array<T>::operator [](int i) const
 {
     if (i<0 || i >= len) { //Error::error("\nERROR: d_array<T>::operator[] : NULL-Pointer!");
-		std::string msg=val::gettypename(*this);
-		msg+=": ERROR: Index out of range!\nIndex: "+ToString(i) + ". Size: " + ToString(len)+ ". Capacity: "+ ToString(cap)+ "\n";
-		Error::error(msg.c_str());
-	}
+        std::string msg=val::gettypename(*this);
+        msg+=": ERROR: Index out of range!\nIndex: "+ToString(i) + ". Size: " + ToString(len)+ ". Capacity: "+ ToString(cap)+ "\n";
+        Error::error(msg.c_str());
+    }
     return dat[i];
 }
 

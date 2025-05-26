@@ -47,9 +47,15 @@ int replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std
 
 DLL_PUBLIC char* StringToChar(const std::string& s);
 
-
+// Checks if valu is in container G
 template <typename T,template <typename> class C>
 int isinContainer(const T& value, const C<T>& G);
+
+// Crates a string Container of type G, of the single words in sf, separated by a list of separators (e.g {',', ';'})
+// if emptywords = 0, empty words are ignored, container ignore, consists of char, that will be ignored.
+template <class T,template <typename> class C, template <typename> class G>
+G<std::basic_string<T>> getwordsfromstring(const std::basic_string<T> &sf,const C<T>& separators,int emptywords = 0, const C<T> &ignore = C<T>());
+
 
 //DLL_PUBLIC rational char_to_rational(const char*);
 //DLL_PUBLIC rational string_to_rational(const std::string&);
@@ -323,6 +329,29 @@ int isinContainer(const T& value, const C<T>& G)
         if (v == value) return 1;
     }
     return 0;
+}
+
+
+template <class T,template <typename> class C, template <typename> class G>
+G<std::basic_string<T>> getwordsfromstring(const std::basic_string<T> &sf,const C<T>& separators,int emptywords, const C<T> &ignore)
+{
+    G<std::basic_string<T>> values;
+    std::basic_string<T> s="";
+    int n = sf.length();
+
+    for (int i = 0; i < n ; ++i) {
+        if (val::isinContainer(sf[i],ignore)) continue;
+        if (val::isinContainer(sf[i],separators)) {
+            if (emptywords || s != "") values.push_back(s);
+            //else if (s != "") values.push_back(s);
+            s = "";
+        }
+        else s += sf[i];
+    }
+
+    if (emptywords || s!= "") values.push_back(s);
+
+    return values;
 }
 
 }

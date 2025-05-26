@@ -62,9 +62,14 @@ public:
     //
     operator double() const;
     //
+    multifloat operator +(const multifloat &y) const;
+    //
+    multifloat operator *(const multifloat &y) const;
+    //
     friend std::istream& operator >>(std::istream&,multifloat&);
     friend std::ostream& operator <<(std::ostream&,const multifloat&);
     void write() const;
+    static multifloat NaN, InfPos, InfNeg;
 
 private:
     unsigned *mantissa=nullptr;
@@ -72,12 +77,12 @@ private:
     int laenge=0;
     static int prec;
     static const int numberofbits;
-    static multifloat add(const multifloat& a,const multifloat& b);  // |a| + |b|
+    static multifloat add(const multifloat& a,const multifloat& b, int ahexp, int bhexp);  // |a| + |b|
     static multifloat sub(const multifloat& a,const multifloat& b);  // |a| - |b| |a| >= |b|
+    static void multunsigned(unsigned a, unsigned b, unsigned &high, unsigned &low);
+    static int multbyunsigned(unsigned*,int,unsigned,unsigned*);
+    static void normalizemantissa(unsigned *c, int l, multifloat &z); // z.mantissa = nullptr and z.exp inititalized, l is length of c. Get z.mantissa from c
 };
-
-
-
 
 
 
