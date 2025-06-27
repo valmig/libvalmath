@@ -731,8 +731,14 @@ void valfunction::simplify_exp(d_array<token> &f_t,int nvar,int prod)
     d_array<token> h_t,tok,h1,tok1,tok2;
     d_array<d_array<token>> toklist;
 
-    // log(exp):
+    // log(exp) abs(exp):
     for (i=0;i<n-1;++i) {
+        // if (f_t[i].data == "abs" && f_t[i+1].data == "exp") {
+        //     for (int j = i; j < n - 1; ++j) f_t[j] = f_t[j+1];
+        //     --n;
+        //     f_t.resize(n);
+        //     continue;
+        // }
         if ((f_t[i].data=="log" && f_t[i+1].data=="exp") || (f_t[i].data == "exp" && f_t[i+1].data == "log")) {
             k=i+2;
             tok=splitfunction(f_t,k);
@@ -1230,8 +1236,14 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
         //for (auto& value : f_t) std::cout<<value.data<<" ";
     }
     
-    // sqrt (h^n)
+    // sqrt (h^n) and abs(sqrt())
     for (i = 0; i < n - 2; ++i) {
+        if (f_t[i].data == "abs" && f_t[i+1].data == "sqrt") {
+            for (int j = i; j < n - 1; ++j) f_t[j] = f_t[j+1];
+            --n;
+            f_t.resize(n);
+            continue;
+        }
         if (f_t[i].data == "sqrt" && f_t[i+1].data == "^" && f_t[i+2].type == 0) {
             if (!val::isinteger(f_t[i+2].data)) continue;
             p = val::FromString<int>(f_t[i+2].data);
@@ -2798,12 +2810,25 @@ void valfunction::simplify(int extended)
         n=f_t.length();
     }
 
+
+    // std::cout<<"\n Befor sqrt simplification: f_t = ";
+    // {
+    //     Glist<token> H;
+    //     for (const auto& t : f_t) H.push(t);
+    //     std::cout << "f_t = " << get_infix(H,nvar);
+    // }
+
     if (has_operator(f_t,"sqrt")) {
         simplify_sqrt(f_t,nvar,1);
         n = f_t.length();
     }
     
-    //std::cout<<"\n After first simplifications: f_t = ";
+    // std::cout<<"\n After first simplifications: f_t = ";
+    // {
+    //     Glist<token> H;
+    //     for (const auto& t : f_t) H.push(t);
+    //     std::cout << "f_t = " << get_infix(H,nvar);
+    // }
     //for (const auto& value : f_t) std::cout<<value.data + " ";
     //valfunction g;
     //for (const auto& value : f_t) g.Gdat.push(value);
@@ -2864,16 +2889,21 @@ void valfunction::simplify(int extended)
         else ++i;
     }
     
-    /*
-    std::cout<<"\n After inner substitutions, f_t = ";
-    for (auto& value : f_t) std::cout<<value.data<<" ";
-    {
-        valfunction g;
-        for (const auto& value : f_t) g.Gdat.push(value);
-        g.s_infix = get_infix(g.Gdat,nvar);
-        std::cout << "\n f = " << g.s_infix << "\n";
-    }
-    */
+
+    // std::cout<<"\n After inner substitutions, f_t = ";
+    // {
+    //     Glist<token> H;
+    //     for (const auto& t : f_t) H.push(t);
+    //     std::cout << "f_t = " << get_infix(H,nvar);
+    // }
+    // for (auto& value : f_t) std::cout<<value.data<<" ";
+    // {
+    //     valfunction g;
+    //     for (const auto& value : f_t) g.Gdat.push(value);
+    //     g.s_infix = get_infix(g.Gdat,nvar);
+    //     std::cout << "\n f = " << g.s_infix << "\n";
+    // }
+
 
     // outer - functions: ------------------------------------------------
 
@@ -2907,79 +2937,99 @@ void valfunction::simplify(int extended)
     */
 
     // Create toklist
-    subst_var_t_pi(f_t,toklist,nx,nvar);
-    //std::cout<<"\n Nach innere Subst. f_t nun: ";
-    //for (auto& value : f_t) std::cout<<value.data<<" ";
-    //std::cout<<"\n toklist.length() = "<<toklist.length();
-    //std::cout<<"\n nvar = "<<nvar;
+    auto simplify_external_rational = [&]() {
+        toklist.del();
+        nx = 0;
+        subst_var_t_pi(f_t,toklist,nx,nvar);
+        // std::cout<<"\n Nach innere Subst. f_t nun: ";
+        // for (auto& value : f_t) std::cout<<value.data<<" ";
+        // std::cout<<"\n toklist.length() = "<<toklist.length();
+        // std::cout<<"\n nvar = "<<nvar;
 
-    // Replace operators:
-    for (i=n-1;i>=0;--i) {
-        if (f_t[i].type==2 && f_t[i].data!="+" && f_t[i].data!="-" && f_t[i].data!="*" && f_t[i].data!="/" && f_t[i].data!="m") {
-            k=i;
+        // Replace operators:
+        for (i = n - 1; i >= 0; --i) {
+            if (f_t[i].type == 2 && f_t[i].data != "+" && f_t[i].data != "-" &&
+                f_t[i].data != "*" && f_t[i].data != "/" && f_t[i].data != "m") {
+                k=i;
 
-            if (f_t[i].data=="^") {
-                if (i>= n-1) continue;
-                if (f_t[i+1].type==0 && f_t[i+1].data!="t" && isinteger(f_t[i+1].data)) continue;
-            }
-
-            //std::cout<<"\n Operator: "<<f_t[k].data;
-            splitfunction(f_t,k);
-            tok.del();
-            tok.reserve(k-i);
-            for (int j=i;j<k;++j) tok.push_back(f_t[j]);
-            //std::cout<<"\n tok = ";
-            //for (const auto&  value : tok) std::cout<<value.data<<" ";
-
-            // check if tok is already in toklist.
-            l=0;
-            found=0;
-            //std::cout<<std::endl;
-            //for (const auto &t : tok) std::cout<<t.data<<" ";
-            for (const auto& value : toklist) {
-                //std::cout<<std::endl;
-                found=0;
-                //for (const auto &t : value) std::cout<<t.data<<" ";
-                if (value.length() != tok.length()) {++l;continue;}
-                found=1;
-                for (int j=0;j<value.length();++j) {
-                    //std::cout<<tok[j].data<<"  "<<value[j].data;
-                    if (tok[j].data!=value[j].data) {
-                        found=0;break;
-                    }
+                if (f_t[i].data=="^") {
+                    if (i>= n-1) continue;
+                    if (f_t[i+1].type==0 && f_t[i+1].data!="t" && isinteger(f_t[i+1].data)) continue;
                 }
-                if (found) {break;}
-                ++l;
-            }
-            if (!found) {
-                l=toklist.length()+1;
-                toklist.push_back(std::move(tok));
-            }
-            else ++l;
-            // Replace operators from i to k-1 by xl:
-            f_t[i] = token("x"+val::ToString(l),1);
-            for (int j=k;j<n;++j) f_t[j-k+i+1]=std::move(f_t[j]);
-            n-=k-i-1;
-            f_t.resize(n);
-            //std::cout<<"\n Substitution i , k , n: "<<i<<" , "<<k<<" , "<<n<<"  ,f_t = ";
-            //for (auto& value : f_t) std::cout<<value.data<<" ";
-        }
-    }
-    //std::cout<<"\n After exterior substitution, f_t =  ";
-    //for (auto& value : f_t) std::cout<<value.data<<" ";
-    //std::cout<<"\n";
-    for (int i=0;i<n;++i) {
-        if (f_t[i].type==0 && fparser::has_point(f_t[i].data)) {
-            isdouble=1;
-            break;
-        }
-    }
-    simplifypolynomial(f_t);
-    //std::cout<<"\n Nach simplifypol f_t: ";
-    //for (auto& value : f_t) std::cout<<value.data<<" ";
 
-    // Back-substitution:
-    back_subst(f_t,toklist,nx);
+                //std::cout<<"\n Operator: "<<f_t[k].data;
+                splitfunction(f_t,k);
+                tok.del();
+                tok.reserve(k-i);
+                for (int j=i;j<k;++j) tok.push_back(f_t[j]);
+                //std::cout<<"\n tok = ";
+                //for (const auto&  value : tok) std::cout<<value.data<<" ";
+
+                // check if tok is already in toklist.
+                l=0;
+                found=0;
+                //std::cout<<std::endl;
+                //for (const auto &t : tok) std::cout<<t.data<<" ";
+                for (const auto& value : toklist) {
+                    //std::cout<<std::endl;
+                    found=0;
+                    //for (const auto &t : value) std::cout<<t.data<<" ";
+                    if (value.length() != tok.length()) {++l;continue;}
+                    found=1;
+                    for (int j=0;j<value.length();++j) {
+                        //std::cout<<tok[j].data<<"  "<<value[j].data;
+                        if (tok[j].data!=value[j].data) {
+                            found=0;break;
+                        }
+                    }
+                    if (found) {break;}
+                    ++l;
+                }
+                if (!found) {
+                    l=toklist.length()+1;
+                toklist.push_back(std::move(tok));
+                }
+                else ++l;
+                // Replace operators from i to k-1 by xl:
+                f_t[i] = token("x"+val::ToString(l),1);
+                for (int j=k;j<n;++j) f_t[j-k+i+1]=std::move(f_t[j]);
+                n-=k-i-1;
+                f_t.resize(n);
+                //std::cout<<"\n Substitution i , k , n: "<<i<<" , "<<k<<" , "<<n<<"  ,f_t = ";
+                //for (auto& value : f_t) std::cout<<value.data<<" ";
+            }
+        }
+        // std::cout<<"\n After exterior substitution, f_t =  ";
+        // {
+        //     Glist<token> H;
+        //     for (const auto& t : f_t) H.push(t);
+        //     std::cout << "f_t = " << get_infix(H,nvar);
+        // }
+        // for (auto& value : f_t) std::cout<<value.data<<" ";
+        // std::cout<<"\n";
+        for (int i=0;i<n;++i) {
+            if (f_t[i].type==0 && fparser::has_point(f_t[i].data)) {
+                isdouble=1;
+                break;
+            }
+        }
+        simplifypolynomial(f_t);
+        //std::cout<<"\n Nach simplifypol f_t: ";
+        //for (auto& value : f_t) std::cout<<value.data<<" ";
+
+        // Back-substitution:
+        back_subst(f_t,toklist,nx);
+    };
+
+    simplify_external_rational();
+
+    if (has_operator(f_t, "sqrt")) {
+       simplify_sqrt(f_t);
+       n = f_t.length();
+       simplify_external_rational();
+    }
+    //
+    //
     //
     if (isdouble) to_double(f_t);
 
