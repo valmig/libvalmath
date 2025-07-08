@@ -1428,4 +1428,3 @@ void update(val::s_polynom<val::integer> &fint,val::s_polynom<val::modq> &fmodq,
 //
 
 } // end namespace common_bb
-

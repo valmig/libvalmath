@@ -47,6 +47,14 @@ int replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std
 
 DLL_PUBLIC char* StringToChar(const std::string& s);
 
+#ifdef __WIN32
+DLL_PUBLIC int system(std::string &command);
+#else
+// wrapper for std::system
+DLL_PUBLIC int system(const std::string &command, int silent = 1);
+#endif
+
+
 // Checks if valu is in container G
 template <typename T,template <typename> class C>
 int isinContainer(const T& value, const C<T>& G);
