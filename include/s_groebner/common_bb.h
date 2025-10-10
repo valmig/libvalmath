@@ -35,16 +35,16 @@ struct spair
       {fmodq=f;gmodq=g;fint=gint=NULL;s_done=deg=0;}
  int operator <(const spair &s) const
      {
-		 if (deg<s.deg) return 1;
-		 if (deg>s.deg) return 0;
-		 if (fint!=NULL && gint!=NULL) {
+         if (deg<s.deg) return 1;
+         if (deg>s.deg) return 0;
+         if (fint!=NULL && gint!=NULL) {
             return (val::lcm(fint->LT(),gint->LT()) < val::lcm(s.fint->LT(),s.gint->LT()));
-		 }
-		 else if (fmodq!=NULL && gmodq!=NULL) {
+         }
+         else if (fmodq!=NULL && gmodq!=NULL) {
             return (val::lcm(fmodq->LT(),gmodq->LT()) < val::lcm(s.fmodq->LT(),s.gmodq->LT()));
-		 }
-		 else return 0;
-	 }
+         }
+         else return 0;
+     }
 };
 
 
@@ -234,7 +234,7 @@ void interredBasis(val::Glist< val::s_polynom<T> > &G,int degoption)
  G.resetactual();
  G.moveactual();
  for (;G.actualvalid();G.moveactual()) {
-	 G.actualvalue().reduction(G,0,1,degoption);
+     G.actualvalue().reduction(G,0,1,degoption);
  }
  G.resetactual();
  return;
@@ -262,21 +262,21 @@ int dehomred(val::Glist<val::s_polynom<T> > &G,int nG,int order,const val::matri
  nH++;
 
  while (!G.isempty()) {//(G.head!=NULL) {
-	 G.resetactual();
-	 teilt=0;
-	 for (pH=H;pH;pH++) {
-		 if (pH().LT() | G.actualvalue().LT()) {
-			 teilt=1;
-			 break;
-		 }
-	 }
-	 if (teilt) {
-		 G.skiphead();
-	 }
-	 else {
-		 G.moveheadtoend(H);
-		 nH++;
-	 }
+     G.resetactual();
+     teilt=0;
+     for (pH=H;pH;pH++) {
+         if (pH().LT() | G.actualvalue().LT()) {
+             teilt=1;
+             break;
+         }
+     }
+     if (teilt) {
+         G.skiphead();
+     }
+     else {
+         G.moveheadtoend(H);
+         nH++;
+     }
  }
  G=std::move(H);
  common_bb::interredBasis(G);
@@ -323,7 +323,7 @@ int minimalGroebner(val::Glist<val::s_polynom<T> > &G)
 }
 
 
-// Primitiver Buchberger Alg. Dabei bilden Elemente in G bereits eine Gröbner Basis; und diese
+// Primitiver Buchberger Alg. Dabei bilden Elemente in G bereits eine GrÃ¶bner Basis; und diese
 // sind normiert. Danach in H leeer!
 template <class T>
 int primGroebner(val::Glist<val::s_polynom<T> > &G,val::Glist<val::s_polynom<T> > &H)
@@ -338,20 +338,20 @@ int primGroebner(val::Glist<val::s_polynom<T> > &G,val::Glist<val::s_polynom<T> 
  H.resetactual();
 
  while (!H.isempty() || !spair.isempty()) {
-	 if (!H.isempty()) {
-		 h=std::move(H.actualvalue());
-		 H.skiphead();
-		 h.reduction(G,0);
-		 if (!h.iszero()) primupdate(h,G,spair);
-		 continue;
-	 }
-	 if (!spair.isempty()) {
+     if (!H.isempty()) {
+         h=std::move(H.actualvalue());
+         H.skiphead();
+         h.reduction(G,0);
+         if (!h.iszero()) primupdate(h,G,spair);
+         continue;
+     }
+     if (!spair.isempty()) {
 
-		 h=spol(*(spair.actualvalue().f1),*(spair.actualvalue().f2));
-		 spair.skiphead();
-		 h.reduction(G,0);
-		 if (!h.iszero()) primupdate(h,G,spair);
-	 }
+         h=spol(*(spair.actualvalue().f1),*(spair.actualvalue().f2));
+         spair.skiphead();
+         h.reduction(G,0);
+         if (!h.iszero()) primupdate(h,G,spair);
+     }
  }
 
  G.sort();
@@ -639,39 +639,39 @@ void update(val::s_polynom<T> &f,val::Glist<val::s_polynom<T> > &G,val::Glist<Pa
  hint= &f;
 
  for (i=0,p=G;i<m;i++,p++) {
-	 if (h_done[i]) continue;
-	 if (lcmdis(hint->LT(),p().LT(),t1)) {
-		 h_done[i]=2;
-		 continue;
-	 }
-	 for (j=0,q=G;j<m;j++,q++) {
-		 if (j==i || h_done[j]==1) continue;
-		 if (val::lcm(hint->LT(),q().LT())|t1) {
-			 h_done[i]=1;
-			 break;
-		 }
-	 }
+     if (h_done[i]) continue;
+     if (lcmdis(hint->LT(),p().LT(),t1)) {
+         h_done[i]=2;
+         continue;
+     }
+     for (j=0,q=G;j<m;j++,q++) {
+         if (j==i || h_done[j]==1) continue;
+         if (val::lcm(hint->LT(),q().LT())|t1) {
+             h_done[i]=1;
+             break;
+         }
+     }
  }
 
 
  for (sp=lspair;sp;sp++) {
-	 if (sp().s_done) continue;
-	 t1 = val::lcm(sp().f1->LT(),sp().f2->LT());
+     if (sp().s_done) continue;
+     t1 = val::lcm(sp().f1->LT(),sp().f2->LT());
 
-	 if ( (hint->LT()|t1) && (val::lcm(sp().f1->LT(),hint->LT())!=t1)
-		 && (val::lcm(hint->LT(),sp().f2->LT())!=t1) ) {
-		 sp().s_done=1;
-	 }
+     if ( (hint->LT()|t1) && (val::lcm(sp().f1->LT(),hint->LT())!=t1)
+         && (val::lcm(hint->LT(),sp().f2->LT())!=t1) ) {
+         sp().s_done=1;
+     }
  }
 
 
 
   // Insert in dPairs:
  for (i=0,p=G;i<m;i++,p++) {
-	 if (h_done[i]) continue;
-	 hs.f1=&(p());hs.f2=hint;
+     if (h_done[i]) continue;
+     hs.f1=&(p());hs.f2=hint;
      hs.deg= val::s_polynom<T>::degw(val::lcm(p().LT(),hint->LT()),w);
-	 lspair.sinsert(hs);
+     lspair.sinsert(hs);
  }
  delete[] h_done;
 }

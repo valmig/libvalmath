@@ -48,10 +48,13 @@ int replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std
 DLL_PUBLIC char* StringToChar(const std::string& s);
 
 #ifdef __WIN32
-DLL_PUBLIC int system(std::string &command);
+DLL_PUBLIC int system(const std::string &command);
 #else
 // wrapper for std::system
 DLL_PUBLIC int system(const std::string &command, int silent = 1);
+
+// executes system command. Stores output in out and return value of command in res.
+DLL_PUBLIC int sys_execute(const std::string &command, int &res, std::string &out);
 #endif
 
 
@@ -154,7 +157,7 @@ std::basic_string<T> getfirstwordofstring(const std::basic_string<T>& value, con
 }
 
 
-// replace every appearende of 'from' to 'to' in string s
+// replace every appearance of 'from' to 'to' in string s
 template <class T>
 int replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std::basic_string<T> &to)
 {
@@ -176,7 +179,7 @@ template <class T> std::string gettypename(const T& a)
     std::string name(typeid(a).name());
 
 #ifdef __GNUC__
-	int status=0;
+    int status=0;
     char *cname = abi::__cxa_demangle(name.c_str(), nullptr, nullptr,&status);
     if (status==0) {
         name = std::string(cname);

@@ -51,14 +51,14 @@ char* StringToChar(const std::string& s)
 int system(const std::string &command)
 {
     char            *tmp_command, *cmd_exe_path;
-    int         ret_val;
+    unsigned long   ret_val;
     size_t          len;
     PROCESS_INFORMATION process_info = {0};
     STARTUPINFOA        startup_info = {0};
 
 
     len = strlen(command.c_str());
-    tmp_command = malloc(len + 4);
+    tmp_command = (char*) malloc(len + 4);
     tmp_command[0] = 0x2F; // '/'
     tmp_command[1] = 0x63; // 'c'
     tmp_command[2] = 0x20; // <space>;
@@ -87,6 +87,23 @@ int system(const std::string &command, int silent)
     if (silent) c += quiet;
     return std::system(c.c_str());
 }
+
+int sys_execute(const std::string &command, int &res, std::string &out)
+{
+    out = "";
+    res = 1;
+    FILE *fp = popen(command.c_str(), "r");
+    if (fp == nullptr) return 0;
+    char buffer[256];
+
+    while(fgets(buffer, sizeof(buffer), fp)) {
+        out += buffer;
+    }
+    res = pclose(fp);
+
+    return 1;
+}
+
 #endif
 
 /*

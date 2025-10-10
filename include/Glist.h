@@ -63,6 +63,8 @@ public:
     void push(T&& value) {inserttohead(std::move(value));}
     void push_back(const T& value) {inserttoend(value);}
     void push_back(T&& value) {inserttoend(std::move(value));}
+    void pop() {skiphead();}
+    void pop_back() {delelement(anz-1);}
     void sinsert(T&&);
     const T& getelement() const;                    // returns value of actual
     const T& getnextelement() const;            // returns value of  actual->next.

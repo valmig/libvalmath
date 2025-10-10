@@ -3350,21 +3350,24 @@ valfunction valfunction::getfirstargument() const
     int n=Gdat.length(),j=1, i, mvar = 0;
     d_array<token> f_t(n),g_t;
     auto it = Gdat.begin();
+    std::string s_number;
 
     for (int i=n-1;i>=0;--i,it++) f_t[i] = it();
     g_t=splitfunction(f_t,j);
     if (j<n) g_t=splitfunction(f_t,j);
+    f.nvar = 0;
     for (const auto& value: g_t) {
         f.Gdat.push(value);
         if (value.data[0] == 'x') {
             i = 1;
-            mvar = FromString<int>(findnumber(value.data, i));
+            s_number = findnumber(value.data, i);
+            if (s_number == "") mvar = 1;
+            else mvar = FromString<int>(s_number);
             f.nvar = Max(f.nvar, mvar);
         }
     }
     f.s_infix = get_infix(f.Gdat);
     f.t = t;
-    //f.nvar = nvar;
     return f;
 }
 
@@ -3376,14 +3379,18 @@ valfunction valfunction::getsecondargument() const
     int n=Gdat.length(),j=1, i, mvar =0;
     d_array<token> f_t(n),g_t;
     auto it = Gdat.begin();
+    std::string s_number;
 
     for (int i=n-1;i>=0;--i,it++) f_t[i] = it();
     g_t=splitfunction(f_t,j);
+    f.nvar = 0;
     for (const auto& value: g_t) {
         f.Gdat.push(value);
         if (value.data[0] == 'x') {
             i = 1;
-            mvar = FromString<int>(findnumber(value.data, i));
+            s_number = findnumber(value.data, i);
+            if (s_number == "") mvar = 1;
+            else mvar = FromString<int>(s_number);
             f.nvar = Max(f.nvar, mvar);
         }
     }
@@ -3399,6 +3406,7 @@ Glist<double> valfunction::double_roots(const double &x1,const double &x2,int it
     Glist<double> d_roots;
 
     if (is_zero() || nvar>1) return d_roots;
+
 
     if (isrationalfunction()) {
         rationalfunction F = getrationalfunction();

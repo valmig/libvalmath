@@ -130,11 +130,11 @@ int Homgroebner(val::Glist<val::s_polynom<T> > &G, int comment)
 
  while (!H.isempty() && H.actualvalue().LT().totdeg()==d) {
      H.actualvalue().reduction(Gd);
-	 if (!H.actualvalue().iszero()) {
-		 Gd.sinsert(std::move(H.actualvalue()));
-		 //nd++;
-	 }
-	 H.skiphead();
+     if (!H.actualvalue().iszero()) {
+         Gd.sinsert(std::move(H.actualvalue()));
+         //nd++;
+     }
+     H.skiphead();
  }
 
  common_bb::interredBasis(Gd);
@@ -142,34 +142,34 @@ int Homgroebner(val::Glist<val::s_polynom<T> > &G, int comment)
  common_bb::updateG(G,nG,Gd,Pair);
 
  while (H.actualvalid() || !Pair.isempty()) {
-	 Pair.resetactual();
-	 if (H.actualvalid() && !H.actualvalue().iszero()) dh=H.actualvalue().LT().totdeg();
-	 else dh=-1;
-	 if (Pair.actualvalid()) ds=Pair.actualvalue().deg;
-	 else ds=-1;
-	 if (dh==-1) d=ds;
-	 else if (ds==-1) d=dh;
-	 else if (dh<=ds) d=dh;
-	 else d=ds;
+     Pair.resetactual();
+     if (H.actualvalid() && !H.actualvalue().iszero()) dh=H.actualvalue().LT().totdeg();
+     else dh=-1;
+     if (Pair.actualvalid()) ds=Pair.actualvalue().deg;
+     else ds=-1;
+     if (dh==-1) d=ds;
+     else if (ds==-1) d=dh;
+     else if (dh<=ds) d=dh;
+     else d=ds;
      //-------------------------------------------------------------------------
      //common_bb::WriteText("\nDegree: " + val::ToString(d) + " s-pols: " + val::ToString(anzs));
      common_bb::KritPairs::nGd=0;
      KP.s_done=0;
      anzs=0;
      for (;H.actualvalid() && H.actualvalue().LT().totdeg()==d;H.moveactual()) {
-		 SetKP(H.actualvalue(),KP);
-		 ListKPairs.inserttoend(KP);
-	 }
-	 while(!Pair.isempty() && Pair.actualvalue().deg==d) {
-		 if (Pair.actualvalue().s_done) {
-			 Pair.skiphead();continue;
-		 }
-		 SetKP<T>(KP,Pair.actualvalue());
-		 ListKPairs.inserttoend(KP);
-		 anzs++;
-		 Pair.skiphead();
-	 }
-	 if (comment) common_bb::WriteText("\nDegree: " + val::ToString(d) + " s-pols: " + val::ToString(anzs));
+         SetKP(H.actualvalue(),KP);
+         ListKPairs.inserttoend(KP);
+     }
+     while(!Pair.isempty() && Pair.actualvalue().deg==d) {
+         if (Pair.actualvalue().s_done) {
+             Pair.skiphead();continue;
+         }
+         SetKP<T>(KP,Pair.actualvalue());
+         ListKPairs.inserttoend(KP);
+         anzs++;
+         Pair.skiphead();
+     }
+     if (comment) common_bb::WriteText("\nDegree: " + val::ToString(d) + " s-pols: " + val::ToString(anzs));
 
      ListKPairs.resetactual();
      for (i=0;i<nThreads;i++)
@@ -255,16 +255,16 @@ int Groebnerpos(val::Glist<val::s_polynom<T> > &G,val::vector<val::integer> &w,c
  }
 
  while (!H.isempty() || !spair.isempty()) {
-	 if (H.actualvalid() && !H.actualvalue().iszero()) dh=H.actualvalue().getLTdegree();
-	 else dh=integer(-1);
-	 if (spair.actualvalid()) ds=spair.actualvalue().deg;
-	 else ds=integer(-1);
-	 if (dh==-1) d=ds;
-	 else if (ds==-1) d=dh;
-	 else if (dh<=ds) d=dh;
-	 else d=ds;
+     if (H.actualvalid() && !H.actualvalue().iszero()) dh=H.actualvalue().getLTdegree();
+     else dh=integer(-1);
+     if (spair.actualvalid()) ds=spair.actualvalue().deg;
+     else ds=integer(-1);
+     if (dh==-1) d=ds;
+     else if (ds==-1) d=dh;
+     else if (dh<=ds) d=dh;
+     else d=ds;
 
-	 while (!H.isempty() && H.actualvalue().getLTdegree()==d) {
+     while (!H.isempty() && H.actualvalue().getLTdegree()==d) {
              H.actualvalue().setLTzerodegree();
             H.actualvalue().reduction(G,0);
             H.actualvalue().reduction(Gd);
@@ -272,8 +272,8 @@ int Groebnerpos(val::Glist<val::s_polynom<T> > &G,val::vector<val::integer> &w,c
                 Gd.sinsert(std::move(H.actualvalue()));
             }
             H.skiphead();
-	 }
-	 while (!spair.isempty() && spair.actualvalue().deg==d) {
+     }
+     while (!spair.isempty() && spair.actualvalue().deg==d) {
         if (spair.actualvalue().s_done) {
             spair.skiphead();
             continue;
@@ -285,12 +285,12 @@ int Groebnerpos(val::Glist<val::s_polynom<T> > &G,val::vector<val::integer> &w,c
             Gd.sinsert(std::move(h));
         }
         spair.skiphead();
-	 }
+     }
 
-	 common_bb::interredBasis(Gd);
+     common_bb::interredBasis(Gd);
 
-	 updateG(G,nG,Gd,spair,w);
-	 spair.resetactual();
+     updateG(G,nG,Gd,spair,w);
+     spair.resetactual();
  }
  return nG;
 }
