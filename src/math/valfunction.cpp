@@ -1329,6 +1329,20 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
         tok1.del();
     }
 
+    n = f_t.length();
+    for (i = 0; i < n - 1; ++i) {
+        if ((f_t[i].data=="sin" && f_t[i+1].data=="arcsin") || (f_t[i].data == "arcsin" && f_t[i+1].data == "sin") ||
+            (f_t[i].data=="cos" && f_t[i+1].data=="arccos") || (f_t[i].data == "arccos" && f_t[i+1].data == "cos") ||
+            (f_t[i].data=="tan" && f_t[i+1].data=="arctan") || (f_t[i].data == "arctan" && f_t[i+1].data == "tan")) {
+            k = i+2;
+            tok = splitfunction(f_t,k);
+            squeeze(f_t, tok, i, k);
+            n = f_t.length();
+            --i;
+        }
+
+    }
+
     // sin(const), cos(const)
     int j , neg = 0, even;
     integer z;
@@ -2920,7 +2934,7 @@ void valfunction::simplify(int extended)
         n = f_t.length();
     }
     // sqrt + sin - cos - rules
-    if (has_operator(f_t,"sqrt") || has_operator(f_t, "sin") || has_operator(f_t, "cos")) {
+    if (has_operator(f_t,"sqrt") || has_operator(f_t, "sin") || has_operator(f_t, "cos") || has_operator(f_t, "tan")) {
         simplify_sqrt(f_t);
         n = f_t.length();
     }
