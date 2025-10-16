@@ -783,6 +783,12 @@ void valfunction::simplify_exp(d_array<token> &f_t,int nvar,int prod)
             h1.reserve(m);
             for (l=1;l<m;++l) h1[l] = tok[l-1];
             h1[0] = token("m",2);
+            if (m > 1 && h1[0].data == "m" && h1[1].data == "m") {
+                for (l = 0; l < m-2 ; ++l) {
+                    h1[l] = h1[l+2];
+                }
+                h1.resize(m-2);
+            }
             f_t[i] = token("*",2);
             squeeze(f_t,h1,i+2,k);
             n=f_t.length();
