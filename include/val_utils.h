@@ -42,7 +42,7 @@ template <template<typename> class C, typename T  = char>
 std::basic_string<T> getfirstwordofstring(const std::basic_string<T>& value, const C<T> &separators = C<T>{'\n', ' ', ';', ',', '.', ':'});
 
 template <class T>
-int replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std::basic_string<T> &to);
+int replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std::basic_string<T> &to, int all = 1 );
 
 
 DLL_PUBLIC char* StringToChar(const std::string& s);
@@ -159,7 +159,7 @@ std::basic_string<T> getfirstwordofstring(const std::basic_string<T>& value, con
 
 // replace every appearance of 'from' to 'to' in string s
 template <class T>
-int replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std::basic_string<T> &to)
+int replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std::basic_string<T> &to, int all)
 {
     int found = 0;
     if (from.empty()) return found;
@@ -169,6 +169,7 @@ int replace(std::basic_string<T> &s, const std::basic_string<T> &from, const std
         s.replace(pos,m,to);
         pos += n;
         found = 1;
+        if (!all) break;
     }
     return found;
 }
