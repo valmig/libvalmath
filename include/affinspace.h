@@ -97,6 +97,7 @@ affinspace<T>::affinspace(const val::vector<val::vector<T> >& V,const val::matri
 template <class T>
 void affinspace<T>::complete(const val::matrix<T>& SP)
 {
+    T zero = zero_element<T>();
     if (Point.isempty() && Vspace.isempty() && LES.isempty()) {
         Globaldim=Dimension=0;
         OrthBasis=OrthSpace=val::vector<val::vector<T> >();
@@ -150,7 +151,7 @@ void affinspace<T>::complete(const val::matrix<T>& SP)
             }
             val::spanvspace(Vspace);
             Dimension=Vspace.dimension();
-            if (Point.isempty() || Point.dimension()!=Globaldim) Point = val::vector<T>(T(0),Globaldim);
+            if (Point.isempty() || Point.dimension()!=Globaldim) Point = val::vector<T>(zero, Globaldim);
             if (Dimension==0) {
                 LES=val::matrix<T>(Globaldim,Globaldim+1);
                 LES.make_identity();
@@ -163,7 +164,7 @@ void affinspace<T>::complete(const val::matrix<T>& SP)
                 T det;
                 for (i=0;i<Dimension;i++) {
                     for (j=0;j<Globaldim;j++) A(i,j) = std::move(Vspace(i)(j));
-                    A(i,Globaldim) = T(0);
+                    A(i,Globaldim) = zero;
                 }
 
                 r=val::les(A,X,det);
@@ -172,7 +173,7 @@ void affinspace<T>::complete(const val::matrix<T>& SP)
 
                 for (i=0;i<r;i++) {
                     for (j=0;j<Globaldim;j++) LES(i,j) = std::move(X(i+1,j));
-                    LES(i,Globaldim) = T(0);
+                    LES(i,Globaldim) = zero;
                     for (k=0;k<Globaldim;k++) LES(i,Globaldim) += LES(i,k) * Point(k);
                 }
 
@@ -218,7 +219,7 @@ void affinspace<T>::complete(const val::matrix<T>& SP)
  template <class T>
  T affinspace<T>::squaredistance(const affinspace<T>& B,val::vector<T> &P,val::vector<T> &Q,const val::matrix<T>& SP) const
 {
-    T zero(0);
+    T zero = zero_element<T>();
     P=Q=val::vector<T>();
 
     if (Globaldim==0 || B.Globaldim==0) return zero;
@@ -285,7 +286,7 @@ typename affinspace<T>::Intersection_Type affinspace<T>::intersection(const affi
     if (r==0) {
         if (Dimension>0 && A.Dimension>0) {
             // Bestimmme Rang B:
-            T zero;
+            T zero = zero_element<T>();
             int k,dimhom;
 
             if (B.numberofcolumns()<B.numberofrows()) k=B.numberofcolumns();

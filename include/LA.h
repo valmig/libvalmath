@@ -175,7 +175,7 @@ const matrix<T>& movefromvectortomatrix(vector<vector<T> >& V,matrix<T>& A)
     }
     else {
         int j,k;
-        T zero(0);
+        T zero = zero_element<T>();
         A=matrix<T>(m,maxdim);
         for (i=0;i<m;i++) {
             for (j=0;j<V(i).dim;j++) A(i,j) = std::move(V(i)(j));
@@ -210,11 +210,12 @@ int gauss(matrix<T>& A,vector<int>& q,T& det)
 
  for (s=0;s<n;s++) {                     // Create left triangle matrix !!
      h=zero;
-     for (i=r;i<m;i++)   // Find pivot
-	 if ((h=A(i,s))!=zero) {
-	    k=i;
-	    break;
-	 }
+     for (i=r;i<m;i++){    // Find pivot
+         if ((h=A(i,s))!=zero) {
+             k=i;
+             break;
+         }
+     }
      if (h!=zero) {
         r++;
         q[r-1]=s;
@@ -257,7 +258,7 @@ int gauss_double(matrix<T>& A,vector<int>& q,T& det,const double& eps)
 {
  int m=A.numberofrows(),n=A.numberofcolumns(),i,j,s,l,k=0,r=0;
  double h,g;
- T zero(0),hi;
+ T zero(zero_element<T>()),hi;
  vector<double> b(m);   // vector for scaling;
 
  q=vector<int>(0,n);
@@ -297,7 +298,7 @@ int gauss_double(matrix<T>& A,vector<int>& q,T& det,const double& eps)
         for (i=r;i<m;i++)
             for (j=n-1;j>=s;j--) {
                 A(i,j)-=A(i,s)*A(r-1,j);
-	    }
+        }
      }
  }
 
@@ -318,7 +319,7 @@ template <class T>
 T det_by_gauss(matrix<T>& A)
 {
  int m=A.numberofrows(),n=A.numberofcolumns(),i,j,s,k=0,r=0;
- T h,zero(0),one(1),det(1);
+ T h, zero(zero_element<T>()), one(unity_element<T>()), det(one);
 
  if (m<=0 || n<=0) return zero;
 
@@ -361,7 +362,7 @@ val::fraction<val::pol<T>> det_by_gauss(val::matrix<val::fraction<val::pol<T>>>&
 {
  using namespace val;
  int m=A.numberofrows(),n=A.numberofcolumns(),i,j,s,k=0,r=0;
- fraction<pol<T>> h,zero,one,det,minusone;
+ fraction<pol<T>> h, zero(zero_element<T>()), one, det, minusone;
  pol<T> onepol;
 
  set_unity_element(onepol);
@@ -457,7 +458,7 @@ int les(matrix<T>& A,matrix<T>& X,T& det)
 
  for (i=1;i<dim;i++) X(i,p(i-1)) = minusone;
   for (i=0;i<r;i++)
-	 for (j=0;j<dim-1;j++) X(j+1,q(i))  = A(i,p(j));
+     for (j=0;j<dim-1;j++) X(j+1,q(i))  = A(i,p(j));
 
  return dim;
 }
@@ -468,6 +469,7 @@ template <class T>
 int les_double(matrix<T>& A,matrix<T>& X,T& det,const double& eps)
 {
  int n=A.numberofcolumns(),r,i,j,s,dim;
+ T zero = zero_element<T>();
 
  vector<int> q(n);
 
@@ -479,7 +481,7 @@ int les_double(matrix<T>& A,matrix<T>& X,T& det,const double& eps)
  if (r>0)
     if (q[r-1]==n-1) return 0;      // LES has no solutions;
 
- X=matrix<T>(T(0),dim=n-r,n-1);
+ X=matrix<T>(zero,dim=n-r,n-1);
 
  vector<int> p(0,dim-1);            // not-scale-indexes
 
@@ -493,7 +495,7 @@ int les_double(matrix<T>& A,matrix<T>& X,T& det,const double& eps)
 
  for (i=1;i<dim;i++) X(i,p(i-1)) = T(-1);
   for (i=0;i<r;i++)
-	 for (j=0;j<dim-1;j++) X(j+1,q(i))  = A(i,p(j));
+     for (j=0;j<dim-1;j++) X(j+1,q(i))  = A(i,p(j));
 
  return dim;
 }
@@ -563,7 +565,7 @@ template <class T>
 int les_integer(matrix<T> &A,matrix<T>& X)
 {
     int r=0,m=A.numberofrows(),n=A.numberofcolumns()-1,actz,i,j,loesbar,ready;
-    T zero(0),eins(1),x,u,v,w,d;
+    T zero(zero_element<T>()), eins(unity_element<T>()), x,u,v,w,d;
 
     if (n<=0) return 0;
 
@@ -703,6 +705,7 @@ template <class T>
 vector<T> operator *(const matrix<T>& A,const vector<T>& x)
 {
     vector<T> y;
+    T zero = zero_element<T>();
 
     if (A.numberofrows()==0 || x.dimension()==0) return y;
     int n,m=A.numberofrows(),i,j;
@@ -712,7 +715,7 @@ vector<T> operator *(const matrix<T>& A,const vector<T>& x)
     if (A.numberofcolumns()<x.dimension()) n=A.numberofcolumns();
     else n=x.dimension();
     for (i=0;i<m;i++) {
-        y(i)=T(0);
+        y(i) = zero;
         for (j=0;j<n;j++) y(i) += A(i,j)*x(j);
     }
     return y;
@@ -723,23 +726,23 @@ template <class T>
 T innerproduct(const vector<T>& x,const vector<T>& y,const matrix<T>& A)
 {
  int i,n=x.dimension();
- T wert(0);
+ T zero = zero_element<T>(), wert(zero);
 
  if (x.dimension()==0 || y.dimension()==0) return wert;
 
  if (A.numberofrows()==0) {  // Standardprodukt:
-	 for (i=0;i<n;i++) wert += x(i) * y(i);
+     for (i=0;i<n;i++) wert += x(i) * y(i);
  }
  else {
-	 int j;
-	 T help;
+     int j;
+     T help;
 
-	 for (i=0;i<n;i++) {
-		 help = T(0);
-		 for (j=0;j<n;j++)
-			 help += x(j) * A(j,i);
-		 wert += help * y(i);
-	 }
+     for (i=0;i<n;i++) {
+         help = zero;
+         for (j=0;j<n;j++)
+             help += x(j) * A(j,i);
+         wert += help * y(i);
+     }
  }
 
  return wert;
@@ -774,7 +777,7 @@ template <class T>
 int orthogonalize(vector<vector<T> > &V,const matrix<T> &A)
 {
  int i,j,k,m=V.dimension(),n=0;
- T zero(0);
+ T zero(zero_element<T>());
 
  if (m==0 || m==1) return 1;
 
@@ -783,13 +786,13 @@ int orthogonalize(vector<vector<T> > &V,const matrix<T> &A)
  n=V(0).dimension();
 
  for (i=1;i<m;i++) {
-	 v(i-1) = innerproduct(V(i-1),V(i-1),A);
-	 if (v(i-1)==zero) return 0;
-	 for (k=0;k<i;k++) {w(k)= innerproduct(V(i),V(k),A);}
-	 if (V(i).dimension()!=n) return 0;
-	 for (j=0;j<n;j++) {
-		 for (k=0;k<i;k++) V(i)(j) -= (w(k)/v(k))*(V(k)(j));
-	 }
+     v(i-1) = innerproduct(V(i-1),V(i-1),A);
+     if (v(i-1)==zero) return 0;
+     for (k=0;k<i;k++) {w(k)= innerproduct(V(i),V(k),A);}
+     if (V(i).dimension()!=n) return 0;
+     for (j=0;j<n;j++) {
+         for (k=0;k<i;k++) V(i)(j) -= (w(k)/v(k))*(V(k)(j));
+     }
  }
  return 1;
 }
@@ -801,7 +804,7 @@ vector<vector<T> > orthogonalspace(const vector<vector<T> >& V,const matrix<T> &
     if (V.isempty()) return vector<vector<T> >();
 
     int m=V.dimension(),n,i,j;
-    T zero(0),det;
+    T zero(zero_element<T>()),det;
 
     // n
     n=V(0).dimension();
