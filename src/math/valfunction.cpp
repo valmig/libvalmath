@@ -1066,8 +1066,10 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
 
         back_subst(f_t,toklist,nx);
         n=f_t.length();
-        //std::cout<<"\n after back-substitution f_t : ";
-        //for (auto& value : f_t) std::cout<<value.data<<" ";
+
+        // std::cout<<"\n after back-substitution f_t : ";
+        // for (auto& value : f_t) std::cout<<value.data<<" ";
+
         int isequal;
         do {
             found=0;
@@ -1199,8 +1201,8 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
             }
         }
         while (found);
-        //std::cout<<"\n after product f_t : ";
-        //for (auto& value : f_t) std::cout<<value.data<<" ";
+        // std::cout<<"\n after product f_t : ";
+        // for (auto& value : f_t) std::cout<<value.data<<" ";
     }
     {
         // simplify sqrt or squares:
@@ -1300,40 +1302,49 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
             tok1.del();
         }
     }
-    
+
+    // std::cout<<"\n after sqrt(h^n) : ";
+    // for (auto& value : f_t) std::cout<<value.data<<" ";
+
     // sqrt(h)^n
     Glist<token> G;
-    std::string sf; 
+    std::string sf;
+    tok1.del();
     for (i = 0; i < n - 3; ++i) {
         if (f_t[i].data != "^") continue;
         k = i + 1;
         tok = splitfunction(f_t,k);
         h_t = splitfunction(f_t,k);
         if (h_t[0].data != "sqrt") continue;
-        //std::cout<<"\n h_t:\n";
-        //for (int l = 0; l < h_t.length(); ++l) std::cout<<h_t[l].data<<"  ";
+        // std::cout<<"\n h_t:\n";
+        // for (int l = 0; l < h_t.length(); ++l) std::cout<<h_t[l].data<<"  ";
         G.dellist();
         for (const auto& v : tok) G.push(v);
         sf = get_infix(G);
         if (!val::isinteger(sf)) continue;
-        //std::cout<<"\n sf = "<<sf;
+        // std::cout<<"\n sf = "<<sf;
         p = FromString<int>(sf);
-        q = 0;
+        //q = 0;
         if (p%2) continue;//q = 1;
         p /= 2;
         m = h_t.length();
-        if (q) ++m;
+        //if (q) ++m;
         if (p < 0) ++m;
         tok1.reserve(m);
         if (p <  0) tok1.push_back(token("m",2));
         sf = ToString(abs(p));
         tok1.push_back(token(sf,0));
-        if (q) tok1.push_back(token("sqrt",2));
+        //if (q) tok1.push_back(token("sqrt",2));
         for (int j = 1; j < h_t.length(); ++j) tok1.push_back(h_t[j]);
+        // std::cout<<"\n tok1:\n";
+        // for (int l = 0; l < tok1.length(); ++l) std::cout<<tok1[l].data<<"  ";
         squeeze(f_t,tok1,i+1,k);
         n = f_t.length();
         tok1.del();
     }
+
+    // std::cout<<"\n after sqrt(h)^n : ";
+    // for (auto& value : f_t) std::cout<<value.data<<" ";
 
     n = f_t.length();
     for (i = 0; i < n - 1; ++i) {
@@ -2842,14 +2853,14 @@ void valfunction::simplify(int extended)
         simplify_sqrt(f_t,nvar,1);
         n = f_t.length();
     }
-    
+
     // std::cout<<"\n After first simplifications: f_t = ";
     // {
     //     Glist<token> H;
     //     for (const auto& t : f_t) H.push(t);
     //     std::cout << "f_t = " << get_infix(H,nvar);
     // }
-    //for (const auto& value : f_t) std::cout<<value.data + " ";
+    // for (const auto& value : f_t) std::cout<<value.data + " ";
     //valfunction g;
     //for (const auto& value : f_t) g.Gdat.push(value);
     //g.s_infix = get_infix(g.Gdat,nvar);
@@ -3040,6 +3051,8 @@ void valfunction::simplify(int extended)
         // Back-substitution:
         back_subst(f_t,toklist,nx);
     };
+    // std::cout<<"\n f_t nach Rücksubstitution: ";
+    // for (auto& value : f_t) std::cout<<value.data<<" ";
 
     simplify_external_rational();
 

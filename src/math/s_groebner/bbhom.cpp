@@ -849,6 +849,7 @@ int hilbertconversionmain(const std::string &name,val::Glist<val::s_polynom<val:
 }
 
 
+
 template <>
 int hilbertconversionmain(const std::string &name,val::Glist<val::s_polynom<val::integer> > &G,int order,const val::matrix<int> &M)
 {

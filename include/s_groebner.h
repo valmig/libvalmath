@@ -59,9 +59,14 @@ DLL_PUBLIC int isgroebner(const std::string &name,Glist<s_polynom<T> > &G,int an
 template <class T>
 DLL_PUBLIC int homgroebner(const std::string &name,Glist<s_polynom<T> > &G);
 
+template <class T>
+DLL_PUBLIC int homgroebner(Glist<s_polynom<T> > &G);
 
 template <class T>
 DLL_PUBLIC int hilbertconversion(const std::string &name,Glist<s_polynom<T>> &G,int order,const matrix<int> &M=matrix<int>());
+
+template <class T>
+DLL_PUBLIC int hilbertconversion(Glist<s_polynom<T>> &G,int order,const matrix<int> &M=matrix<int>());
 
 
 DLL_PUBLIC pol<rational> Hilbertpolynomial(const std::string &name,int affin=1);

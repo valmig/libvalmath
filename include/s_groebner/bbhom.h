@@ -22,6 +22,11 @@ void perturbmatrix(val::matrix<int> &M);
 template <class T>
 int totdegisinitialform(const val::s_polynom<T> &f);
 
+
+template <class T>
+void checktotaldegreecriteria(const val::Glist<val::s_polynom<T>> &, int &washomogen, int &wastotdegcompatble);
+
+
 template <class T>
 void SetKP(val::s_polynom<T> &f,common_bb::KritPairs &KP);
 
@@ -46,6 +51,12 @@ int bbhom(val::Glist<val::s_polynom<T> > &G,int washomogen,int wastotdegcompatib
 
 template <class T>
 int bbhommain(const std::string &name,val::Glist<val::s_polynom<T> >& G);
+
+
+template <class T>
+int bbhommain(val::Glist<val::s_polynom<T> >& G);
+
+
 
 //
 
@@ -76,6 +87,9 @@ int hilbertconversion(val::Glist<val::s_polynom<T> > &G,int washomogen,int wasto
 template <class T>
 int hilbertconversionmain(const std::string &name,val::Glist<val::s_polynom<T> > &G,int order,const val::matrix<int> &M=val::matrix<int>());
 
+template <class T>
+int hilbertconversionmain(val::Glist<val::s_polynom<T> > &G,int order,const val::matrix<int> &M=val::matrix<int>());
+
 
 
 //
@@ -95,6 +109,45 @@ int totdegisinitialform(const val::s_polynom<T> &f)
     return 1;
 }
 
+
+template <class T>
+void checktotaldegreecriteria(const val::Glist<val::s_polynom<T>> &G, int &washomogen, int &wastotdegcompatible)
+{
+    int deg, order = val::s_expo::getordtype(), tdegisinit = 1;
+    val::s_polynomIterator<T> pf;
+
+    washomogen = 1; wastotdegcompatible = 1;
+
+    if (order == -1000) {
+        const val::matrix<int> &M = val::s_expo::getordmatrix();
+        int n = M.numberofcolumns();
+        if (n == 0) wastotdegcompatible = 0;
+        else wastotdegcompatible = 1;
+
+        for (int i = 0; i < n; ++i) {
+            if (M(0,i) != 1) wastotdegcompatible = 0;
+        }
+    }
+    else if (order == -1) {
+        wastotdegcompatible = 0;
+    }
+    else if (order != -2 && order != 0) val::s_expo::setordtype(-2);
+
+    for (const auto &f : G) {
+        pf = f;
+        deg = pf.actualterm().totdeg();
+        for (pf++; pf; pf++) {
+            if (pf.actualterm().totdeg() != deg) {
+                washomogen = 0;
+                break;
+            }
+        }
+        if (!washomogen && !wastotdegcompatible) {
+            if (tdegisinit) tdegisinit=totdegisinitialform(f);
+        }
+    }
+	if (tdegisinit) wastotdegcompatible = 1;
+}
 //
 
 template <class T>
@@ -464,6 +517,36 @@ int hilbertconversion(val::Glist<val::s_polynom<T> > &G,int washomogen,int wasto
 
     return nG;
 }
+
+
+template <class T>
+int bbhommain(val::Glist<val::s_polynom<T> >& G)
+{
+    int nG,washomogen,wastotdegcompatible;
+
+    checktotaldegreecriteria(G, washomogen, wastotdegcompatible);
+    val::s_expo::setdim(val::s_expo::getdim() + 1);
+    nG = bbhom(G,washomogen,wastotdegcompatible);
+
+    return nG;
+}
+
+
+
+
+template <class T>
+int hilbertconversionmain(val::Glist<val::s_polynom<T> > &G,int order,const val::matrix<int> &M)
+{
+    int nG,washomogen,wastotdegcompatible;
+
+    checktotaldegreecriteria(G, washomogen, wastotdegcompatible);
+    val::s_expo::setdim(val::s_expo::getdim() + 1);
+
+    nG = hilbertconversion(G,washomogen,wastotdegcompatible,order,M);
+    return nG;
+}
+
+
 
 } //end namespace
 

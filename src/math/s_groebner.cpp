@@ -192,6 +192,18 @@ int homgroebner(const std::string &name,Glist<s_polynom<modq> > &G)
     return bbhom::bbhommain(name,G);
 }
 
+template <>
+int homgroebner(Glist<s_polynom<integer> > &G)
+{
+    return bbhom::bbhommain(G);
+}
+
+template <>
+int homgroebner(Glist<s_polynom<modq> > &G)
+{
+    return bbhom::bbhommain(G);
+}
+
 
 template <>
 int hilbertconversion(const std::string &name,Glist<s_polynom<integer> > &G,int order,const matrix<int> &M)
@@ -204,6 +216,20 @@ int hilbertconversion(const std::string &name,Glist<s_polynom<modq> > &G,int ord
 {
     return bbhom::hilbertconversionmain(name,G,order,M);
 }
+
+template <>
+int hilbertconversion(Glist<s_polynom<integer> > &G,int order,const matrix<int> &M)
+{
+    return bbhom::hilbertconversionmain(G,order,M);
+}
+
+template <>
+int hilbertconversion(Glist<s_polynom<modq> > &G,int order,const matrix<int> &M)
+{
+    return bbhom::hilbertconversionmain(G,order,M);
+}
+
+
 
 
 pol<rational> Hilbertpolynomial(const std::string &name,int affin)
