@@ -1245,6 +1245,7 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
     }
     
     // sqrt (h^n) and abs(sqrt())
+    tok1.del();
     for (i = 0; i < n - 2; ++i) {
         if (f_t[i].data == "abs" && f_t[i+1].data == "sqrt") {
             for (int j = i; j < n - 1; ++j) f_t[j] = f_t[j+1];
