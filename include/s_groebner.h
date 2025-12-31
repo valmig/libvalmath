@@ -97,6 +97,11 @@ DLL_PUBLIC int Iddim(const std::string& file);
 template <class T>
 DLL_PUBLIC int reduceGroebner(const std::string& name,Glist<s_polynom<T> >& G);
 
+template <class T>
+DLL_PUBLIC int reduceGroebner(Glist<s_polynom<T> >& G, int comment = 0);
+
+
+	
 
 DLL_PUBLIC int homogenize(const std::string& i_name,const std::string& o_name,int comment=0);
 

@@ -10,9 +10,12 @@
 #include <cxxabi.h>
 #endif
 
+
+
+
+
 namespace val
 {
-
 class integer;
 class rational;
 template <class T> class complex_type;
@@ -67,6 +70,36 @@ int isinContainer(const T& value, const C<T>& G);
 template <class T,template <typename> class C, template <typename> class G>
 G<std::basic_string<T>> getwordsfromstring(const std::basic_string<T> &sf,const C<T>& separators,int emptywords = 0, const C<T> &ignore = C<T>());
 
+
+template <class T> void print(const T& a);
+
+template <typename T, typename ...Types> void print(const std::string &s, const T &value, const Types& ...Arguments);
+	
+template <class T> void print(std::ostream &os, const T& a);
+
+template <typename T, typename ...Types> void print(std::ostream &os, const std::string &s, const T &value, const Types& ...Arguments);
+
+
+namespace variadic_help
+{
+template <class T>
+void replace_args(std::string &s, const T &arg)
+{
+	std::string to = val::ToString(arg);
+	val::replace<char>(s, "{}", to, 0);
+}
+
+
+
+
+template <typename T, typename ...Types>
+void replace_args(std::string &s, const T &value, const Types& ...Arguments)
+{
+	replace_args(s, value);
+	replace_args(s, Arguments...);
+}
+	
+}
 
 //DLL_PUBLIC rational char_to_rational(const char*);
 //DLL_PUBLIC rational string_to_rational(const std::string&);
@@ -366,6 +399,39 @@ G<std::basic_string<T>> getwordsfromstring(const std::basic_string<T> &sf,const 
     return values;
 }
 
+template <class T>
+void print(const T& a)
+{
+	std::cout << a;
+}
+
+
+template <typename T, typename ...Types>
+void print(const std::string &s, const T &value, const Types& ...Arguments)
+{
+	std::string cs = s;
+	if (sizeof...(Arguments) == 0) variadic_help::replace_args(cs, value);
+	else variadic_help::replace_args(cs, value, Arguments...);
+	std::cout << cs;
+}
+
+
+template <class T>
+void print(std::ostream &os, const T& a)
+{
+	os << a;
+}
+
+
+template <typename T, typename ...Types>
+void print(std::ostream &os, const std::string &s, const T &value, const Types& ...Arguments)
+{
+	std::string cs = s;
+	if (sizeof...(Arguments) == 0) variadic_help::replace_args(cs, value);
+	else variadic_help::replace_args(cs, value, Arguments...);
+	os << cs;
+}
+	
 }
 
 #endif // VAL_UTILS_H_INCLUDED

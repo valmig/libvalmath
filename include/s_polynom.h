@@ -1242,6 +1242,15 @@ T s_polynom<T>::content() const
     return T(1);
 }
 
+//
+
+template <class T>
+void set_unity_element(s_polynom<T> &one)
+{
+    T one_T;
+    set_unity_element(one_T);
+    one = s_polynom<T>(one_T);
+}
 
 //
 

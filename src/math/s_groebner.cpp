@@ -365,6 +365,47 @@ int reduceGroebner(const std::string& name,Glist<s_polynom<integer> >& G)
 }
 
 
+template <>
+int reduceGroebner(Glist<s_polynom<modq> >& G, int comment)
+{
+    int nG;
+    std::string s;
+    ChronoClass Chrono;
+
+    s_polynom<modq>::nreduction=0;
+    Chrono();
+    nG=common_bb::minimalGroebner(G);
+    common_bb::interredBasis(G);
+	if (comment) {
+		s+="\nTime: " + ToString(Chrono());
+		s+="\nElements in G: " + ToString(nG);
+		s+="\nMonomials: " + ToString(s_polynom<modq>::getmnumber());
+		s+="\nReductions: "+ ToString(s_polynom<modq>::nreduction);
+		common_bb::WriteText(s);
+	}
+    return nG;
+}
+
+template <>
+int reduceGroebner(Glist<s_polynom<integer> >& G, int comment)
+{
+    int nG;
+    std::string s;
+    ChronoClass Chrono;
+
+    s_polynom<integer>::nreduction=0;
+    Chrono();
+    nG=common_bb::minimalGroebner(G);
+    common_bb::interredBasis(G);
+	if (comment) {
+		s+="\nTime: " + ToString(Chrono());
+		s+="\nElements in G: " + ToString(nG);
+		s+="\nMonomials: " + ToString(s_polynom<integer>::getmnumber());
+		s+="\nReductions: "+ ToString(s_polynom<integer>::nreduction);
+		common_bb::WriteText(s);
+	}
+    return nG;
+}
 
 int homogenize(const std::string& i_name,const std::string& o_name,int comment)
 {
