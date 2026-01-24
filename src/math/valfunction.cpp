@@ -1325,21 +1325,47 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
         if (!val::isinteger(sf)) continue;
         // std::cout<<"\n sf = "<<sf;
         p = FromString<int>(sf);
-        //q = 0;
-        if (p%2) continue;//q = 1;
-        p /= 2;
-        m = h_t.length();
-        //if (q) ++m;
-        if (p < 0) ++m;
-        tok1.reserve(m);
-        if (p <  0) tok1.push_back(token("m",2));
-        sf = ToString(abs(p));
-        tok1.push_back(token(sf,0));
-        //if (q) tok1.push_back(token("sqrt",2));
-        for (int j = 1; j < h_t.length(); ++j) tok1.push_back(h_t[j]);
-        // std::cout<<"\n tok1:\n";
-        // for (int l = 0; l < tok1.length(); ++l) std::cout<<tok1[l].data<<"  ";
-        squeeze(f_t,tok1,i+1,k);
+		if (p%2) {               // odd exponent
+			int neg = 0;
+			if (p < 0) {
+				neg = 1;
+				p = -p;
+			}
+			if (p == 1) continue;
+			p /= 2;
+			m = h_t.length();
+			if (!neg) tok1.reserve(2*m+4);
+			else tok1.reserve(2*m+8);
+			tok1.push_back(token("*",2));
+			if (neg) {
+				tok1.push_back(token("^",2));
+				tok1.push_back(token("m",2));
+				tok1.push_back(token("1",0));
+			}
+			tok1.push_back(token("sqrt",2));
+			for (int j = 1; j < h_t.length(); ++j) tok1.push_back(h_t[j]);
+			tok1.push_back(token("^",2));
+			if (neg) tok1.push_back(token("m",2));
+			sf = val::ToString(p);
+			tok1.push_back(token(sf,0));
+			for (int j = 1; j < h_t.length(); ++j) tok1.push_back(h_t[j]);
+			squeeze(f_t,tok1,i,k);
+		}
+		else {              // even expoent
+			p /= 2;
+			m = h_t.length();
+			//if (q) ++m;
+			if (p < 0) ++m;
+			tok1.reserve(m);
+			if (p <  0) tok1.push_back(token("m",2));
+			sf = ToString(abs(p));
+			tok1.push_back(token(sf,0));
+			//if (q) tok1.push_back(token("sqrt",2));
+			for (int j = 1; j < h_t.length(); ++j) tok1.push_back(h_t[j]);
+			// std::cout<<"\n tok1:\n";
+			// for (int l = 0; l < tok1.length(); ++l) std::cout<<tok1[l].data<<"  ";
+			squeeze(f_t,tok1,i+1,k);
+		}
         n = f_t.length();
         tok1.del();
     }
