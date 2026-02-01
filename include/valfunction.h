@@ -66,6 +66,7 @@ private:
     static void simplify_log(d_array<token> &f,int extended);
     static void simplify_sqrt(d_array<token> &f,int nvar=1,int prod = 0);
     static void simplify_qsin(d_array<token> &f);
+    static void simplify_arcsc(d_array<token> &f);
     static int simplify_im(d_array<token> &f);
     static void subst_var_t_pi(d_array<token> &f_t,d_array<d_array<token>> &toklist,int &nx,int nvar=1);
     static void back_subst(d_array<token> & f_t,const d_array<d_array<token>> &toklist,int nx);

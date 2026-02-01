@@ -1498,6 +1498,67 @@ void valfunction::simplify_qsin(d_array<token> &f_t)
 }
 
 
+// simplify arcsin(const), arccos(const)
+void valfunction::simplify_arcsc(d_array<token> &f_t)
+{
+	int n = f_t.length(), i, j, neg;
+	d_array<token> tok;
+	
+    for (i = 0; i < n - 1; ++i) {
+		neg = 0;
+        if (f_t[i].data == "arcsin" || f_t[i].data == "arccos" || f_t[i].data == "arctan") {
+			if (f_t[i+1].data == "0") {
+				tok.del();
+                if (f_t[i].data == "arcsin" || f_t[i].data == "arctan") {
+					tok.push_back(token("0",0));
+				}
+                else {
+					tok.push_back(token("/",2));
+					tok.push_back(token("2",0));	
+					tok.push_back(token("PI",0));	
+				}
+                squeeze(f_t, tok, i, i+2);
+                n = f_t.length();
+                continue;
+            }
+            j = i + 1;
+            if (f_t[j].data == "m") {
+                neg = 1;
+                ++j;
+            }
+            if (j < n && f_t[j].data == "1") {
+				tok.del();
+				if (f_t[i].data == "arcsin") {
+					if (neg) tok.push_back(token("m",2));
+					tok.push_back(token("/",2));
+					tok.push_back(token("2",0));	
+					tok.push_back(token("PI",0));	
+				}
+				else if (f_t[i].data == "arccos") {
+					if (neg) {
+						tok.push_back(token("PI",0));
+					}
+					else tok.push_back(token("0",0));
+				}
+				else {
+					if (neg) {
+						tok.push_back(token("m",2));
+					}
+					tok.push_back(token("/",2));
+					tok.push_back(token("4",0));	
+					tok.push_back(token("PI",0));	
+				}
+				squeeze(f_t, tok, i, j+1);
+				n = f_t.length();
+			}
+        }
+    }
+}
+
+
+
+
+
 int valfunction::simplify_im(d_array<token> &f_t)
 {
     int i, n = f_t.length(), subst = 0, e, k;
@@ -2982,6 +3043,11 @@ void valfunction::simplify(int extended)
         simplify_sqrt(f_t);
         n = f_t.length();
     }
+	
+    if (has_operator(f_t,"arcsin") || has_operator( f_t, "arccos") || has_operator( f_t, "arctan")) {
+		simplify_arcsc(f_t);
+		n = f_t.length();
+	}
     
     /*
     std::cout<<"\n After extended rules: f_t = ";
