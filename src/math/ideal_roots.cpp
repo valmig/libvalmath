@@ -748,6 +748,93 @@ int idealroots(const std::string &filename,matrix<double> &MR,matrix<complex> &M
 }
 
 
+int getnormalpospol(val::Glist<val::s_polynom<val::integer>> &G, vector<pol<rational>> &F, int &index, int nthreads, int comment)
+{
+    if (G.isempty() || !val::iszerodimensional(G)) {
+        if (comment) WriteText("\n Basis is not zero dimensional!");
+        return 0;
+    }
+
+    int i, j, n=s_expo::getdim(), maxdgree=0, order=s_expo::getordtype(), dimincreased = 0;
+	integer nofzeros;
+    val::matrix<int> OM;
+
+	F = vector<pol<rational>>();
+	index = 0;
+
+    if (comment) WriteText("\nCheck if Basis is radical:");
+    index = zero_dim_radical_ideal(G,maxdgree,nthreads,comment);
+    //
+    if (comment) WriteText("\nCheck if Basis has normal position index:");
+    if ((nofzeros = val::Hilbertpolynomial(G).LC().nominator()) == integer(maxdgree)) {
+        if (comment) WriteText("\nBasis has normal position index = " + val::ToString(index));
+        if (index != n-1 || order != -1) {
+            if (comment) WriteText("\n Convert Basis:");
+            if (index == n-1) {
+                val::groebnerwalk(G, -1, n-1, n-1, OM, 0);
+            }
+            else {
+                val::vector<int> selection(0,n);
+                selection(index) = 1;
+                OM=id_roots::eliminationmatrix(selection);
+                val::groebnerwalk(G,-1000,n-1,n-1,OM,0);
+            }
+            if (comment) WriteText("\nBasis converted!");
+        }
+	}
+    else { //
+        Glist<s_polynom<integer>> H;
+        Glist<int> Primlist;
+        pol<rational> h;
+        val::vector<int> selection(0,n+1);
+
+        selection(0) = 1;
+
+        if (comment) WriteText("\nBasis has no normal position index!\nSearch extension basis:");
+        id_roots::extendordermatrix(); // Now s_expp::dim = n+1;
+		dimincreased = 1;
+        do {
+            Primlist = CreatePrimlist(H);
+            H = id_roots::preparenormalposition(G);
+            h = modint_minimalpolynom(H,0,Primlist,nthreads,0);
+        }
+        while (integer(h.degree())<nofzeros);
+        if (comment) WriteText("\n Extension basis found!");
+
+        if (comment) WriteText("\nConvert Basis: ");
+        OM = id_roots::eliminationmatrix(selection);
+        val::groebnerwalk(H,-1000,n,n,OM,0);
+        if (comment) WriteText("\n Basis converted!");
+        index = 0;
+		G = std::move(H);
+	}
+
+	int dim = G.length();
+    val::s_polynom<rational> f_r;
+    val::s_polynomIterator<rational> it;
+
+	F = vector<pol<rational>>(dim);
+	
+    f_r = val::toRationalPolynom(G[0]);
+    f_r.normalize();
+    F(index) = val::To_unipol(f_r,index);
+    for (i=1;i<dim;++i) {
+        f_r = val::toRationalPolynom(G[i]);
+        f_r.normalize();
+        it = f_r.begin();
+        for (j=0;j<dim;++j) {
+            if ((it.actualterm())[j]) break;
+        }
+        for (++it;it;++it) {
+            F(j).insert(-it.actualcoef(),(it.actualterm())[index]);
+        }
+    }
+
+	if (dimincreased) s_expo::setdim(n);
+	return 1;
+}
+
+
 int computeroots(val::Glist<val::s_polynom<val::integer>> &G,matrix<double> &MR,matrix<complex> &MC,int nthreads,int comment)
 {
     if (G.isempty() || !val::iszerodimensional(G)) {

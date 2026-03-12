@@ -2575,7 +2575,7 @@ std::string valfunction::get_infix(const Glist<valfunction::token>& Gdat,int nva
                 if (fparser::is_arithmetic_operator(tok1)) op1 = "(" + op1 + ")";
             }
             else if (value.data=="^") {
-                if (fparser::is_arithmetic_operator(tok2)) op2 = "(" + op2+ ")";
+                if (fparser::is_arithmetic_operator(tok2) || tok2[0] == 'm') op2 = "(" + op2+ ")";
                 if (fparser::is_arithmetic_operator(tok1) || tok1[0]=='m') op1 = "(" + op1 + ")";
             }
 
@@ -3123,14 +3123,16 @@ void valfunction::simplify(int extended)
                 //for (auto& value : f_t) std::cout<<value.data<<" ";
             }
         }
+		
         // std::cout<<"\n After exterior substitution, f_t =  ";
         // {
         //     Glist<token> H;
         //     for (const auto& t : f_t) H.push(t);
-        //     std::cout << "f_t = " << get_infix(H,nvar);
+        //     std::cout << "f_t = " << get_infix(H,nvar) + ";\t";
         // }
-        // for (auto& value : f_t) std::cout<<value.data<<" ";
+        // for (auto& value : f_t) std::cout << " " << value.data;
         // std::cout<<"\n";
+        
         for (int i=0;i<n;++i) {
             if (f_t[i].type==0 && fparser::has_point(f_t[i].data)) {
                 isdouble=1;

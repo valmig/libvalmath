@@ -16,6 +16,8 @@ DLL_PUBLIC void SetRootsMessage(strg_function&);
 
 DLL_PUBLIC int idealroots(const std::string &filename,matrix<double> &RZMat,matrix<complex> &CZMat,int nthreads=3,int comment=1);
 
+DLL_PUBLIC int getnormalpospol(val::Glist<val::s_polynom<val::integer>> &G, vector<pol<rational>> &F, int &index, int nthreads = 3, int comment = 1);
+	
 DLL_PUBLIC int computeroots(val::Glist<val::s_polynom<val::integer>> &G,matrix<double> &RZMat,matrix<complex> &CZMat,int nthreads=3,int comment=1);
 
 
