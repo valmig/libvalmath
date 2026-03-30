@@ -31,6 +31,22 @@ template <class T> std::string ToString(const T& a,unsigned prec=6);
 
 template <class T> std::string gettypename(const T& a);
 
+
+class DLL_PUBLIC enter_function_guard
+{
+private:
+	std::string fname;
+public:	
+	enter_function_guard(const std::string& name) : fname(name) {
+		std::cout << "\n " << fname << " entered!" << std::endl;
+	}
+	~enter_function_guard() {
+		std::cout << "\n Leaving " << fname <<std::endl; 
+	}
+};
+
+
+	
 /*
 template <typename S, typename std::enable_if_t<val::is_string_type<S>::value,int> = 0>
 S headofstring(const S &value, int m  = 1);

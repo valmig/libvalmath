@@ -31,6 +31,12 @@ val::n_polynom<val::rational> lcm(const val::n_polynom<val::rational>& f,const v
 
     int i,n = val::Max(f1.getdim(),g1.getdim());
 
+	if (n >= 9) {
+		h = f * g;
+		h.normalize();
+		return h;
+	}
+
     s_expo::setordtype(-1);
     s_expo::setdim(n+1);
     s_expo X,Y(0);
@@ -2885,8 +2891,6 @@ void valfunction::simplify(int extended)
     valfunction h;
     std::string s_number;
 
- 
-
 
     h.s_infix="1";
 
@@ -3178,7 +3182,8 @@ void valfunction::simplify(int extended)
     }
     s_infix=get_infix(Gdat,nvar);
 
-    if (imsubst) simplify(extended);
+	if (imsubst) simplify(extended);
+
 
     //std::cout<<"\n s_infix at end of simplify = "<<s_infix;
 
@@ -3799,5 +3804,20 @@ Glist<GPair<double>> valfunction::get_undefined_intervals(const double &x1,const
 
     return intervals;
 }
+
+std::istream& operator >>(std::istream &is,valfunction &f)
+{
+	std::string s;
+	is >> s;
+	f = valfunction(s);
+	return is;
+}
+
+std::ostream& operator <<(std::ostream &os, const valfunction &f)
+{
+	os << f.getinfixnotation();
+	return os;
+}
+
 
 } //end namespace val

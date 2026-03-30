@@ -22,6 +22,9 @@ template <class T> class fraction;
 template <class T> class vector;
 //template <class T> class n_polynom;
 //template <class T> class s_polynom;
+
+class valfunction;
+	
 class rational;
 
 typedef fraction<pol<rational>> rationalfunction;
@@ -30,6 +33,13 @@ template <class T> class complex_type;
 typedef complex_type<double> complex;
 
 
+
+DLL_PUBLIC std::istream& operator >>(std::istream &is,valfunction &f);
+DLL_PUBLIC std::ostream& operator <<(std::ostream &os, const valfunction &f);
+
+
+
+	
 class DLL_PUBLIC valfunction
 {
 private:
