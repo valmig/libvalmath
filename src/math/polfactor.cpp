@@ -4,8 +4,6 @@
 #include <s_modinteger.h>
 #include <val_basics.h>
 #include <pol_arithmetic.h>
-#include <fstream>
-#include <thread>
 #include <modint.h>
 #include <numbers.h>
 

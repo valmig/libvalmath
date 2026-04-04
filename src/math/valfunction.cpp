@@ -14,6 +14,7 @@
 //#include <s_modinteger.cpp>
 //#include <polfactor.h>
 #include <s_groebner.h>
+#include <polfactor.h>
 
 typedef val::complex (c_function)(const val::complex &);
 
@@ -2718,22 +2719,57 @@ void valfunction::simplifypolynomial(d_array<token> &f_t)
     dim=0;
     f_nom=f.nominator();
     f_denom = f.denominator();
-    n_polynom<rational> hgcd = ::gcd(f_nom,f_denom);
-    f_nom/=hgcd;
-    f_denom/=hgcd;
     for (const auto& monom : f_nom) {
         dim = val::Max(dim,monom.actualterm().dimension());
     }
     for (const auto& monom : f_denom) {
         dim = val::Max(dim,monom.actualterm().dimension());
     }
+	if (dim > 1) {
+		n_polynom<rational> hgcd = ::gcd(f_nom,f_denom);
+		f_nom/=hgcd;
+		f_denom/=hgcd;
+		dim = 0;
+		for (const auto& monom : f_nom) {
+			dim = val::Max(dim,monom.actualterm().dimension());
+		}
+		for (const auto& monom : f_denom) {
+			dim = val::Max(dim,monom.actualterm().dimension());
+		}
+	}
 
     // Case: univariate polynomials:
     if (dim<=1) {
-        //std::cout<<"\n OK!";
         pol<rational> uf,ug;
         std::string sF;
         valfunction fz,fn;
+		int minus = 0, num = 0;
+		auto factorize = [&](pol<integer>& f, const integer &b)
+		{
+			integer a = b;
+			if (f.degree() > 1) {
+				d_array<pol<rational>> factors = polfactor(toRationalPolynom(f));
+				int e = f.degree() / factors[0].degree();
+				if (factors.length() == 1 && e > 1) {
+					if (power(factors[0].LC().signum(),e) != f.LC().signum()) minus = 1;
+					if (minus && num) a.changesign();
+					std::string sfactor="";
+					if (a != 1) {
+						if (a == -1) sfactor = "-";
+						else sfactor = "(" + ToString(a) + ")";
+					}
+					sF = sfactor + "(" + PolToString(factors[0]) + ")^" + ToString(e); 
+				}
+				else {
+					f *= a;
+					sF = PolToString(f);
+				}
+			}
+			else {
+				f *= a;
+				sF = val::PolToString(f);
+			}
+		};
 
         for (const auto& value : f_nom) uf.insert(value.actualcoef(),value.actualterm()[0]);
         for (const auto& value : f_denom) ug.insert(value.actualcoef(),value.actualterm()[0]);
@@ -2748,16 +2784,19 @@ void valfunction::simplifypolynomial(d_array<token> &f_t)
         else {
             pol<integer> iuf,iug;
             rational cuf,cug;
+			integer sign = 1;
 
             primitivpart(uf,iuf,cuf);
             primitivpart(ug,iug,cug);
             r=cuf/cug;
-            iuf*=nominator(r);
-            iug*=denominator(r);
-            sF = val::PolToString(iuf);
-            fz.infix_to_postfix(sF);
-            sF = val::PolToString(iug);
+			//denominator
+			factorize(iug, denominator(r));
             fn.infix_to_postfix(sF);
+			//nominator:
+			if (minus) sign = -1;
+			minus = 0; num = 1;
+			factorize(iuf, nominator(r)* sign);
+            fz.infix_to_postfix(sF);
             fz.Gdat.append(std::move(fn.Gdat));
             fz.Gdat.push_back(token("/",2));
         }
@@ -3135,7 +3174,7 @@ void valfunction::simplify(int extended)
         //     std::cout << "f_t = " << get_infix(H,nvar) + ";\t";
         // }
         // for (auto& value : f_t) std::cout << " " << value.data;
-        // std::cout<<"\n";
+        // std::cout<<std::endl;
         
         for (int i=0;i<n;++i) {
             if (f_t[i].type==0 && fparser::has_point(f_t[i].data)) {
