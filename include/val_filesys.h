@@ -46,7 +46,7 @@ DLL_PUBLIC int Copy_File(const std::string& oldfile,const std::string& newfile,i
 
 DLL_PUBLIC int Delete_File(const std::string&);
 
-
+DLL_PUBLIC long long GetFileSize(const std::string&);
 
 } // end namespace val
 

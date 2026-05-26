@@ -229,6 +229,24 @@ int Delete_File(const std::string& filename)
     return ::DeleteFile(filename.c_str());
 }
 
+long long GetFileSize(const std::string &name)
+{
+    HANDLE hFile = CreateFile(name.c_strg(), GENERIC_READ, 
+        FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 
+        FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile==INVALID_HANDLE_VALUE)
+        return -1; // error condition, could call GetLastError to find out more
+
+    LARGE_INTEGER size;
+    if (!GetFileSizeEx(hFile, &size))
+    {
+        CloseHandle(hFile);
+        return -1; // error condition, could call GetLastError to find out more
+    }
+
+    CloseHandle(hFile);
+    return size.QuadPart;	
+}
 
 
 #else    // Linux:
@@ -364,6 +382,18 @@ int Delete_File(const std::string& filename)
     else return 0;
 }
 
+long long GetFileSize(const std::string &name)
+{
+	if (!FileExists(name)) return -1;
+	long long size = 0;
+    struct stat statbuf;
+
+	if (stat(name.c_str(), &statbuf) != -1) {
+		size = statbuf.st_size;
+	}
+	else return -1;
+	return size;
+}
 
 
 #endif // _Win32
