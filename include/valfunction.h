@@ -79,6 +79,7 @@ private:
     static void simplify_trig(d_array<token> &f);
     static void simplify_arcsc(d_array<token> &f);
     static int simplify_im(d_array<token> &f);
+	static void simplify_abs(d_array<token> &f, int nvar);
     static void subst_var_t_pi(d_array<token> &f_t,d_array<d_array<token>> &toklist,int &nx,int nvar=1);
     static void back_subst(d_array<token> & f_t,const d_array<d_array<token>> &toklist,int nx);
     static std::string get_infix(const Glist<token>& Gdat,int nvar=1);

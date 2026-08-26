@@ -1288,202 +1288,6 @@ void valfunction::simplify_sqrt(d_array<token> &f_t, int nvar, int prod)
         n = f_t.length();
         tok1.del();
     }
-
-    // std::cout<<"\n after sqrt(h)^n : ";
-    // for (auto& value : f_t) std::cout<<value.data<<" ";
-/*
-    n = f_t.length();
-    for (i = 0; i < n - 1; ++i) {
-        if ((f_t[i].data=="sin" && f_t[i+1].data=="arcsin") || (f_t[i].data == "arcsin" && f_t[i+1].data == "sin") ||
-            (f_t[i].data=="cos" && f_t[i+1].data=="arccos") || (f_t[i].data == "arccos" && f_t[i+1].data == "cos") ||
-            (f_t[i].data=="tan" && f_t[i+1].data=="arctan") || (f_t[i].data == "arctan" && f_t[i+1].data == "tan")) {
-            k = i+2;
-            tok = splitfunction(f_t,k);
-            squeeze(f_t, tok, i, k);
-            n = f_t.length();
-            --i;
-        }
-
-    }
-
-    // sin(const), cos(const)
-    int j , neg = 0; //even;
-    integer two(2);
-    rational r, ratvalue;
-	
-	d_array<rational> ratmult{rational(0), rational(1,6), rational(1,4), rational(1,3), rational(1,2), rational(2,3), rational(3,4), rational(5,6)}; 
-	d_array<d_array<token>> sintoken{{token("0",0)}, {token("/",2),token("2",0),token("1",0)}, {token("/",2), token("2",0), token("sqrt",2), token("2",0)},
-									 {token("/",2), token("2",0), token("sqrt",2), token("3",0)},{token("1",0)}, {token("/",2), token("2",0), token("sqrt",2), token("3",0)},
-	                                 {token("/",2), token("2",0), token("sqrt",2), token("2",0)}, {token("/",2),token("2",0),token("1",0)}};
-	d_array<d_array<token>> costoken {{token("1",0)}, {token("/",2), token("2",0), token("sqrt",2), token("3",0)}, {token("/",2), token("2",0), token("sqrt",2), token("2",0)},
-									  {token("/",2),token("2",0),token("1",0)}, {token("0",0)}, {token("m",2), token("/",2),token("2",0),token("1",0)},
-	                                  {token("m",2), token("/",2), token("2",0), token("sqrt",2), token("2",0)}, {token("m",2), token("/",2), token("2",0), token("sqrt",2), token("3",0)}};
-
-    n = f_t.length();
-    for (i = 0; i < n - 1; ++i) {
-        neg = 0;
-		//even = 1;
-		tok.del();
-		
-        if (f_t[i].data != "sin" && f_t[i].data != "cos") continue;
-		j = i+1;
-		if (f_t[j].data == "0") {
-			if (f_t[i].data == "sin") tok = sintoken[0];
-			else tok = costoken[0];
-			squeeze(f_t, tok, i, i+2);
-			n = f_t.length();
-			continue;
-		}
-		if (f_t[j].data == "m") {
-			neg = 1;
-			++j;
-		}
-		if (j < n && f_t[j].data == "PI") {
-			k = j+1;
-			r = rational(1);
-		}
-		else if (j < n-1 && f_t[j].data == "*" && f_t[j+1].data =="PI") {
-			j += 2;
-			if (j < n && f_t[j].type == 0 && f_t[j].data != "t" && f_t[j].data != "PI") {
-				r = FromString<rational>(f_t[j].data);
-				k = j +1;
-			}
-			else if (j < n - 2 && f_t[j].data == "/" && f_t[j+1].type == 0 && f_t[j+2].type == 0) {
-				++j;
-				r = rational(FromString<integer>(f_t[j+1].data),FromString<integer>(f_t[j].data));
-				k = j+2;
-			}
-			else continue;
-		}
-		else continue;
-		
-		for (int l = 0; l < ratmult.length(); ++l) {
-			ratvalue = r - ratmult[l];
-			if (ratvalue.denominator() != 1) continue;
-			if (ratvalue.nominator() % two != 0) {
-				if (f_t[i].data == "sin") neg = !neg;
-				else {
-					tok.reserve(costoken[l].length() +1);
-					tok.push_back(token("m",2));
-					for (const auto &t : costoken[l]) tok.push_back(t);
-					break;
-				}
-			}
-			if (f_t[i].data == "sin") {
-				if (neg) {
-					tok.reserve(sintoken[l].length()+1);
-					tok.push_back(token("m",2));
-					for (const auto &t : sintoken[l]) tok.push_back(t);
-				}
-				else tok = sintoken[l];
-			}
-			else tok = costoken[l];
-			break;
-		}
-		if (tok.isempty()) continue;
-		squeeze(f_t, tok, i, k);
-		n = f_t.length();
-	}
-*/																						
-		
-/*		
-        if (f_t[i].data == "sin" || f_t[i].data == "cos") {
-            if (f_t[i+1].data == "0") {
-                tok.del();
-                if (f_t[i].data == "sin") tok.push_back(token("0",0));
-                else tok.push_back(token("1",0));
-                squeeze(f_t, tok, i, i+2);
-                n = f_t.length();
-                continue;
-            }
-            j = i + 1;
-            if (f_t[j].data == "m") {
-                neg = 1;
-                ++j;
-            }
-            if (j < n && f_t[j].data == "PI") {
-               tok.del();
-               if (f_t[i].data == "sin") tok.push_back(token("0",0));
-               else {
-                   tok.push_back(token("m",2));
-                   tok.push_back(token("1",0));
-               }
-               // std::cout << "\n Prev: f_t = ";
-               // for (k = 0; k < n; ++ k) std::cout << f_t[k].data << " ";
-               // std::cout << std::endl;
-               squeeze(f_t, tok, i, j+1);
-               n = f_t.length();
-               // std::cout << "\n f_t = ";
-               // for (k = 0; k < n; ++ k) std::cout << f_t[k].data << " ";
-               // std::cout << std::endl;
-               continue;
-            }
-            if (j < n-1 && f_t[j].data == "*" && f_t[j+1].data =="PI") {
-               j = j+2;
-               if (j < n && f_t[j].type == 0 && f_t[j].data != "t" && f_t[j].data != "PI") {
-                   z = FromString<integer>(f_t[j].data);
-                   if (z % integer(2) != 0) even = 0;
-                   tok.del();
-                   if (f_t[i].data == "sin") {
-                       tok.push_back(token("0",0));
-                   }
-                   else {
-                       if (!even) tok.push_back(token("m",2));
-                       tok.push_back(token("1",0));
-                   }
-                   squeeze(f_t, tok, i, j+1);
-                   n = f_t.length();
-                   continue;
-               }
-               if (j < n - 2 && f_t[j].data == "/" && f_t[j+1].type == 0 && f_t[j+2].type == 0) {
-                   j = j+1;
-                   if (f_t[j].data == "PI" || f_t[j].data == "t" || f_t[j+1].data == "PI" || f_t[j+1].data == "t") continue;
-                   r = rational(FromString<integer>(f_t[j+1].data),FromString<integer>(f_t[j].data));
-                   // if (r.denominator() != integer(2)) continue;
-                   tok.del();
-				   
-                   for (int l = 0; l < ratmult.length(); ++l) {
-					   ratvalue = r - ratmult[l];
-					   if (ratvalue.denominator() != 1) continue;
-					   if (ratvalue.nominator() % two != 0) {
-						   if (f_t[i].data == "sin") neg = !neg;
-						   else {
-							   tok.reserve(costoken[l].length() +1);
-							   tok.push_back(token("m",2));
-							   for (const auto &t : costoken[l]) tok.push_back(t);
-							   break;
-						   }
-					   }
-					   if (f_t[i].data == "sin") {
-						   if (neg) {
-							   tok.reserve(sintoken[l].length()+1);
-							   tok.push_back(token("m",2));
-							   for (const auto &t : sintoken[l]) tok.push_back(t);
-						   }
-						   else tok = sintoken[l];
-					   }
-					   else tok = costoken[l];
-					   break;
-				   }
-				   if (tok.isempty()) continue;
-                   // if (f_t[i].data == "cos") {
-                   //     tok.push_back(token("0",0));
-                   // }
-                   // else {
-                   //     if (r.nominator()%integer(4) == 1) even = 1;
-                   //     else even = 0;
-                   //     if (neg) even = !even;
-                   //     if (!even) tok.push_back(token("m",2));
-                   //     tok.push_back(token("1",0));
-                   // }
-                   squeeze(f_t, tok, i, j+2);
-                   n = f_t.length();
-                   continue;
-               }
-            }
-        }
-    }
-    */
 }
 
 void valfunction::simplify_trig(d_array<token> &f_t)
@@ -1665,7 +1469,144 @@ void valfunction::simplify_arcsc(d_array<token> &f_t)
 }
 
 
+void valfunction::simplify_abs(d_array<token> &f_t, int nvar)
+{
+    int i,k,n=f_t.length(), m;
+	d_array<token> tok;
 
+	// Get rid of operator m in abs:
+	for (i = 0; i < n-1; ++i) {
+		if (f_t[i].data == "abs" && f_t[i+1].data == "m") {
+			k = i + 2;
+			tok = splitfunction(f_t, k);
+			squeeze( f_t, tok, i + 1, k);
+			n = f_t.length();
+		}
+	}
+
+	// simplify abs(number)
+	for (i = 0; i < n-1; ++i) {
+		if (f_t[i].data == "abs" && f_t[i+1].type == 0) {
+			if (f_t[i+1].data == "t" || f_t[i+1].data == "i") continue;
+			k = i + 1;
+			tok = splitfunction(f_t, k);
+			squeeze(f_t, tok, i, k);
+			n = f_t.length();
+		}
+		// rationals, multiples of PI:
+		if (f_t[i].data == "abs" && (f_t[i+1].data == "/" || f_t[i+1].data == "*")) {
+			if (f_t[i+2].type == 0 && f_t[i+3].type == 0) {
+				if (f_t[i+2].data == "t" || f_t[i+3].data =="t") continue;
+				if (f_t[i+2].data == "i" || f_t[i+3].data == "i") continue;
+				k = i + 1;
+				tok = splitfunction(f_t, k);
+				squeeze(f_t, tok, i, k);
+				n = f_t.length();
+			}
+		}
+	}
+	k = 0;
+	m = 0;
+	for (i = 0; i < n; ++i) {
+		if (f_t[i].data == "abs") ++k;
+		if (f_t[i].data == "*" || f_t[i].data == "/") ++m;
+	}
+	if (k < 2 || m == 0) return;
+	k = m = 0;
+
+	// products;
+	int nx = 0, l, found, m1, m2;
+	d_array<token> h1, h_t, tok1, tok2;
+	d_array<d_array<token>> toklist;
+
+	// Put all exp-products together:
+    subst_var_t_pi(f_t,toklist,nx,nvar);
+    // Replace abs:
+    for (i=n-1;i>=0;--i) {
+        if (f_t[i].data=="abs") {
+            k=i;
+            splitfunction(f_t,k);
+            tok.del();
+            tok.reserve(k-i);
+            for (int j=i;j<k;++j) tok.push_back(f_t[j]);
+            l=toklist.length()+1;
+            toklist.push_back(std::move(tok));
+            //Replace operators from i to k-1 by xl:
+            f_t[i] = token("x"+val::ToString(l),1);
+            for (int j=k;j<n;++j) f_t[j-k+i+1]=std::move(f_t[j]);
+            n-=k-i-1;
+            f_t.resize(n);
+        }
+    }
+    // Replace other operators:
+    n = f_t.length();
+    for (i=n-1;i>=0;--i) {
+        if (f_t[i].type==2 && f_t[i].data!="+" && f_t[i].data!="-" && f_t[i].data!="*" && f_t[i].data!="/" && f_t[i].data!="m" && f_t[i].data[0]!='x') {
+            k=i;
+
+            if (f_t[i].data=="^") {
+                if (i>= n-1) continue;
+                if (f_t[i+1].type==0 && f_t[i+1].data!="t" && isinteger(f_t[i+1].data)) continue;
+            }
+
+            tok = splitfunction(f_t,k);
+            l=toklist.length()+1;
+            toklist.push_back(std::move(tok));
+            tok.del(); tok.reserve(1); tok.push_back(token("x"+val::ToString(l),1));
+            squeeze(f_t,tok,i,k);
+            n = f_t.length();
+        }
+    }
+    simplifypolynomial(f_t);
+
+    back_subst(f_t,toklist,nx);
+    n=f_t.length();
+    // abs-products:
+    do {
+        found=0;
+        for (i=0;i<n;++i) {
+            if (f_t[i].data=="*" || f_t[i].data=="/") {
+                k=i+1;
+                h_t=splitfunction(f_t,k);
+                tok=splitfunction(f_t,k);
+                if (h_t[0].data=="abs" && tok[0].data=="abs") {
+                    m1=h_t.length(),m2=tok.length(),m=m1+m2-1;
+                    h1.del();
+                    h1.reserve(m);
+                    if (f_t[i].data=="*") h1[0] = token("*",2);
+                    else h1[0] = token("/",2);
+                    for (l=1;l<m1;++l) h1[l] = h_t[l];
+                    for (l=1;l<m2;++l) h1[l+m1-1] = tok[l];
+                    f_t[i].data="abs";
+                    squeeze(f_t,h1,i+1,k);
+                    n=f_t.length();
+                    found=1;
+                    //std::cout<<"\nexp simplified f_t = ";
+                    //for (const auto& value : f_t) std::cout<<value.data + " ";
+                    break;
+                }
+                if (f_t[i].data=="*" &&  h_t[0].data=="abs" && tok[0].data=="*" && tok[1].data=="abs") {
+                    l=1;
+                    m1=h_t.length();m2=tok.length();
+                    h1.del();
+                    h1.reserve(m=m1+m2-1);
+                    tok1 = splitfunction(tok,l);
+                    tok2= splitfunction(tok,l);
+                    h1.push_back(h_t[0]); h1.push_back(token("*",2));
+                    for (l=1;l<m1;++l) h1.push_back(h_t[l]);
+                    for (l=1;l<tok1.length();++l) h1.push_back(tok1[l]);
+                    for (l=0;l<tok2.length();++l) h1.push_back(tok2[l]);
+                    squeeze(f_t,h1,i+1,k);
+                    n=f_t.length();
+                    found=1;
+                    break;
+                }
+            }
+        }
+    }
+    while (found);
+
+}
 
 
 int valfunction::simplify_im(d_array<token> &f_t)
@@ -3152,6 +3093,36 @@ void valfunction::simplify(int extended)
         }
         else ++i;
     }
+
+	// replace negative powers:
+	{
+		int k, j;
+		d_array<token> tok1, tok2;
+		h_t.del();
+
+		n = f_t.length();
+		for (i = 0; i < n-1; ++i) {
+			if (f_t[i].data != "^" || f_t[i+1].data != "m") continue;
+			j = i; i+= 2;
+			tok1 = splitfunction(f_t, i);
+			tok2 = splitfunction(f_t, i);
+			h_t.reserve(tok1.length() + tok2.length() + 3);
+			h_t[0] = token("/", 2); h_t[1] = token("^", 2);
+			k = 2;
+			for (const auto &v : tok1) {
+				h_t[k] = v;
+				++k;
+			}
+			for (const auto &v : tok2) {
+				h_t[k] = v;
+				++k;
+			}
+			h_t[k] = token("1",0);
+			squeeze( f_t, h_t, j, i);
+			n = f_t.length();
+		}
+		h_t.del();
+	}
     
 
     // std::cout<<"\n After inner substitutions, f_t = ";
@@ -3170,7 +3141,12 @@ void valfunction::simplify(int extended)
 
 
     // outer - functions: ------------------------------------------------
-
+    //
+    // abs - rules 
+    if (has_operator(f_t,"abs")) {
+        simplify_abs(f_t, nvar);       // don't simplify products
+        n=f_t.length();
+    }
     // exp - rules
     if (has_operator(f_t,"exp")) {
         simplify_exp(f_t,nvar,0);       // don't simplify products
