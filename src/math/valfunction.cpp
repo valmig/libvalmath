@@ -1626,6 +1626,10 @@ int valfunction::simplify_im(d_array<token> &f_t)
             k = i+3;
             switch (e)
             {
+				case 1:
+				{
+					h.push_back(token("i",0));
+				} break;
                 case 2:
                 {
                     // subst i^e with -1;
@@ -1647,9 +1651,9 @@ int valfunction::simplify_im(d_array<token> &f_t)
             n = f_t.length();
         }
     }
-    //std::cout<<"\nNach im f = ";
-    //for (const auto& value : f_t) std::cout<<value.data + " ";
-    //std::cout<<std::endl;
+    // std::cout<<"\nNach im f = ";
+    // for (const auto& value : f_t) std::cout<<value.data + " ";
+    // std::cout<<std::endl;
     return subst;
 }
 
@@ -3205,8 +3209,13 @@ void valfunction::simplify(int extended)
                 k=i;
 
                 if (f_t[i].data=="^") {
-                    if (i>= n-1) continue;
-                    if (f_t[i+1].type==0 && f_t[i+1].data!="t" && isinteger(f_t[i+1].data)) continue;
+                    if (i >= n-2) continue;
+                    if (f_t[i+1].type==0 && f_t[i+1].data!="t" && isinteger(f_t[i+1].data)) {
+						if (extended == 2) continue;
+						int exp = FromString<int>(f_t[i+1].data);
+						if (exp <= 10) continue;
+						if (f_t[i+2].type == 1) continue;
+					}
                 }
 
                 //std::cout<<"\n Operator: "<<f_t[k].data;
@@ -3407,7 +3416,8 @@ valfunction valfunction::derive(int k) const
     g.nvar = h.nvar = g1.nvar = g2.nvar = g3.nvar = nvar;
     g.t = h.t = g1.t = g2.t = g3.t = t;
 
-    // Case: rational function:
+	/*
+	// Case: rational function:
     if (nvar==1 && isrationalfunction() && !iscomplex()) {
         rationalfunction F=getrationalfunction();
         pol<rational> f_denom = F.denominator();
@@ -3440,6 +3450,7 @@ valfunction valfunction::derive(int k) const
         //f.print();std::cout<<std::endl;
         return f;
     }
+    */
 
     for (int i=n-1;i>=0;--i,it++) f_t[i] = it();
     g_t=splitfunction(f_t,j);
