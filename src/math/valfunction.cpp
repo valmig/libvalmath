@@ -3214,7 +3214,7 @@ void valfunction::simplify(int extended)
 						if (extended == 2) continue;
 						int exp = FromString<int>(f_t[i+1].data);
 						if (exp <= 10) continue;
-						if (f_t[i+2].type == 1) continue;
+						if (f_t[i+2].type <= 1) continue;
 					}
                 }
 
