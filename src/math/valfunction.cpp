@@ -3206,31 +3206,34 @@ void valfunction::simplify(int extended)
         for (i = n - 1; i >= 0; --i) {
             if (f_t[i].type == 2 && f_t[i].data != "+" && f_t[i].data != "-" &&
                 f_t[i].data != "*" && f_t[i].data != "/" && f_t[i].data != "m") {
-                k=i;
 
                 if (f_t[i].data=="^") {
                     if (i >= n-2) continue;
                     if (f_t[i+1].type==0 && f_t[i+1].data!="t" && isinteger(f_t[i+1].data)) {
 						if (extended == 2) continue;
+						if (f_t[i+2].type <= 1) continue;
 						int exp = FromString<int>(f_t[i+1].data);
 						if (exp <= 10) continue;
-						if (f_t[i+2].type <= 1) continue;
+						i += 2;
 					}
                 }
+                k = i;
+                tok = splitfunction(f_t,k);
 
                 //std::cout<<"\n Operator: "<<f_t[k].data;
-                splitfunction(f_t,k);
-                tok.del();
-                tok.reserve(k-i);
-                for (int j=i;j<k;++j) tok.push_back(f_t[j]);
+                // tok.del();
+                // tok.reserve(k-i);
+                // for (int j=i;j<k;++j) tok.push_back(f_t[j]);
+				
                 //std::cout<<"\n tok = ";
                 //for (const auto&  value : tok) std::cout<<value.data<<" ";
 
                 // check if tok is already in toklist.
-                l=0;
-                found=0;
+                // l=0;
+                // found=0;
                 //std::cout<<std::endl;
                 //for (const auto &t : tok) std::cout<<t.data<<" ";
+                /*
                 for (const auto& value : toklist) {
                     //std::cout<<std::endl;
                     found=0;
@@ -3247,15 +3250,46 @@ void valfunction::simplify(int extended)
                     ++l;
                 }
                 if (!found) {
+					if (expcont) {
+						i -= 2;
+						continue;
+					}
                     l=toklist.length()+1;
-                toklist.push_back(std::move(tok));
+					toklist.push_back(std::move(tok));
                 }
                 else ++l;
                 // Replace operators from i to k-1 by xl:
-                f_t[i] = token("x"+val::ToString(l),1);
-                for (int j=k;j<n;++j) f_t[j-k+i+1]=std::move(f_t[j]);
-                n-=k-i-1;
-                f_t.resize(n);
+                h_t.del();
+                h_t.push_back(token("x"+val::ToString(l),1));
+
+				// squeeze( f_t, h_t, i, k);
+				// n = f_t.length();
+				*/
+				toklist.push_back(tok);
+				l = toklist.length();
+                h_t.del();
+                h_t.push_back(token("x"+val::ToString(l),1));
+
+				int m = tok.length();
+				for (int i = 0; i < n; ++i) {
+					found = 1;
+					for (int j = 0; j < m; ++j) {
+						if ((i+j >= n) || f_t[i+j].data != tok[j].data) {
+							found = 0;
+							break;
+						}
+					}
+					if (found) {
+						squeeze( f_t, h_t, i, i+m);
+						n = f_t.length();
+					}
+				}
+				i = n;
+                // f_t[i] = token("x"+val::ToString(l),1);
+                // for (int j=k;j<n;++j) f_t[j-k+i+1]=std::move(f_t[j]);
+                // n-=k-i-1;
+                // f_t.resize(n);
+				
                 //std::cout<<"\n Substitution i , k , n: "<<i<<" , "<<k<<" , "<<n<<"  ,f_t = ";
                 //for (auto& value : f_t) std::cout<<value.data<<" ";
             }
