@@ -3013,6 +3013,24 @@ void valfunction::simplify(int extended)
         n = f_t.length();
     }
 
+	{   // simplify powers of powers:
+		for (i = 0; i < n; ++i) {
+			if (f_t[i].data == "^") {
+				++i;
+				k = i;
+				tok = splitfunction(f_t, i);
+				if (f_t[i].data != "^") continue;
+				++i;
+				tok.append(splitfunction(f_t, i));
+				h_t.del();
+				h_t.push_back(token("*",2));
+				h_t.append(tok);
+				squeeze( f_t, h_t, k, i);
+				n = f_t.length();
+			}
+		}
+	}
+
     // exp - rules
     if (has_operator(f_t,"exp")) {
         simplify_exp(f_t,nvar,1);      // simplify also exp - products
